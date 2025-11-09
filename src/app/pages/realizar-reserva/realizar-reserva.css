@@ -1,0 +1,367 @@
+/* Container principal */
+.reserva-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.reserva-card {
+  background: #F0F8F0;
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 700px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón cerrar */
+.btn-close-modal {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.3s ease;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-close-modal:hover {
+  color: #333;
+}
+
+/* Header */
+.reserva-header {
+  margin-bottom: 2rem;
+}
+
+.reserva-titulo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2E5339;
+  margin-bottom: 1.5rem;
+}
+
+.anfitrion-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.anfitrion-avatar {
+  width: 60px;
+  height: 60px;
+  background-color: #4A7C59;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.anfitrion-texto small {
+  color: #666;
+  font-size: 0.85rem;
+  display: block;
+}
+
+.anfitrion-texto p {
+  color: #333;
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+/* Calendarios */
+.calendarios-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.calendario-wrapper {
+  position: relative;
+}
+
+.calendario-wrapper .form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.calendario-wrapper .form-control {
+  background: white;
+  border: 2px solid #C8E6C9;
+  border-radius: 8px;
+  padding: 0.6rem;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.calendario-wrapper .form-control:focus {
+  border-color: #4A7C59;
+  box-shadow: 0 0 0 0.2rem rgba(74, 124, 89, 0.25);
+}
+
+/* Calendario */
+.calendario {
+  background: #D4E8D8;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.calendario-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+}
+
+.btn-nav {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem;
+  color: #2E5339;
+  transition: background 0.3s ease;
+  border-radius: 4px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-nav:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.mes-año {
+  font-weight: 600;
+  color: #2E5339;
+  font-size: 0.9rem;
+}
+
+/* Días de la semana */
+.dias-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.dia-semana {
+  text-align: center;
+  font-weight: 600;
+  color: #2E5339;
+  font-size: 0.85rem;
+  padding: 0.3rem;
+}
+
+/* Días del mes */
+.dias-mes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.3rem;
+}
+
+.dia {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #333;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  min-height: 35px;
+}
+
+.dia:hover:not(.vacio) {
+  background: #A8D5BA;
+  transform: scale(1.05);
+}
+
+.dia.vacio {
+  background: transparent;
+  cursor: default;
+}
+
+.dia.seleccionado {
+  background: #2E5339;
+  color: white;
+  font-weight: bold;
+}
+
+/* Footer del calendario */
+.calendario-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.calendario-footer .btn {
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  border: none;
+}
+
+.calendario-footer .btn-outline-secondary {
+  background: transparent;
+  border: 1px solid #999;
+  color: #666;
+}
+
+.calendario-footer .btn-outline-secondary:hover {
+  background: #f5f5f5;
+  border-color: #999;
+  color: #666;
+}
+
+.calendario-footer .btn-success {
+  background: #4A7C59;
+  border: none;
+  color: white;
+}
+
+.calendario-footer .btn-success:hover {
+  background: #3A6249;
+  border: none;
+}
+
+/* Sección de huéspedes */
+.huespedes-section {
+  margin-bottom: 2rem;
+}
+
+.huespedes-section .form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.huespedes-section .form-control {
+  background: white;
+  border: 2px solid #C8E6C9;
+  border-radius: 8px;
+  padding: 0.8rem;
+  font-size: 1rem;
+}
+
+.huespedes-section .form-control:focus {
+  border-color: #4A7C59;
+  box-shadow: 0 0 0 0.2rem rgba(74, 124, 89, 0.25);
+  outline: none;
+}
+
+/* Botón de reserva */
+.btn-reservar {
+  width: 100%;
+  background: #4A7C59;
+  border: none;
+  color: white;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-reservar:hover {
+  background: #3A6249;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(74, 124, 89, 0.3);
+}
+
+/* Utilidades Bootstrap personalizadas */
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .calendarios-container {
+    grid-template-columns: 1fr;
+  }
+
+  .reserva-card {
+    padding: 1.5rem;
+  }
+
+  .reserva-titulo {
+    font-size: 1.5rem;
+  }
+
+  .dia {
+    font-size: 0.8rem;
+    min-height: 30px;
+  }
+
+  .dia-semana {
+    font-size: 0.75rem;
+  }
+
+  .anfitrion-avatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .calendario-header {
+    flex-wrap: wrap;
+  }
+
+  .mes-año {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .reserva-container {
+    padding: 1rem;
+  }
+
+  .reserva-card {
+    padding: 1rem;
+  }
+
+  .reserva-titulo {
+    font-size: 1.3rem;
+  }
+
+  .calendario {
+    padding: 0.8rem;
+  }
+
+  .btn-nav {
+    width: 25px;
+    height: 25px;
+    font-size: 0.8rem;
+  }
+
+  .dia {
+    min-height: 28px;
+    font-size: 0.75rem;
+  }
+}

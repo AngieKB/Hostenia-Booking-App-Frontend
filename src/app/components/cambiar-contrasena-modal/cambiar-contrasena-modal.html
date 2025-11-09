@@ -1,0 +1,47 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>Cambiar contraseña</h2>
+      <button class="close-button" (click)="onClose()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="modal-form">
+      <!-- Old Password -->
+      <div class="form-group">
+        <label for="oldPassword">Contraseña Antigua</label>
+        <input
+          type="password"
+          id="oldPassword"
+          name="oldPassword"
+          [(ngModel)]="oldPassword"
+          placeholder="Contraseña Anterior"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <!-- New Password -->
+      <div class="form-group">
+        <label for="newPassword">Nueva contraseña</label>
+        <input
+          type="password"
+          id="newPassword"
+          name="newPassword"
+          [(ngModel)]="newPassword"
+          placeholder="Nueva contraseña"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="submit-button">
+        Cambiar contraseña
+      </button>
+    </form>
+  </div>
+</div>

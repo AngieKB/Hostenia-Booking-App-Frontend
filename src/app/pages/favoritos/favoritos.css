@@ -1,0 +1,129 @@
+/* Import Material Icons */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+/* Container */
+.favoritos-container {
+  min-height: 100vh;
+  background-color: #f0f4c3;
+  padding: 40px 24px;
+}
+
+/* Page Title */
+.page-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #2d5016;
+  margin: 0 0 40px 0;
+  padding-left: 8px;
+}
+
+/* Favoritos Grid */
+.favoritos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Favorito Card */
+.favorito-card {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.favorito-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Image */
+.card-image {
+  width: 100%;
+  height: 200px;
+  background-color: #b2dfdb;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Card Content */
+.card-content {
+  padding: 20px;
+}
+
+.alojamiento-titulo {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.alojamiento-ubicacion {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 16px 0;
+}
+
+/* Quitar Button */
+.btn-quitar {
+  width: 100%;
+  padding: 10px;
+  background-color: #80cbc4;
+  color: #2d5016;
+  border: none;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-quitar:hover {
+  background-color: #4db6ac;
+}
+
+.btn-quitar:active {
+  transform: scale(0.98);
+}
+
+/* No Favoritos */
+.no-favoritos {
+  text-align: center;
+  padding: 80px 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.no-favoritos-icon {
+  font-size: 80px;
+  color: #aed581;
+  margin-bottom: 20px;
+}
+
+.no-favoritos p {
+  font-size: 18px;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .favoritos-container {
+    padding: 24px 16px;
+  }
+
+  .page-title {
+    font-size: 28px;
+  }
+
+  .favoritos-grid {
+    grid-template-columns: 1fr;
+  }
+}

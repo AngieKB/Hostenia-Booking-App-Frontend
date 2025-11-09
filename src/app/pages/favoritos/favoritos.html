@@ -1,1 +1,25 @@
-<p>favoritos works!</p>
+<app-main-header [currentPage]="'favoritos'"></app-main-header>
+
+<div class="favoritos-container">
+  <h1 class="page-title">Favoritos</h1>
+
+  <div class="favoritos-grid" *ngIf="alojamientosFavoritos.length > 0">
+    <div class="favorito-card" *ngFor="let alojamiento of alojamientosFavoritos">
+      <div class="card-image">
+        <img [src]="alojamiento.galeria[0] || 'assets/placeholder.jpg'" [alt]="alojamiento.titulo">
+      </div>
+      <div class="card-content">
+        <h3 class="alojamiento-titulo">{{ alojamiento.titulo }}</h3>
+        <p class="alojamiento-ubicacion">{{ alojamiento.ubicacion.ciudad }}</p>
+        <button class="btn-quitar" (click)="quitarFavorito(alojamiento.id)">
+          Quitar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-favoritos" *ngIf="alojamientosFavoritos.length === 0">
+    <span class="material-icons no-favoritos-icon">favorite_border</span>
+    <p>No tienes alojamientos favoritos</p>
+  </div>
+</div>

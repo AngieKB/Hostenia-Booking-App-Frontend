@@ -1,0 +1,66 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>Editar Perfil</h2>
+      <button class="close-button" (click)="onClose()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="modal-form">
+      <!-- Nombre -->
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          [(ngModel)]="editedUser.nombre"
+          placeholder="Nombre"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <!-- Teléfono -->
+      <div class="form-group">
+        <label for="telefono">Teléfono</label>
+        <input
+          type="tel"
+          id="telefono"
+          name="telefono"
+          [(ngModel)]="editedUser.telefono"
+          placeholder="Teléfono"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <!-- Profile Picture Upload -->
+      <div class="upload-section">
+        <div class="avatar-preview">
+          <div class="avatar-circle" [style.background-image]="editedUser.fotoUrl ? 'url(' + editedUser.fotoUrl + ')' : 'none'">
+            <span class="material-icons" *ngIf="!editedUser.fotoUrl">person</span>
+          </div>
+        </div>
+        <label for="fileUpload" class="upload-label">
+          Subir Imagen
+        </label>
+        <input
+          type="file"
+          id="fileUpload"
+          accept="image/*"
+          (change)="onFileSelected($event)"
+          class="file-input"
+        />
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="submit-button">
+        Aceptar cambios
+      </button>
+    </form>
+  </div>
+</div>

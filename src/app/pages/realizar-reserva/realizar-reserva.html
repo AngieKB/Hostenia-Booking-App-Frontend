@@ -1,1 +1,160 @@
-<p>realizar-reserva works!</p>
+<div class="reserva-container">
+  <div class="reserva-card">
+    <!-- Botón cerrar -->
+    <button class="btn-close-modal" (click)="cerrarModal()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <!-- Header -->
+    <div class="reserva-header">
+      <h2 class="reserva-titulo">Formulario de Reserva</h2>
+      <div class="anfitrion-info">
+        <div class="anfitrion-avatar"></div>
+        <div class="anfitrion-texto">
+          <small>Hospedado por:</small>
+          <p class="mb-0"><strong>{{ anfitrion.nombre }}</strong></p>
+          <p class="mb-0"><strong>{{ anfitrion.apellido }}</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendarios -->
+    <div class="calendarios-container">
+      <!-- Check-in Calendar -->
+      <div class="calendario-wrapper">
+        <label class="form-label">Fecha check-in</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          [value]="reserva.fechaCheckIn"
+          placeholder="MM/DD/YYYY"
+          readonly>
+        
+        <div class="calendario">
+          <!-- Controles del mes -->
+          <div class="calendario-header">
+            <button class="btn-nav" (click)="cambiarMes('checkIn', -1)">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <span class="mes-año">
+              {{ getNombreMes(mesCheckIn) }}
+            </span>
+            <button class="btn-nav" (click)="cambiarMes('checkIn', 1)">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+            <button class="btn-nav" (click)="cambiarAnio('checkIn', -1)">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <span class="mes-año">{{ mesCheckIn.getFullYear() }}</span>
+            <button class="btn-nav" (click)="cambiarAnio('checkIn', 1)">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Días de la semana -->
+          <div class="dias-semana">
+            <div *ngFor="let dia of diasSemana" class="dia-semana">{{ dia }}</div>
+          </div>
+
+          <!-- Días del mes -->
+          <div class="dias-mes">
+            <div 
+              *ngFor="let semana of dividirEnSemanas(getDiasDelMes(mesCheckIn))"
+              class="semana">
+              <div 
+                *ngFor="let dia of semana"
+                class="dia"
+                [class.vacio]="dia === null"
+                [class.seleccionado]="dia && esDiaSeleccionado(dia, 'checkIn')"
+                (click)="dia && seleccionarFecha(dia, 'checkIn')">
+                {{ dia }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="calendario-footer">
+            <button class="btn btn-outline-secondary btn-sm">Cancel</button>
+            <button class="btn btn-success btn-sm">Ok</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Check-out Calendar -->
+      <div class="calendario-wrapper">
+        <label class="form-label">Fecha check-out</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          [value]="reserva.fechaCheckOut"
+          placeholder="MM/DD/YYYY"
+          readonly>
+        
+        <div class="calendario">
+          <!-- Controles del mes -->
+          <div class="calendario-header">
+            <button class="btn-nav" (click)="cambiarMes('checkOut', -1)">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <span class="mes-año">
+              {{ getNombreMes(mesCheckOut) }}
+            </span>
+            <button class="btn-nav" (click)="cambiarMes('checkOut', 1)">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+            <button class="btn-nav" (click)="cambiarAnio('checkOut', -1)">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <span class="mes-año">{{ mesCheckOut.getFullYear() }}</span>
+            <button class="btn-nav" (click)="cambiarAnio('checkOut', 1)">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Días de la semana -->
+          <div class="dias-semana">
+            <div *ngFor="let dia of diasSemana" class="dia-semana">{{ dia }}</div>
+          </div>
+
+          <!-- Días del mes -->
+          <div class="dias-mes">
+            <div 
+              *ngFor="let semana of dividirEnSemanas(getDiasDelMes(mesCheckOut))"
+              class="semana">
+              <div 
+                *ngFor="let dia of semana"
+                class="dia"
+                [class.vacio]="dia === null"
+                [class.seleccionado]="dia && esDiaSeleccionado(dia, 'checkOut')"
+                (click)="dia && seleccionarFecha(dia, 'checkOut')">
+                {{ dia }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="calendario-footer">
+            <button class="btn btn-outline-secondary btn-sm">Cancel</button>
+            <button class="btn btn-success btn-sm">Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Número de huéspedes -->
+    <div class="huespedes-section">
+      <label class="form-label">Indique el número de huéspedes:</label>
+      <input 
+        type="number" 
+        class="form-control" 
+        [(ngModel)]="reserva.numeroHuespedes"
+        min="1"
+        placeholder="1">
+    </div>
+
+    <!-- Botón de reserva -->
+    <button class="btn btn-reservar" (click)="realizarReserva()">
+      Realizar Reserva
+    </button>
+  </div>
+</div>

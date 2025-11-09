@@ -1,1 +1,58 @@
-<p>perfil-usuario works!</p>
+<div class="profile-container">
+  <!-- Header -->
+  <div class="profile-header">
+    <h1>Perfil</h1>
+    <button class="close-button" (click)="onBackClick()">
+      <span class="material-icons">close</span>
+    </button>
+  </div>
+
+  <!-- Profile Content -->
+  <div class="profile-content">
+    <div class="profile-main">
+      <div class="profile-picture">
+        <div class="avatar-placeholder">
+          <span class="material-icons">person</span>
+        </div>
+        <p class="upload-text">Sube una imagen</p>
+      </div>
+
+      <div class="profile-info-card">
+        <h2 class="user-name">{{ userData.nombre }}</h2>
+
+        <div class="info-section">
+          <h3>Teléfono</h3>
+          <p class="info-value">{{ userData.telefono }}</p>
+        </div>
+
+        <div class="info-section">
+          <h3>Email</h3>
+          <p class="info-value">{{ userData.email }}</p>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn-action btn-edit" (click)="onEditClick()">
+            Editar Perfil
+          </button>
+          <button class="btn-action btn-password" (click)="onChangePasswordClick()">
+            Cambiar contraseña
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<app-editar-perfil-usuario-modal
+  *ngIf="showEditModal"
+  [userData]="userData"
+  (close)="onCloseEditModal()"
+  (save)="onSaveProfile($event)">
+</app-editar-perfil-usuario-modal>
+
+<app-cambiar-contrasena-modal
+  *ngIf="showPasswordModal"
+  (close)="onClosePasswordModal()"
+  (save)="onSavePassword($event)">
+</app-cambiar-contrasena-modal>

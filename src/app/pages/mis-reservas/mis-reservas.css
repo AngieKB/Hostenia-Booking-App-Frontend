@@ -1,0 +1,191 @@
+/* Import Material Icons */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+/* Container */
+.reservas-container {
+  min-height: 100vh;
+  background-color: #f0f4c3;
+  padding: 40px 24px;
+}
+
+/* Page Title */
+.page-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #7cb342;
+  margin: 0 0 32px 0;
+  padding-left: 8px;
+}
+
+/* Filtros Tabs */
+.filtros-tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.tab-button:hover {
+  color: #2d5016;
+}
+
+.tab-button.active {
+  color: #2d5016;
+  font-weight: 700;
+  border-bottom-color: #2d5016;
+}
+
+/* Reservas List */
+.reservas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Reserva Card */
+.reserva-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.reserva-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Reserva Image */
+.reserva-image {
+  flex-shrink: 0;
+}
+
+.image-placeholder {
+  width: 100px;
+  height: 100px;
+  background-color: #80cbc4;
+  border-radius: 8px;
+}
+
+/* Reserva Info */
+.reserva-info {
+  flex-grow: 1;
+}
+
+.alojamiento-nombre {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.check-in {
+  font-size: 14px;
+  color: #7cb342;
+  margin: 0 0 4px 0;
+}
+
+.precio {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+/* Reserva Actions */
+.reserva-actions {
+  flex-shrink: 0;
+}
+
+.btn-cancelar {
+  padding: 10px 24px;
+  background-color: #d4e157;
+  color: #2d5016;
+  border: none;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancelar:hover {
+  background-color: #c6d84e;
+}
+
+.btn-cancelar:active {
+  transform: scale(0.98);
+}
+
+/* No Reservas */
+.no-reservas {
+  text-align: center;
+  padding: 80px 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.no-reservas-icon {
+  font-size: 80px;
+  color: #aed581;
+  margin-bottom: 20px;
+}
+
+.no-reservas p {
+  font-size: 18px;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .reservas-container {
+    padding: 24px 16px;
+  }
+
+  .page-title {
+    font-size: 28px;
+  }
+
+  .filtros-tabs {
+    gap: 8px;
+  }
+
+  .tab-button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .reserva-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .reserva-actions {
+    width: 100%;
+  }
+
+  .btn-cancelar {
+    width: 100%;
+  }
+}

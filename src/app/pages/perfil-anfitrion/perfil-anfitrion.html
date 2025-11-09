@@ -1,1 +1,79 @@
-<p>perfil-anfitrion works!</p>
+<div class="profile-container">
+  <!-- Header -->
+  <div class="profile-header">
+    <button class="icon-button" (click)="onBackClick()">
+      <span class="material-icons">close</span>
+    </button>
+    <h1>Perfil</h1>
+    <div class="spacer"></div>
+  </div>
+
+  <!-- Profile Content -->
+  <div class="profile-content" *ngIf="userData && perfilAnfitrion">
+    <!-- Profile Picture and Basic Info -->
+    <div class="profile-main">
+      <div class="profile-picture">
+        <div class="avatar-placeholder">
+          <span class="material-icons">person</span>
+        </div>
+        <p class="upload-text">Sube una imagen</p>
+      </div>
+
+      <div class="profile-info-card">
+        <div class="info-section">
+          <h3>Nombre Anfitrión</h3>
+          <p class="info-value">{{ userData.nombre }}</p>
+        </div>
+
+        <div class="info-section">
+          <h3>Teléfono</h3>
+          <p class="info-value">{{ userData.telefono }}</p>
+        </div>
+
+        <div class="info-section">
+          <h3>Email</h3>
+          <p class="info-value">{{ userData.email }}</p>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn-action btn-edit" (click)="onEditClick()">
+            Editar Perfil
+          </button>
+          <button class="btn-action btn-password" (click)="onChangePasswordClick()">
+            Cambiar contraseña
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description Section -->
+    <div class="description-section">
+      <h2>Descripción</h2>
+      <p class="description-text">{{ perfilAnfitrion.descripcion }}</p>
+    </div>
+  </div>
+
+  <!-- No Profile Message -->
+  <div class="no-profile" *ngIf="userData && !perfilAnfitrion">
+    <span class="material-icons no-profile-icon">person_off</span>
+    <p>No tienes un perfil de anfitrión configurado</p>
+    <button class="btn-create-profile" (click)="onEditClick()">
+      Crear Perfil de Anfitrión
+    </button>
+  </div>
+</div>
+
+<!-- Modals -->
+<app-editar-perfil-anfitrion-modal
+  *ngIf="showEditModal && userData && perfilAnfitrion"
+  [userData]="userData"
+  [perfilAnfitrion]="perfilAnfitrion"
+  (close)="onCloseEditModal()"
+  (save)="onSaveProfile($event)">
+</app-editar-perfil-anfitrion-modal>
+
+<app-cambiar-contrasena-modal
+  *ngIf="showPasswordModal"
+  (close)="onClosePasswordModal()"
+  (save)="onSavePassword($event)">
+</app-cambiar-contrasena-modal>

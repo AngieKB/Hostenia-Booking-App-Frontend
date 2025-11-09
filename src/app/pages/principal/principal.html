@@ -1,0 +1,161 @@
+<app-main-header [currentPage]="'principal'"></app-main-header>
+
+<!-- Hero Section con título -->
+<div class="hero-section">
+  <div class="container">
+    <h1 class="hero-title">ALOJAMIENTOS</h1>
+  </div>
+</div>
+
+<!-- Sección de búsqueda -->
+<div class="search-section">
+  <div class="container">
+    <div class="search-card">
+      <h3 class="mb-4">Buscar Alojamientos</h3>
+      <div class="row g-3">
+        <!-- Ciudad -->
+        <div class="col-md-3">
+          <label class="form-label">Ciudad</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="¿Cual ciudad prefieres?"
+            [(ngModel)]="filtros.ciudad">
+        </div>
+
+        <!-- Rango de fechas -->
+        <div class="col-md-3">
+          <label class="form-label">Rango de fechas</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Selecciona una fecha"
+            [(ngModel)]="filtros.rangoFechas">
+        </div>
+
+        <!-- Precio -->
+        <div class="col-md-3">
+          <label class="form-label">Precio</label>
+          <div class="d-flex align-items-center">
+            <span class="me-2 small">Rango: {{ formatearPrecio(filtros.precio.min) }} - {{ formatearPrecio(filtros.precio.max) }}</span>
+          </div>
+          <input 
+            type="range" 
+            class="form-range" 
+            min="0" 
+            max="1000000" 
+            step="50000"
+            [(ngModel)]="filtros.precio.max">
+        </div>
+
+        <!-- Servicios -->
+        <div class="col-md-2">
+          <label class="form-label">Servicios</label>
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+              Seleccionar
+            </button>
+            <ul class="dropdown-menu p-3">
+              <li class="form-check">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="filtros.servicios.wifi" id="wifi">
+                <label class="form-check-label" for="wifi">WiFi</label>
+              </li>
+              <li class="form-check">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="filtros.servicios.piscina" id="piscina">
+                <label class="form-check-label" for="piscina">Piscina</label>
+              </li>
+              <li class="form-check">
+                <label class="form-check-label" for="parqueadero">Parqueadero</label>
+              </li>
+              <li class="form-check">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="filtros.servicios.mascotas" id="mascotas">
+                <label class="form-check-label" for="mascotas">Mascotas</label>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Botón de búsqueda -->
+        <div class="col-md-1 d-flex align-items-end">
+          <button class="btn btn-search" (click)="buscarAlojamientos()">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sección de alojamientos -->
+<div class="alojamientos-section">
+  <div class="container">
+    <h2 class="section-title">Nuestros Alojamientos</h2>
+    
+    <div class="row">
+      <div class="col-lg-4 col-md-6 mb-4" *ngFor="let alojamiento of alojamientosFiltrados">
+        <div class="alojamiento-card">
+          <!-- Imagen -->
+          <div class="alojamiento-image">
+            <img [src]="alojamiento.galeria[0] || 'assets/placeholder.jpg'" 
+                 [alt]="alojamiento.titulo"
+                 class="w-100">
+            <!-- Botón favorito -->
+            <button 
+              class="btn-favorito" 
+              [class.active]="esFavorito(alojamiento.id)"
+              (click)="toggleFavorito(alojamiento.id)">
+              <i class="bi" [class.bi-heart]="!esFavorito(alojamiento.id)" 
+                            [class.bi-heart-fill]="esFavorito(alojamiento.id)"></i>
+            </button>
+            <!-- Badge de precio -->
+            <div class="precio-badge">
+              {{ formatearPrecio(alojamiento.precioNoche) }} COP
+            </div>
+          </div>
+
+          <!-- Información -->
+          <div class="alojamiento-info">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h5 class="alojamiento-titulo">{{ alojamiento.titulo }}</h5>
+              <div class="calificacion">
+                <i class="bi bi-star-fill"></i>
+                <span>{{ calcularCalificacionPromedio(alojamiento) }}</span>
+              </div>
+            </div>
+
+            <p class="text-muted small mb-3">
+              <i class="bi bi-geo-alt"></i> {{ alojamiento.ubicacion.ciudad }}
+            </p>
+
+            <!-- Servicios -->
+            <div class="servicios-icons mb-3">
+              <span *ngIf="contarServicios(alojamiento, 'wifi')" title="WiFi">
+                <i class="bi bi-wifi"></i>
+              </span>
+              <span *ngIf="contarServicios(alojamiento, 'piscina')" title="Piscina">
+                <i class="bi bi-water"></i>
+              </span>
+              <span *ngIf="contarServicios(alojamiento, 'parqueadero')" title="Parqueadero">
+                <i class="bi bi-car-front"></i>
+              </span>
+              <span *ngIf="alojamiento.capacidadMax" title="Capacidad">
+                <i class="bi bi-people"></i> {{ alojamiento.capacidadMax }}
+              </span>
+            </div>
+
+            <!-- Botón ver más -->
+            <button class="btn btn-outline-success w-100">Ver detalles</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje si no hay resultados -->
+    <div *ngIf="alojamientosFiltrados.length === 0" class="text-center py-5">
+      <i class="bi bi-house-slash" style="font-size: 4rem; color: #ccc;"></i>
+      <p class="text-muted mt-3">No se encontraron alojamientos con los filtros seleccionados</p>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

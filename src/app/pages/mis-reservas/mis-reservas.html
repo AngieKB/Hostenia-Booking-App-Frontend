@@ -1,1 +1,62 @@
-<p>mis-reservas works!</p>
+<app-main-header [currentPage]="'reservas'"></app-main-header>
+
+<div class="reservas-container">
+  <h1 class="page-title">Mis reservas</h1>
+
+  <!-- Filtros -->
+  <div class="filtros-tabs">
+    <button 
+      class="tab-button" 
+      [class.active]="filtroActivo === EstadoReserva.CONFIRMADA"
+      (click)="cambiarFiltro(EstadoReserva.CONFIRMADA)">
+      Confirmadas
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="filtroActivo === EstadoReserva.PENDIENTE"
+      (click)="cambiarFiltro(EstadoReserva.PENDIENTE)">
+      Pendientes
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="filtroActivo === EstadoReserva.CANCELADA"
+      (click)="cambiarFiltro(EstadoReserva.CANCELADA)">
+      Canceladas
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="filtroActivo === EstadoReserva.COMPLETADA"
+      (click)="cambiarFiltro(EstadoReserva.COMPLETADA)">
+      Completadas
+    </button>
+  </div>
+
+  <!-- Lista de Reservas -->
+  <div class="reservas-list" *ngIf="reservas.length > 0">
+    <div class="reserva-card" *ngFor="let reserva of reservas">
+      <div class="reserva-image">
+        <!-- Placeholder image -->
+        <div class="image-placeholder"></div>
+      </div>
+      <div class="reserva-info">
+        <h3 class="alojamiento-nombre">{{ reserva.alojamientoTitulo }}</h3>
+        <p class="check-in">Check in: {{ formatearFecha(reserva.fechaCheckIn) }}</p>
+        <p class="precio">{{ formatearPrecio(reserva.total) }}</p>
+      </div>
+      <div class="reserva-actions">
+        <button 
+          class="btn-cancelar" 
+          *ngIf="reserva.estado === EstadoReserva.CONFIRMADA"
+          (click)="cancelarReserva(reserva.id)">
+          Cancelar reserva
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- No hay reservas -->
+  <div class="no-reservas" *ngIf="reservas.length === 0">
+    <span class="material-icons no-reservas-icon">event_busy</span>
+    <p>No tienes reservas {{ filtroActivo.toLowerCase() }}s</p>
+  </div>
+</div>
