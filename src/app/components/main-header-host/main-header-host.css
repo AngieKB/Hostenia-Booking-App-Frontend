@@ -119,6 +119,17 @@
   color: #2d5016;
 }
 
+/* Menu Overlay */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: transparent;
+  z-index: 99;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .main-header-host {

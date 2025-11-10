@@ -14,7 +14,7 @@
       <h3 class="mb-4">Buscar Alojamientos</h3>
       <div class="row g-3">
         <!-- Ciudad -->
-        <div class="col-md-3">
+        <div class="col-lg-2 col-md-6">
           <label class="form-label">Ciudad</label>
           <input 
             type="text" 
@@ -24,32 +24,60 @@
         </div>
 
         <!-- Rango de fechas -->
-        <div class="col-md-3">
+        <div class="col-lg-4 col-md-6">
           <label class="form-label">Rango de fechas</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            placeholder="Selecciona una fecha"
-            [(ngModel)]="filtros.rangoFechas">
+          <div class="row g-2">
+            <div class="col-6">
+              <input 
+                type="date" 
+                class="form-control" 
+                placeholder="Desde"
+                [(ngModel)]="filtros.fechaInicio"
+                [min]="fechaMinima">
+            </div>
+            <div class="col-6">
+              <input 
+                type="date" 
+                class="form-control" 
+                placeholder="Hasta"
+                [(ngModel)]="filtros.fechaFin"
+                [min]="filtros.fechaInicio || fechaMinima">
+            </div>
+          </div>
         </div>
 
         <!-- Precio -->
-        <div class="col-md-3">
-          <label class="form-label">Precio</label>
-          <div class="d-flex align-items-center">
-            <span class="me-2 small">Rango: {{ formatearPrecio(filtros.precio.min) }} - {{ formatearPrecio(filtros.precio.max) }}</span>
+        <div class="col-lg-3 col-md-6">
+          <label class="form-label">Rango de precio</label>
+          <div class="mb-2">
+            <small class="text-muted">{{ formatearPrecio(filtros.precio.min) }} - {{ formatearPrecio(filtros.precio.max) }}</small>
           </div>
-          <input 
-            type="range" 
-            class="form-range" 
-            min="0" 
-            max="1000000" 
-            step="50000"
-            [(ngModel)]="filtros.precio.max">
+          <div class="mb-2">
+            <label class="form-label small">Mínimo</label>
+            <input 
+              type="range" 
+              class="form-range" 
+              min="0" 
+              max="1000000" 
+              step="50000"
+              [(ngModel)]="filtros.precio.min"
+              (input)="ajustarPrecioMinimo()">
+          </div>
+          <div>
+            <label class="form-label small">Máximo</label>
+            <input 
+              type="range" 
+              class="form-range" 
+              min="0" 
+              max="1000000" 
+              step="50000"
+              [(ngModel)]="filtros.precio.max"
+              (input)="ajustarPrecioMaximo()">
+          </div>
         </div>
 
         <!-- Servicios -->
-        <div class="col-md-2">
+        <div class="col-lg-2 col-md-4">
           <label class="form-label">Servicios</label>
           <div class="dropdown">
             <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
@@ -77,8 +105,8 @@
         </div>
 
         <!-- Botón de búsqueda -->
-        <div class="col-md-1 d-flex align-items-end">
-          <button class="btn btn-search" (click)="buscarAlojamientos()">
+        <div class="col-lg-1 col-md-2 d-flex align-items-end">
+          <button class="btn btn-search w-100" (click)="buscarAlojamientos()">
             <i class="bi bi-search"></i>
           </button>
         </div>
@@ -134,10 +162,13 @@
                 <i class="bi bi-wifi"></i>
               </span>
               <span *ngIf="contarServicios(alojamiento, 'piscina')" title="Piscina">
-                <i class="bi bi-water"></i>
+                <i class="fas fa-swimming-pool"></i>
               </span>
-              <span *ngIf="contarServicios(alojamiento, 'parqueadero')" title="Parqueadero">
-                <i class="bi bi-car-front"></i>
+              <span *ngIf="contarServicios(alojamiento, 'cocina')" title="Cocina">
+                <i class="fas fa-kitchen-set"></i>
+              </span>
+              <span *ngIf="contarServicios(alojamiento, 'mascotas')" title="Permite mascotas">
+                <i class="fas fa-paw"></i>
               </span>
               <span *ngIf="alojamiento.capacidadMax" title="Capacidad">
                 <i class="bi bi-people"></i> {{ alojamiento.capacidadMax }}

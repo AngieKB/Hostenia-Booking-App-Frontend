@@ -18,7 +18,8 @@ export class Principal implements OnInit {
   // Filtros de búsqueda (estos NO vienen del backend, son locales)
   filtros = {
     ciudad: '',
-    rangoFechas: '',
+    fechaInicio: '',
+    fechaFin: '',
     precio: { min: 0, max: 1000000 },
     servicios: {
       cocina: false,
@@ -27,6 +28,9 @@ export class Principal implements OnInit {
       mascotas: false
     }
   };
+
+  // Fecha mínima para el selector (hoy)
+  fechaMinima: string = '';
 
   // Lista de alojamientos que vienen del backend
   alojamientos: AlojamientoDTO[] = [];
@@ -42,8 +46,15 @@ export class Principal implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.inicializarFechaMinima();
     this.cargarAlojamientos();
     this.cargarFavoritosLocalStorage();
+  }
+
+  // Inicializar fecha mínima (hoy)
+  inicializarFechaMinima() {
+    const hoy = new Date();
+    this.fechaMinima = hoy.toISOString().split('T')[0];
   }
 
   // Método para cargar alojamientos desde el servicio
@@ -64,6 +75,12 @@ export class Principal implements OnInit {
       const cumplePrecio = alojamiento.precioNoche >= this.filtros.precio.min && 
         alojamiento.precioNoche <= this.filtros.precio.max;
       
+      // Filtro por fechas (verificar disponibilidad)
+      let cumpleFechas = true;
+      if (this.filtros.fechaInicio && this.filtros.fechaFin) {
+        cumpleFechas = this.verificarDisponibilidad(alojamiento, this.filtros.fechaInicio, this.filtros.fechaFin);
+      }
+      
       // Filtro por servicios
       let cumpleServicios = true;
       if (this.filtros.servicios.wifi) {
@@ -76,8 +93,41 @@ export class Principal implements OnInit {
         cumpleServicios = cumpleServicios && this.contarServicios(alojamiento, 'mascotas');
       }
       
-      return cumpleCiudad && cumplePrecio && cumpleServicios;
+      return cumpleCiudad && cumplePrecio && cumpleFechas && cumpleServicios;
     });
+  }
+
+  // Verificar si el alojamiento está disponible en el rango de fechas
+  verificarDisponibilidad(alojamiento: AlojamientoDTO, fechaInicio: string, fechaFin: string): boolean {
+    if (!alojamiento.reservas || alojamiento.reservas.length === 0) {
+      return true; // Si no hay reservas, está disponible
+    }
+
+    const inicio = new Date(fechaInicio);
+    const fin = new Date(fechaFin);
+
+    // Verificar que no haya solapamiento con ninguna reserva existente
+    return !alojamiento.reservas.some(reserva => {
+      const reservaInicio = new Date(reserva.fechaInicio);
+      const reservaFin = new Date(reserva.fechaFin);
+      
+      // Hay conflicto si las fechas se solapan
+      return (inicio <= reservaFin && fin >= reservaInicio);
+    });
+  }
+
+  // Ajustar precio mínimo para que no sea mayor que el máximo
+  ajustarPrecioMinimo(): void {
+    if (this.filtros.precio.min > this.filtros.precio.max) {
+      this.filtros.precio.min = this.filtros.precio.max;
+    }
+  }
+
+  // Ajustar precio máximo para que no sea menor que el mínimo
+  ajustarPrecioMaximo(): void {
+    if (this.filtros.precio.max < this.filtros.precio.min) {
+      this.filtros.precio.max = this.filtros.precio.min;
+    }
   }
 
   // Gestión de favoritos (LOCAL - no viene del backend)

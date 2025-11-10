@@ -150,7 +150,7 @@ export class AlojamientoService {
         id: 1,
         titulo: 'Casa Moderna en el Centro',
         descripcion: 'Hermosa casa con todas las comodidades',
-        servicios: ['WiFi', 'Piscina', 'Cocina'],
+        servicios: ['WiFi', 'Piscina', 'Cocina', 'Mascotas'],
         galeria: ['https://images.unsplash.com/photo-1568605114967-8130f3a36994'],
         ubicacion: {
           direccion: 'Calle 123 #45-67',
@@ -226,7 +226,7 @@ export class AlojamientoService {
         id: 3,
         titulo: 'Casa de Playa',
         descripcion: 'Disfruta del mar y el sol',
-        servicios: ['WiFi', 'Piscina'],
+        servicios: ['WiFi', 'Piscina', 'Cocina', 'Mascotas'],
         galeria: ['https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf'],
         ubicacion: {
           direccion: 'Sector Playa Blanca',
