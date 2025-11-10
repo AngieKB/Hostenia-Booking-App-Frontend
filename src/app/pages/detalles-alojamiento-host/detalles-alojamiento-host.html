@@ -50,10 +50,14 @@
 
       <!-- Servicios -->
       <div class="servicios-grid">
-        <div class="servicio-item" *ngFor="let servicio of alojamiento.servicios.slice(0, 4)">
-          <span class="material-icons servicio-icon">
-            {{ servicio === 'WiFi' ? 'wifi' : servicio === 'Cocina' ? 'kitchen' : servicio === 'Piscina' ? 'pool' : 'pets' }}
-          </span>
+        <div class="servicio-item" *ngFor="let servicio of alojamiento.servicios">
+          <i class="servicio-icon" 
+             [ngClass]="{
+               'bi bi-wifi': servicio.toLowerCase().includes('wifi'),
+               'bi bi-cup-hot': servicio.toLowerCase().includes('cocina'),
+               'bi bi-water': servicio.toLowerCase().includes('piscina'),
+               'fas fa-paw': servicio.toLowerCase().includes('mascotas')
+             }"></i>
           <span class="servicio-nombre">{{ servicio }}</span>
         </div>
       </div>
