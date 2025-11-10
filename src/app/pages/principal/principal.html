@@ -48,17 +48,32 @@
 
         <!-- Precio -->
         <div class="col-lg-3 col-md-6">
-          <label class="form-label">Precio</label>
-          <div class="mb-1">
+          <label class="form-label">Rango de precio</label>
+          <div class="mb-2">
             <small class="text-muted">{{ formatearPrecio(filtros.precio.min) }} - {{ formatearPrecio(filtros.precio.max) }}</small>
           </div>
-          <input 
-            type="range" 
-            class="form-range" 
-            min="0" 
-            max="1000000" 
-            step="50000"
-            [(ngModel)]="filtros.precio.max">
+          <div class="mb-2">
+            <label class="form-label small">Mínimo</label>
+            <input 
+              type="range" 
+              class="form-range" 
+              min="0" 
+              max="1000000" 
+              step="50000"
+              [(ngModel)]="filtros.precio.min"
+              (input)="ajustarPrecioMinimo()">
+          </div>
+          <div>
+            <label class="form-label small">Máximo</label>
+            <input 
+              type="range" 
+              class="form-range" 
+              min="0" 
+              max="1000000" 
+              step="50000"
+              [(ngModel)]="filtros.precio.max"
+              (input)="ajustarPrecioMaximo()">
+          </div>
         </div>
 
         <!-- Servicios -->
@@ -147,10 +162,10 @@
                 <i class="bi bi-wifi"></i>
               </span>
               <span *ngIf="contarServicios(alojamiento, 'piscina')" title="Piscina">
-                <i class="bi bi-water"></i>
+                <i class="fas fa-swimming-pool"></i>
               </span>
               <span *ngIf="contarServicios(alojamiento, 'cocina')" title="Cocina">
-                <i class="bi bi-cup-hot"></i>
+                <i class="fas fa-kitchen-set"></i>
               </span>
               <span *ngIf="contarServicios(alojamiento, 'mascotas')" title="Permite mascotas">
                 <i class="fas fa-paw"></i>

@@ -20,7 +20,7 @@
       </button>
 
       <!-- Dropdown Menu -->
-      <div class="dropdown-menu" *ngIf="showUserMenu">
+      <div class="dropdown-menu" *ngIf="showUserMenu" (click)="$event.stopPropagation()">
         <a (click)="navigateTo('/perfil-anfitrion')" class="dropdown-item">
           <span class="material-icons">person</span>
           Ver perfil
@@ -33,3 +33,6 @@
     </div>
   </div>
 </header>
+
+<!-- Overlay to close menu when clicking outside -->
+<div class="menu-overlay" *ngIf="showUserMenu" (click)="closeUserMenu()"></div>

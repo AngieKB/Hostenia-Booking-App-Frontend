@@ -18,6 +18,10 @@ export class MainHeaderHost {
     this.showUserMenu = !this.showUserMenu;
   }
 
+  closeUserMenu(): void {
+    this.showUserMenu = false;
+  }
+
   navigateTo(route: string): void {
     this.router.navigate([route]);
     this.showUserMenu = false;
@@ -25,7 +29,10 @@ export class MainHeaderHost {
 
   logout(): void {
     // Implementar lógica de logout
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userRole');
     console.log('Logout');
     this.router.navigate(['/']);
+    this.showUserMenu = false;
   }
 }

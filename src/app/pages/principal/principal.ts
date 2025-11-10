@@ -116,6 +116,20 @@ export class Principal implements OnInit {
     });
   }
 
+  // Ajustar precio mínimo para que no sea mayor que el máximo
+  ajustarPrecioMinimo(): void {
+    if (this.filtros.precio.min > this.filtros.precio.max) {
+      this.filtros.precio.min = this.filtros.precio.max;
+    }
+  }
+
+  // Ajustar precio máximo para que no sea menor que el mínimo
+  ajustarPrecioMaximo(): void {
+    if (this.filtros.precio.max < this.filtros.precio.min) {
+      this.filtros.precio.max = this.filtros.precio.min;
+    }
+  }
+
   // Gestión de favoritos (LOCAL - no viene del backend)
   cargarFavoritosLocalStorage() {
     const favoritosGuardados = localStorage.getItem('favoritos');
