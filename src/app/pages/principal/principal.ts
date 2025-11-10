@@ -6,6 +6,7 @@ import { AlojamientoDTO } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
 import { MainHeader } from '../../components/main-header/main-header';
 import { Footer } from '../../components/footer/footer';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-principal',
@@ -95,6 +96,16 @@ export class Principal implements OnInit {
       
       return cumpleCiudad && cumplePrecio && cumpleFechas && cumpleServicios;
     });
+    if (this.alojamientosFiltrados.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Sin resultados',
+        text: 'No se encontraron alojamientos con los filtros seleccionados.',
+        timer: 3000,
+        timerProgressBar: true,
+        confirmButtonColor: '#4CB0A6'        
+      });
+    }
   }
 
   // Verificar si el alojamiento está disponible en el rango de fechas
