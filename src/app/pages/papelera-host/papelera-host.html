@@ -1,1 +1,29 @@
-<p>papelera-host works!</p>
+<app-main-header-host></app-main-header-host>
+
+<div class="papelera-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>Inactivos</h1>
+  </div>
+
+  <!-- Grid de Alojamientos Inactivos -->
+  <div class="alojamientos-grid" *ngIf="alojamientosInactivos.length > 0">
+    <div class="alojamiento-card" *ngFor="let alojamiento of alojamientosInactivos">
+      <div class="card-image">
+        <img [src]="alojamiento.galeria[0]" [alt]="alojamiento.titulo">
+      </div>
+      <div class="card-info">
+        <h3>{{ alojamiento.titulo }}</h3>
+        <p>{{ alojamiento.ubicacion.direccion }}</p>
+      </div>
+      <button class="btn-reponer" (click)="reponerAlojamiento(alojamiento.id)">
+        Reponer
+      </button>
+    </div>
+  </div>
+
+  <!-- Mensaje si no hay alojamientos inactivos -->
+  <div class="empty-message" *ngIf="alojamientosInactivos.length === 0">
+    <p>No hay alojamientos inactivos</p>
+  </div>
+</div>

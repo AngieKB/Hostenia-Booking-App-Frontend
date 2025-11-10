@@ -1,0 +1,59 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>Comentar y Calificar</h2>
+      <button class="close-button" (click)="onClose()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="modal-form">
+      <!-- Calificación -->
+      <div class="form-group">
+        <label for="calificacion">Calificar</label>
+        <div class="rating-stars">
+          <button 
+            type="button"
+            class="star-btn" 
+            *ngFor="let star of [1, 2, 3, 4, 5]"
+            (click)="setCalificacion(star)">
+            <span class="material-icons" [class.filled]="star <= calificacion">
+              {{ star <= calificacion ? 'star' : 'star_border' }}
+            </span>
+          </button>
+        </div>
+        <input
+          type="text"
+          id="calificacion"
+          name="calificacion"
+          [value]="calificacion || ''"
+          placeholder="Calificación"
+          readonly
+          class="form-input"
+        />
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label for="comentario">Descripción</label>
+        <textarea
+          id="comentario"
+          name="comentario"
+          [(ngModel)]="comentario"
+          placeholder="Comentario (máx 500 caracteres)"
+          maxlength="500"
+          rows="6"
+          required
+          class="form-textarea"
+        ></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="submit-button">
+        Aceptar cambios
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,1 +1,34 @@
-<p>mis-alojamientos-host works!</p>
+<app-main-header-host></app-main-header-host>
+
+<div class="mis-alojamientos-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>Mis Alojamientos</h1>
+    <button class="btn-add" (click)="openAddModal()">
+      Añadir Alojamiento
+    </button>
+  </div>
+
+  <!-- Grid de Alojamientos -->
+  <div class="alojamientos-grid">
+    <div class="alojamiento-card" *ngFor="let alojamiento of alojamientos" (click)="verDetalles(alojamiento.id)">
+      <div class="card-image">
+        <img [src]="alojamiento.galeria[0]" [alt]="alojamiento.titulo">
+      </div>
+      <div class="card-info">
+        <h3>{{ alojamiento.titulo }}</h3>
+        <p>{{ alojamiento.ubicacion.direccion }}</p>
+      </div>
+      <button class="btn-eliminar" (click)="eliminarAlojamiento(alojamiento.id); $event.stopPropagation()">
+        Eliminar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Agregar Alojamiento -->
+<app-agregar-alojamiento-modal
+  *ngIf="showAddModal"
+  (close)="closeAddModal()"
+  (agregar)="onAgregarAlojamiento($event)">
+</app-agregar-alojamiento-modal>

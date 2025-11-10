@@ -11,6 +11,11 @@ export class ReservaService {
     this.initializeTestData();
   }
 
+  // Obtener todas las reservas
+  public getAll(): ReservaAlojamientoDTO[] {
+    return this.reservas;
+  }
+
   // Obtener todas las reservas de un huésped
   public getByHuespedId(huespedId: number): ReservaAlojamientoDTO[] {
     return this.reservas.filter(r => r.idHuesped === huespedId);

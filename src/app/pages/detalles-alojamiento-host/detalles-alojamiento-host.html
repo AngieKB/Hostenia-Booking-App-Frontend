@@ -1,1 +1,130 @@
-<p>detalles-alojamiento-host works!</p>
+<app-main-header-host></app-main-header-host>
+
+<div class="detalles-host-container" *ngIf="alojamiento">
+  <!-- Header con título y botón editar -->
+  <div class="page-header">
+    <h1 class="page-title">Mi Alojamiento</h1>
+    <button class="btn-editar" (click)="openEditModal()">
+      Editar
+    </button>
+    <button class="btn-close" (click)="router.navigate(['/'])">
+      <span class="material-icons">close</span>
+    </button>
+  </div>
+
+  <!-- Galería de Imágenes -->
+  <div class="galeria-section">
+    <div class="imagen-principal">
+      <img [src]="imagenPrincipal" [alt]="alojamiento.titulo">
+      <div class="host-badge">
+        <div class="host-avatar"></div>
+        <div class="host-info">
+          <span class="host-label">Alojado por:</span>
+          <span class="host-name">Nombre Anfitrión</span>
+        </div>
+      </div>
+    </div>
+    <div class="imagenes-thumbnails">
+      <div 
+        class="thumbnail" 
+        *ngFor="let imagen of alojamiento.galeria.slice(0, 4)"
+        (click)="seleccionarImagen(imagen)">
+        <img [src]="imagen" alt="Thumbnail">
+      </div>
+    </div>
+  </div>
+
+  <!-- Información Principal -->
+  <div class="info-section">
+    <div class="info-left">
+      <div class="titulo-acciones">
+        <div>
+          <h2 class="alojamiento-titulo">{{ alojamiento.titulo }}</h2>
+          <p class="ubicacion">{{ alojamiento.ubicacion.ciudad }}</p>
+        </div>
+        <div class="favoritos-count">
+          <span class="material-icons">favorite</span>
+          <span class="count-text">{{ favoritosCount }}</span>
+        </div>
+      </div>
+
+      <!-- Servicios -->
+      <div class="servicios-grid">
+        <div class="servicio-item" *ngFor="let servicio of alojamiento.servicios.slice(0, 4)">
+          <span class="material-icons servicio-icon">
+            {{ servicio === 'WiFi' ? 'wifi' : servicio === 'Cocina' ? 'kitchen' : servicio === 'Piscina' ? 'pool' : 'pets' }}
+          </span>
+          <span class="servicio-nombre">{{ servicio }}</span>
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="descripcion-section">
+        <h3>Descripción del Alojamiento</h3>
+        <p>{{ alojamiento.descripcion }}</p>
+      </div>
+    </div>
+
+    <!-- Card de Precio -->
+    <div class="precio-card">
+      <div class="precio-info">
+        <span class="precio">{{ formatearPrecio(alojamiento.precioNoche) }}</span>
+        <span class="precio-label">Precio por noche</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calificaciones y Comentarios -->
+  <div class="comentarios-section">
+    <div class="comentarios-header">
+      <h3>
+        Calificaciones y comentarios
+        <span class="rating-badge">
+          <span class="material-icons">star</span>
+          {{ calcularCalificacionPromedio() }}
+        </span>
+      </h3>
+    </div>
+
+    <!-- Lista de Comentarios -->
+    <div class="comentarios-grid">
+      <div class="comentario-card" *ngFor="let comentario of comentariosPaginados">
+        <div class="comentario-header">
+          <div class="comentario-avatar"></div>
+          <div class="comentario-info">
+            <span class="comentario-autor">John Doberman</span>
+            <span class="comentario-fecha">{{ formatearFecha(comentario.fecha) }}</span>
+          </div>
+        </div>
+        <p class="comentario-texto">{{ comentario.texto }}</p>
+        <button class="btn-responder" (click)="responderComentario(comentario.id)">
+          Responder
+        </button>
+      </div>
+    </div>
+
+    <!-- Paginación de Comentarios -->
+    <div class="paginacion" *ngIf="totalPaginasComentarios > 1">
+      <button 
+        class="pag-btn" 
+        (click)="cambiarPaginaComentarios(paginaActualComentarios - 1)"
+        [disabled]="paginaActualComentarios === 1">
+        <span class="material-icons">keyboard_arrow_up</span>
+      </button>
+      <button 
+        class="pag-btn" 
+        (click)="cambiarPaginaComentarios(paginaActualComentarios + 1)"
+        [disabled]="paginaActualComentarios === totalPaginasComentarios">
+        <span class="material-icons">keyboard_arrow_down</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Editar Alojamiento -->
+<app-editar-alojamiento-modal
+  *ngIf="showEditModal"
+  [alojamiento]="alojamiento"
+  (close)="closeEditModal()"
+  (guardar)="onGuardarEdicion($event)">
+</app-editar-alojamiento-modal>

@@ -16,10 +16,8 @@ export interface UbicacionDTO {
 
 export interface Comentario {
   id: number;
-  usuarioId: number;
-  nombreUsuario: string;
+  texto: string;
   calificacion: number;
-  comentario: string;
   fecha: Date;
 }
 

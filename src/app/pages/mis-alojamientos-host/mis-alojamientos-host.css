@@ -1,0 +1,132 @@
+/* Container */
+.mis-alojamientos-container {
+  min-height: 100vh;
+  background-color: white;
+  padding: 40px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Page Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.page-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2d5016;
+  margin: 0;
+}
+
+.btn-add {
+  padding: 12px 32px;
+  background-color: #aed581;
+  color: #2d5016;
+  border: none;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-add:hover {
+  background-color: #9ccc65;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(124, 179, 66, 0.3);
+}
+
+/* Alojamientos Grid */
+.alojamientos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+/* Alojamiento Card */
+.alojamiento-card {
+  background-color: #80cbc4;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.alojamiento-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-info {
+  padding: 16px;
+  flex-grow: 1;
+}
+
+.card-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d5016;
+  margin: 0 0 8px 0;
+}
+
+.card-info p {
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+}
+
+.btn-eliminar {
+  width: 100%;
+  padding: 12px;
+  background-color: #aed581;
+  color: #2d5016;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-eliminar:hover {
+  background-color: #9ccc65;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mis-alojamientos-container {
+    padding: 24px 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+  }
+
+  .alojamientos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+}

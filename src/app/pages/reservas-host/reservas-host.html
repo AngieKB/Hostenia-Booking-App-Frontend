@@ -1,1 +1,102 @@
-<p>reservas-host works!</p>
+<app-main-header-host></app-main-header-host>
+
+<div class="reservas-container">
+  <!-- Header con filtro de fechas -->
+  <div class="page-header">
+    <h1>Reservas</h1>
+    <div class="date-filter-container">
+      <button class="btn-date-filter" (click)="toggleDateFilter()">
+        Rango de fechas
+      </button>
+      
+      <!-- Dropdown de filtro de fechas -->
+      <div class="date-filter-dropdown" *ngIf="showDateFilter">
+        <div class="filter-header">
+          <span>Rango de fechas</span>
+        </div>
+        <div class="filter-body">
+          <div class="date-input-group">
+            <label>Inicio</label>
+            <input
+              type="date"
+              [(ngModel)]="fechaInicio"
+              class="date-input"
+            />
+          </div>
+          <div class="date-input-group">
+            <label>Fin</label>
+            <input
+              type="date"
+              [(ngModel)]="fechaFin"
+              class="date-input"
+            />
+          </div>
+        </div>
+        <div class="filter-actions">
+          <button class="btn-cancel" (click)="cancelarFiltroFechas()">Cancel</button>
+          <button class="btn-ok" (click)="buscarPorFechas()">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs de filtro por estado -->
+  <div class="filter-tabs">
+    <button
+      class="filter-tab"
+      [class.active]="filtroActivo === EstadoReserva.PENDIENTE"
+      (click)="cambiarFiltro(EstadoReserva.PENDIENTE)">
+      Pendientes
+    </button>
+    <button
+      class="filter-tab"
+      [class.active]="filtroActivo === EstadoReserva.CANCELADA"
+      (click)="cambiarFiltro(EstadoReserva.CANCELADA)">
+      Canceladas
+    </button>
+    <button
+      class="filter-tab"
+      [class.active]="filtroActivo === EstadoReserva.CONFIRMADA"
+      (click)="cambiarFiltro(EstadoReserva.CONFIRMADA)">
+      Confirmadas
+    </button>
+    <button
+      class="filter-tab"
+      [class.active]="filtroActivo === EstadoReserva.COMPLETADA"
+      (click)="cambiarFiltro(EstadoReserva.COMPLETADA)">
+      Completadas
+    </button>
+  </div>
+
+  <!-- Lista de Reservas -->
+  <div class="reservas-list">
+    <div class="reserva-card" *ngFor="let reserva of reservasFiltradas">
+      <div class="reserva-image">
+        <!-- Placeholder image -->
+        <div class="image-placeholder"></div>
+      </div>
+      <div class="reserva-info">
+        <h3>{{ reserva.alojamientoTitulo }}</h3>
+        <div class="reserva-details">
+          <p><strong>Check in:</strong> {{ formatearFecha(reserva.fechaCheckIn) }}</p>
+          <p><strong>Check out:</strong> {{ formatearFecha(reserva.fechaCheckOut) }}</p>
+          <p><strong>Huéspedes:</strong> {{ reserva.cantidadHuespedes }}</p>
+        </div>
+        <p class="reserva-total"><strong>Precio Total:</strong> {{ formatearPrecio(reserva.total) }}</p>
+      </div>
+      <div class="reserva-actions" *ngIf="filtroActivo === EstadoReserva.PENDIENTE">
+        <button class="btn-aprobar" (click)="aprobarReserva(reserva.id)">
+          Aprobar
+        </button>
+        <button class="btn-denegar" (click)="denegarReserva(reserva.id)">
+          Denegar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje si no hay reservas -->
+  <div class="empty-message" *ngIf="reservasFiltradas.length === 0">
+    <p>No hay reservas para mostrar</p>
+  </div>
+</div>

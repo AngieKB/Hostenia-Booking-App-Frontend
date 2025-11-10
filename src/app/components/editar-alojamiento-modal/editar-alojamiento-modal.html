@@ -1,0 +1,198 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>Editar alojamiento</h2>
+      <button class="close-button" (click)="onClose()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="modal-form">
+      <!-- Nombre alojamiento -->
+      <div class="form-group">
+        <label for="nombre">Nombre alojamiento</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          [(ngModel)]="nombre"
+          placeholder="Nombre"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <!-- Precio por noche -->
+      <div class="form-group">
+        <label for="precio">Precio por noche</label>
+        <input
+          type="number"
+          id="precio"
+          name="precio"
+          [(ngModel)]="precioNoche"
+          placeholder="Precio por noche"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <!-- Cambiar Imágenes -->
+      <div class="form-group">
+        <div class="upload-section">
+          <span class="material-icons upload-icon">add_photo_alternate</span>
+          <label for="imagenes" class="upload-label">
+            Cambiar Imágenes<br>
+            <span class="upload-sublabel">(mínimo 1, máximo 10)</span>
+          </label>
+          <input
+            type="file"
+            id="imagenes"
+            name="imagenes"
+            (change)="onFileChange($event)"
+            accept="image/*"
+            multiple
+            class="file-input"
+          />
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea
+          id="descripcion"
+          name="descripcion"
+          [(ngModel)]="descripcion"
+          placeholder="Descripción ..."
+          rows="4"
+          required
+          class="form-textarea"
+        ></textarea>
+      </div>
+
+      <!-- Servicios -->
+      <div class="form-group">
+        <label>Cocina</label>
+        <input
+          type="text"
+          name="cocina"
+          [(ngModel)]="cocina"
+          placeholder="Si o No"
+          class="form-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Wifi</label>
+        <input
+          type="text"
+          name="wifi"
+          [(ngModel)]="wifi"
+          placeholder="Si o No"
+          class="form-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Piscina</label>
+        <input
+          type="text"
+          name="piscina"
+          [(ngModel)]="piscina"
+          placeholder="Si o No"
+          class="form-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Permite mascotas</label>
+        <input
+          type="text"
+          name="mascotas"
+          [(ngModel)]="permiteMascotas"
+          placeholder="Si o No"
+          class="form-input"
+        />
+      </div>
+
+      <!-- Capacidad máxima -->
+      <div class="form-group">
+        <label for="capacidad">Capacidad máxima</label>
+        <input
+          type="number"
+          id="capacidad"
+          name="capacidad"
+          [(ngModel)]="capacidadMaxima"
+          placeholder="Capacidad máxima"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <!-- Ciudad -->
+      <div class="form-group">
+        <label for="ciudad">Ciudad en la que está ubicada</label>
+        <input
+          type="text"
+          id="ciudad"
+          name="ciudad"
+          [(ngModel)]="ciudad"
+          placeholder="Ciudad"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <!-- Dirección -->
+      <div class="form-group">
+        <label for="direccion">Dirección</label>
+        <input
+          type="text"
+          id="direccion"
+          name="direccion"
+          [(ngModel)]="direccion"
+          placeholder="Dirección"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <!-- Latitud -->
+      <div class="form-group">
+        <label for="latitud">Latitud</label>
+        <input
+          type="number"
+          id="latitud"
+          name="latitud"
+          [(ngModel)]="latitud"
+          placeholder="Latitud"
+          step="any"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <!-- Longitud -->
+      <div class="form-group">
+        <label for="longitud">Longitud</label>
+        <input
+          type="number"
+          id="longitud"
+          name="longitud"
+          [(ngModel)]="longitud"
+          placeholder="Longitud"
+          step="any"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="submit-button">
+        Guardar Cambios
+      </button>
+    </form>
+  </div>
+</div>

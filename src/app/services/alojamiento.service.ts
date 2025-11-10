@@ -58,6 +58,20 @@ export class AlojamientoService {
     return true;
   }
 
+  // Obtener alojamientos inactivos
+  public getInactive(): AlojamientoDTO[] {
+    return this.alojamientos.filter(a => a.estado === EstadoAlojamiento.INACTIVO);
+  }
+
+  // Restaurar un alojamiento (cambiar estado a ACTIVO)
+  public restore(id: number): boolean {
+    const index = this.alojamientos.findIndex(a => a.id === id);
+    if (index === -1) return false;
+
+    this.alojamientos[index].estado = EstadoAlojamiento.ACTIVO;
+    return true;
+  }
+
   // Filtrar alojamientos por ciudad
   public filterByCiudad(ciudad: string): AlojamientoDTO[] {
     if (!ciudad) return this.getAll();
@@ -150,11 +164,33 @@ export class AlojamientoService {
         comentarios: [
           {
             id: 1,
-            usuarioId: 1,
-            nombreUsuario: 'Juan Pérez',
+            texto: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
             calificacion: 5,
-            comentario: 'Excelente lugar',
-            fecha: new Date()
+            fecha: new Date('2020-03-12')
+          },
+          {
+            id: 2,
+            texto: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+            calificacion: 4,
+            fecha: new Date('2020-03-12')
+          },
+          {
+            id: 3,
+            texto: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+            calificacion: 5,
+            fecha: new Date('2020-03-12')
+          },
+          {
+            id: 4,
+            texto: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+            calificacion: 4,
+            fecha: new Date('2020-03-12')
+          },
+          {
+            id: 5,
+            texto: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.',
+            calificacion: 5,
+            fecha: new Date('2020-03-12')
           }
         ],
         reservas: [],
@@ -177,12 +213,10 @@ export class AlojamientoService {
         capacidadMax: 4,
         comentarios: [
           {
-            id: 2,
-            usuarioId: 2,
-            nombreUsuario: 'María García',
+            id: 1,
+            texto: 'Muy cómodo y bien ubicado. Excelente atención del anfitrión.',
             calificacion: 4,
-            comentario: 'Muy cómodo',
-            fecha: new Date()
+            fecha: new Date('2020-03-12')
           }
         ],
         reservas: [],
@@ -205,20 +239,16 @@ export class AlojamientoService {
         capacidadMax: 8,
         comentarios: [
           {
-            id: 3,
-            usuarioId: 3,
-            nombreUsuario: 'Carlos López',
+            id: 1,
+            texto: 'Increíble vista al mar, la casa es hermosa y muy espaciosa.',
             calificacion: 5,
-            comentario: 'Increíble vista al mar',
-            fecha: new Date()
+            fecha: new Date('2020-03-12')
           },
           {
-            id: 4,
-            usuarioId: 4,
-            nombreUsuario: 'Ana Rodríguez',
+            id: 2,
+            texto: 'Muy limpio y ordenado. Definitivamente volveríamos.',
             calificacion: 4,
-            comentario: 'Muy limpio',
-            fecha: new Date()
+            fecha: new Date('2020-03-12')
           }
         ],
         reservas: [],

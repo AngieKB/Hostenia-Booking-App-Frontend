@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AlojamientoDTO } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
 import { MainHeader } from '../../components/main-header/main-header';
@@ -35,7 +36,10 @@ export class Principal implements OnInit {
   // En una app real, podrías guardarlos en localStorage o en el backend
   favoritos: Set<number> = new Set();
 
-  constructor(private alojamientoService: AlojamientoService) {}
+  constructor(
+    private alojamientoService: AlojamientoService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.cargarAlojamientos();
@@ -46,105 +50,6 @@ export class Principal implements OnInit {
   cargarAlojamientos() {
     // Obtener alojamientos del servicio
     this.alojamientos = this.alojamientoService.getAll();
-    this.alojamientosFiltrados = [...this.alojamientos];
-  }
-
-  // Método anterior con datos hardcodeados (ya no se usa)
-  cargarAlojamientosHardcoded() {
-    this.alojamientos = [
-      {
-        id: 1,
-        titulo: 'Casa Moderna en el Centro',
-        descripcion: 'Hermosa casa con todas las comodidades',
-        servicios: ['WiFi', 'Piscina', 'Cocina'],
-        galeria: ['https://images.unsplash.com/photo-1568605114967-8130f3a36994'],
-        ubicacion: {
-          direccion: 'Calle 123 #45-67',
-          ciudad: 'Bogotá',
-          pais: 'Colombia',
-          latitud: 4.7110,
-          longitud: -74.0721
-        },
-        precioNoche: 250000,
-        capacidadMax: 6,
-        comentarios: [
-          {
-            id: 1,
-            usuarioId: 1,
-            nombreUsuario: 'Juan Pérez',
-            calificacion: 5,
-            comentario: 'Excelente lugar',
-            fecha: new Date()
-          }
-        ],
-        reservas: [],
-        estado: 'ACTIVO' as any
-      },
-      {
-        id: 2,
-        titulo: 'Apartamento Acogedor',
-        descripcion: 'Perfecto para parejas o familias pequeñas',
-        servicios: ['WiFi', 'Cocina', 'TV'],
-        galeria: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267'],
-        ubicacion: {
-          direccion: 'Carrera 50 #23-10',
-          ciudad: 'Medellín',
-          pais: 'Colombia',
-          latitud: 6.2442,
-          longitud: -75.5812
-        },
-        precioNoche: 180000,
-        capacidadMax: 4,
-        comentarios: [
-          {
-            id: 2,
-            usuarioId: 2,
-            nombreUsuario: 'María García',
-            calificacion: 4,
-            comentario: 'Muy cómodo',
-            fecha: new Date()
-          }
-        ],
-        reservas: [],
-        estado: 'ACTIVO' as any
-      },
-      {
-        id: 3,
-        titulo: 'Casa de Playa',
-        descripcion: 'Disfruta del mar y el sol',
-        servicios: ['WiFi', 'Piscina'],
-        galeria: ['https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf'],
-        ubicacion: {
-          direccion: 'Sector Playa Blanca',
-          ciudad: 'Cartagena',
-          pais: 'Colombia',
-          latitud: 10.3910,
-          longitud: -75.4794
-        },
-        precioNoche: 450000,
-        capacidadMax: 8,
-        comentarios: [
-          {
-            id: 3,
-            usuarioId: 3,
-            nombreUsuario: 'Carlos López',
-            calificacion: 5,
-            comentario: 'Increíble vista al mar',
-            fecha: new Date()
-          },
-          {
-            id: 4,
-            usuarioId: 4,
-            nombreUsuario: 'Ana Rodríguez',
-            calificacion: 4,
-            comentario: 'Muy limpio',
-            fecha: new Date()
-          }
-        ],
-        reservas: [],
-        estado: 'ACTIVO' as any
-      }
-    ];
     this.alojamientosFiltrados = [...this.alojamientos];
   }
 
@@ -221,5 +126,10 @@ export class Principal implements OnInit {
   // Método para verificar si tiene un servicio específico
   contarServicios(alojamiento: AlojamientoDTO, servicio: string): boolean {
     return alojamiento.servicios.some(s => s.toLowerCase().includes(servicio.toLowerCase()));
+  }
+
+  // Navegar a detalles del alojamiento
+  verDetalles(id: number): void {
+    this.router.navigate(['/detalles-alojamiento', id]);
   }
 }
