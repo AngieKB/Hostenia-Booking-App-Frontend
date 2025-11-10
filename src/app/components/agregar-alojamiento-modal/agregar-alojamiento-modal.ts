@@ -1,6 +1,8 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
+
 
 @Component({
   selector: 'app-agregar-alojamiento-modal',
@@ -27,6 +29,9 @@ export class AgregarAlojamientoModal {
   latitud: number = 0;
   longitud: number = 0;
   imagenes: File[] = [];
+
+  
+
 
   onClose(): void {
     this.close.emit();

@@ -112,7 +112,37 @@
         </div>
       </div>
     </div>
+    <div id="map"></div>
+<style>
+  #map {
+  width: 100%;
+  height: 500px;
+  border-radius: 10px;
+  margin-top: 2rem;
+  margin-bottom: 4rem;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;  /* Contener marcadores */
+  /* Evita transform o translate aquí si los hay */
+}
+@media (max-width: 576px) {
+  #map {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+/* Opcional: Estilos para asegurar que los marcadores no se muevan */
+.mapboxgl-marker {
+  /* Si hay problemas, añade esto para forzar posicionamiento */
+  position: absolute !important;
+  /* Evita cualquier transform que pueda interferir */
+  transform: none !important;
+}
+</style>
   </div>
+  
+
 </div>
 
 <!-- Sección de alojamientos -->
@@ -188,6 +218,7 @@
       <p class="text-muted mt-3">No se encontraron alojamientos con los filtros seleccionados</p>
     </div>
   </div>
+
 </div>
 
 <app-footer></app-footer>
