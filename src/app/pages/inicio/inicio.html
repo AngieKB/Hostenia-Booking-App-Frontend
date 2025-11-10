@@ -10,6 +10,12 @@
           <h5 class="mb-0">Registrarse</h5>
         </div>
         <div class="card-body">
+          <!-- Mensaje de error -->
+          <div *ngIf="mensajeErrorRegistro" class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ mensajeErrorRegistro }}
+            <button type="button" class="btn-close" (click)="mensajeErrorRegistro = ''"></button>
+          </div>
+
           <form (ngSubmit)="registrar()">
             <!-- Nombre -->
             <div class="mb-3">
@@ -94,8 +100,26 @@
                 required>
             </div>
 
+            <!-- Foto de perfil -->
+            <div class="mb-3">
+              <label class="form-label">Foto de perfil (opcional)</label>
+              <input 
+                type="file" 
+                class="form-control" 
+                accept="image/*"
+                (change)="onFileSelected($event)"
+                name="fotoUrl">
+              <small class="text-muted">Formatos aceptados: JPG, PNG, GIF</small>
+            </div>
+
             <!-- Botón de registro -->
-            <button type="submit" class="btn btn-success w-100">Ingresar</button>
+            <button 
+              type="submit" 
+              class="btn btn-success w-100"
+              [disabled]="registrando">
+              <span *ngIf="registrando" class="spinner-border spinner-border-sm me-2"></span>
+              {{ registrando ? 'Registrando...' : 'Ingresar' }}
+            </button>
           </form>
         </div>
       </div>
@@ -108,6 +132,12 @@
           <h5 class="mb-0">Iniciar Sesión</h5>
         </div>
         <div class="card-body">
+          <!-- Mensaje de error -->
+          <div *ngIf="mensajeErrorLogin" class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ mensajeErrorLogin }}
+            <button type="button" class="btn-close" (click)="mensajeErrorLogin = ''"></button>
+          </div>
+
           <form (ngSubmit)="iniciarSesion()">
             <!-- Correo electrónico -->
             <div class="mb-3">
@@ -141,7 +171,13 @@
             </div>
 
             <!-- Botón de ingreso -->
-            <button type="submit" class="btn btn-success w-100">Ingresar</button>
+            <button 
+              type="submit" 
+              class="btn btn-success w-100"
+              [disabled]="iniciandoSesion">
+              <span *ngIf="iniciandoSesion" class="spinner-border spinner-border-sm me-2"></span>
+              {{ iniciandoSesion ? 'Iniciando sesión...' : 'Ingresar' }}
+            </button>
           </form>
         </div>
       </div>
@@ -158,13 +194,48 @@
         <button type="button" class="btn-close" (click)="cerrarModal()"></button>
       </div>
       <div class="modal-body">
-        <form (ngSubmit)="establecerPassword()">
-          <!-- Información -->
-          <p class="text-muted small">Se ha enviado a su correo electrónico un código de verificación</p>
+        <!-- Mensajes de error y éxito -->
+        <div *ngIf="mensajeError" class="alert alert-danger alert-dismissible fade show" role="alert">
+          {{ mensajeError }}
+          <button type="button" class="btn-close" (click)="mensajeError = ''"></button>
+        </div>
+        <div *ngIf="mensajeExito" class="alert alert-success alert-dismissible fade show" role="alert">
+          {{ mensajeExito }}
+          <button type="button" class="btn-close" (click)="mensajeExito = ''"></button>
+        </div>
+
+        <!-- Paso 1: Ingresar email y solicitar código -->
+        <div *ngIf="!codigoEnviado">
+          <p class="text-muted small">Ingrese su correo electrónico para recibir un código de verificación</p>
+          
+          <div class="mb-3">
+            <label class="form-label">Correo electrónico</label>
+            <input 
+              type="email" 
+              class="form-control" 
+              placeholder="correo@ejemplo.com"
+              [(ngModel)]="recuperarData.email"
+              name="email"
+              required>
+          </div>
+
+          <button 
+            type="button" 
+            class="btn btn-primary w-100" 
+            (click)="enviarCodigo()"
+            [disabled]="enviandoCodigo">
+            <span *ngIf="enviandoCodigo" class="spinner-border spinner-border-sm me-2"></span>
+            {{ enviandoCodigo ? 'Enviando...' : 'Enviar código' }}
+          </button>
+        </div>
+
+        <!-- Paso 2: Ingresar código y nueva contraseña -->
+        <form *ngIf="codigoEnviado" (ngSubmit)="establecerPassword()">
+          <p class="text-muted small">Se ha enviado un código de verificación a {{ recuperarData.email }}</p>
           
           <!-- Código -->
           <div class="mb-3">
-            <label class="form-label">Código</label>
+            <label class="form-label">Código de verificación</label>
             <input 
               type="text" 
               class="form-control" 
@@ -177,8 +248,13 @@
 
           <!-- Botón reenviar código -->
           <div class="mb-3">
-            <button type="button" class="btn btn-info w-100" (click)="reenviarCodigo()">
-              Reenviar código
+            <button 
+              type="button" 
+              class="btn btn-info w-100" 
+              (click)="reenviarCodigo()"
+              [disabled]="enviandoCodigo">
+              <span *ngIf="enviandoCodigo" class="spinner-border spinner-border-sm me-2"></span>
+              {{ enviandoCodigo ? 'Reenviando...' : 'Reenviar código' }}
             </button>
           </div>
 
@@ -192,11 +268,16 @@
               [(ngModel)]="recuperarData.nuevaPassword"
               name="nuevaPassword"
               required>
+            <small class="text-muted">Mínimo 8 caracteres, incluir mayúscula, minúscula y número</small>
           </div>
 
           <!-- Botón establecer contraseña -->
-          <button type="submit" class="btn btn-success w-100">
-            Establecer contraseña
+          <button 
+            type="submit" 
+            class="btn btn-success w-100"
+            [disabled]="enviandoPassword">
+            <span *ngIf="enviandoPassword" class="spinner-border spinner-border-sm me-2"></span>
+            {{ enviandoPassword ? 'Estableciendo...' : 'Establecer contraseña' }}
           </button>
         </form>
       </div>
