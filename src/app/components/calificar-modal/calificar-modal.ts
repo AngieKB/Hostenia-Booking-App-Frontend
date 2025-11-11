@@ -33,5 +33,6 @@ export class CalificarModal {
 
   setCalificacion(valor: number): void {
     this.calificacion = valor;
+    console.log('Calificación seleccionada:', valor);
   }
 }

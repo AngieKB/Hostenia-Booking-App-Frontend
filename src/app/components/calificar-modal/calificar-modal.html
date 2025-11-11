@@ -19,20 +19,18 @@
             class="star-btn" 
             *ngFor="let star of [1, 2, 3, 4, 5]"
             (click)="setCalificacion(star)">
-            <span class="material-icons" [class.filled]="star <= calificacion">
-              {{ star <= calificacion ? 'star' : 'star_border' }}
-            </span>
+            <i class="bi" 
+               [class.bi-star-fill]="star <= calificacion" 
+               [class.bi-star]="star > calificacion"
+               style="font-size: 32px;"></i>
           </button>
         </div>
-        <input
-          type="text"
-          id="calificacion"
-          name="calificacion"
-          [value]="calificacion || ''"
-          placeholder="Calificación"
-          readonly
-          class="form-input"
-        />
+        <p class="calificacion-texto" *ngIf="calificacion > 0">
+          <strong>{{ calificacion }}</strong> {{ calificacion === 1 ? 'estrella' : 'estrellas' }}
+        </p>
+        <p class="calificacion-texto" *ngIf="calificacion === 0">
+          <em>Selecciona una calificación (1-5 estrellas)</em>
+        </p>
       </div>
 
       <!-- Descripción -->

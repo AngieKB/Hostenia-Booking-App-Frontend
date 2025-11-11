@@ -92,33 +92,52 @@
       </button>
     </div>
 
+    <!-- Indicador de carga -->
+    <div *ngIf="cargandoComentarios" class="text-center py-4">
+      <div class="spinner-border text-success" role="status">
+        <span class="visually-hidden">Cargando comentarios...</span>
+      </div>
+    </div>
+
     <!-- Lista de Comentarios -->
-    <div class="comentarios-grid">
+    <div class="comentarios-grid" *ngIf="!cargandoComentarios">
       <div class="comentario-card" *ngFor="let comentario of comentariosPaginados">
         <div class="comentario-header">
           <div class="comentario-avatar"></div>
           <div class="comentario-info">
-            <span class="comentario-autor">John Doberman</span>
-            <span class="comentario-fecha">{{ formatearFecha(comentario.fecha) }}</span>
+            <div class="d-flex align-items-center gap-2">
+              <span class="comentario-autor">Usuario</span>
+              <div class="calificacion-comentario">
+                <i class="bi bi-star-fill"></i>
+                <span>{{ comentario.calificacion }}</span>
+              </div>
+            </div>
+            <span class="comentario-fecha">{{ formatearFechaComentario(comentario.fecha) }}</span>
           </div>
         </div>
         <p class="comentario-texto">{{ comentario.texto }}</p>
       </div>
+
+      <!-- Mensaje si no hay comentarios -->
+      <div *ngIf="comentariosPaginados.length === 0" class="text-center py-4">
+        <p class="text-muted">No hay comentarios aún. ¡Sé el primero en comentar!</p>
+      </div>
     </div>
 
     <!-- Paginación de Comentarios -->
-    <div class="paginacion" *ngIf="totalPaginasComentarios > 1">
+    <div class="paginacion" *ngIf="totalPaginasComentarios > 1 && !cargandoComentarios">
       <button 
         class="pag-btn" 
-        (click)="cambiarPaginaComentarios(paginaActualComentarios - 1)"
-        [disabled]="paginaActualComentarios === 1">
-        <span class="material-icons">keyboard_arrow_up</span>
+        (click)="cambiarPaginaComentarios(paginaActualComentarios)"
+        [disabled]="paginaActualComentarios === 0">
+        <span class="material-icons">keyboard_arrow_left</span>
       </button>
+      <span class="px-3">Página {{ paginaActualComentarios + 1 }} de {{ totalPaginasComentarios }}</span>
       <button 
         class="pag-btn" 
-        (click)="cambiarPaginaComentarios(paginaActualComentarios + 1)"
-        [disabled]="paginaActualComentarios === totalPaginasComentarios">
-        <span class="material-icons">keyboard_arrow_down</span>
+        (click)="cambiarPaginaComentarios(paginaActualComentarios + 2)"
+        [disabled]="paginaActualComentarios === totalPaginasComentarios - 1">
+        <span class="material-icons">keyboard_arrow_right</span>
       </button>
     </div>
   </div>

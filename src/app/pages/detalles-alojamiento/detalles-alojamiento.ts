@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlojamientoDTO, Comentario } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
+import { ComentarioService } from '../../services/comentario.service';
+import { ComentarioDTO, ComentarDTO } from '../../models/comentario-dto';
 import { MainHeader } from '../../components/main-header/main-header';
 import { CalificarModal } from '../../components/calificar-modal/calificar-modal';
 import Swal from 'sweetalert2';
@@ -18,18 +20,20 @@ export class DetallesAlojamiento implements OnInit {
   alojamiento: AlojamientoDTO | null = null;
   imagenPrincipal: string = '';
   showCalificarModal: boolean = false;
-  cargando: boolean = false;
   
-  // Paginación de comentarios
-  comentariosPaginados: Comentario[] = [];
-  paginaActualComentarios: number = 1;
-  comentariosPorPagina: number = 4;
-  totalPaginasComentarios: number = 1;
+  // Paginación de comentarios desde API
+  comentariosPaginados: ComentarioDTO[] = [];
+  paginaActualComentarios: number = 0;
+  comentariosPorPagina: number = 12;
+  totalPaginasComentarios: number = 0;
+  totalComentarios: number = 0;
+  cargandoComentarios: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private alojamientoService: AlojamientoService
+    private alojamientoService: AlojamientoService,
+    private comentarioService: ComentarioService
   ) {}
 
   ngOnInit(): void {
@@ -40,26 +44,48 @@ export class DetallesAlojamiento implements OnInit {
   }
 
   private loadAlojamiento(id: number): void {
-    this.cargando = true;
     this.alojamientoService.obtenerPorId(id).subscribe({
       next: (alojamiento) => {
         this.alojamiento = alojamiento;
-        this.imagenPrincipal = this.alojamiento.galeria[0] || '';
-        this.calcularPaginacionComentarios();
-        this.cargarComentariosPagina();
-        this.cargando = false;
+        this.imagenPrincipal = alojamiento.galeria[0] || '';
+        this.cargarComentariosDesdeAPI(id);
       },
       error: (error) => {
         console.error('Error al cargar alojamiento:', error);
+        this.alojamiento = null;
         Swal.fire({
           icon: 'error',
           title: 'Error',
           text: 'No se pudo cargar el alojamiento',
           confirmButtonColor: '#4CB0A6'
-        }).then(() => {
-          this.router.navigate(['/']);
         });
-        this.cargando = false;
+      }
+    });
+  }
+
+  // Cargar comentarios desde la API
+  private cargarComentariosDesdeAPI(idAlojamiento: number): void {
+    this.cargandoComentarios = true;
+    this.comentarioService.obtenerComentariosPorAlojamiento(
+      idAlojamiento,
+      this.paginaActualComentarios,
+      this.comentariosPorPagina
+    ).subscribe({
+      next: (response) => {
+        this.comentariosPaginados = response.content;
+        this.totalPaginasComentarios = response.totalPages;
+        this.totalComentarios = response.totalElements;
+        this.cargandoComentarios = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar comentarios:', error);
+        this.cargandoComentarios = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar los comentarios',
+          confirmButtonColor: '#4CB0A6'
+        });
       }
     });
   }
@@ -121,34 +147,94 @@ export class DetallesAlojamiento implements OnInit {
   }
 
   onGuardarCalificacion(data: { calificacion: number; comentario: string }): void {
-    console.log('Guardar calificación:', data);
-    // Aquí implementarías la lógica para guardar en el backend
-    this.closeCalificarModal();
-  }
-
-  // Métodos de paginación de comentarios
-  private calcularPaginacionComentarios(): void {
     if (!this.alojamiento) return;
-    this.totalPaginasComentarios = Math.ceil(
-      this.alojamiento.comentarios.length / this.comentariosPorPagina
-    );
+
+    // Solicitar ID de reserva al usuario
+    Swal.fire({
+      title: 'ID de Reserva',
+      text: 'Ingrese el ID de su reserva para comentar',
+      input: 'number',
+      inputAttributes: {
+        min: '1',
+        step: '1'
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Enviar comentario',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#4CB0A6',
+      inputValidator: (value) => {
+        if (!value || parseInt(value) <= 0) {
+          return 'Debe ingresar un ID de reserva válido';
+        }
+        return null;
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value && this.alojamiento) {
+        const reservaId = parseInt(result.value);
+        const comentarDTO: ComentarDTO = {
+          texto: data.comentario,
+          calificacion: data.calificacion,
+          idAlojamiento: this.alojamiento.id
+        };
+
+        this.comentarioService.crearComentario(reservaId, comentarDTO).subscribe({
+          next: (mensaje) => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: mensaje,
+              confirmButtonColor: '#4CB0A6'
+            });
+            this.closeCalificarModal();
+            // Recargar comentarios para mostrar el nuevo
+            if (this.alojamiento?.id) {
+              this.cargarComentariosDesdeAPI(this.alojamiento.id);
+            }
+          },
+          error: (error) => {
+            console.error('Error al crear comentario:', error);
+            let mensajeError = 'No se pudo crear el comentario';
+            
+            if (error.error?.content) {
+              mensajeError = error.error.content;
+            } else if (error.error?.message) {
+              mensajeError = error.error.message;
+            }
+            
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: mensajeError,
+              confirmButtonColor: '#4CB0A6'
+            });
+          }
+        });
+      }
+    });
   }
 
-  private cargarComentariosPagina(): void {
-    if (!this.alojamiento) return;
-    const inicio = (this.paginaActualComentarios - 1) * this.comentariosPorPagina;
-    const fin = inicio + this.comentariosPorPagina;
-    this.comentariosPaginados = this.alojamiento.comentarios.slice(inicio, fin);
-  }
-
+  // Métodos de paginación de comentarios desde API
   cambiarPaginaComentarios(pagina: number): void {
-    if (pagina >= 1 && pagina <= this.totalPaginasComentarios) {
-      this.paginaActualComentarios = pagina;
-      this.cargarComentariosPagina();
+    // La API usa paginación 0-indexed
+    const paginaAPI = pagina - 1;
+    if (paginaAPI >= 0 && paginaAPI < this.totalPaginasComentarios) {
+      this.paginaActualComentarios = paginaAPI;
+      if (this.alojamiento) {
+        this.cargarComentariosDesdeAPI(this.alojamiento.id);
+      }
     }
   }
 
   get paginasComentarios(): number[] {
     return Array.from({ length: this.totalPaginasComentarios }, (_, i) => i + 1);
+  }
+
+  // Método para formatear fecha de comentario
+  formatearFechaComentario(fecha: string): string {
+    return new Date(fecha).toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
   }
 }
