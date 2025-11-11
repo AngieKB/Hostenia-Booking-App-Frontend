@@ -6,6 +6,11 @@ import { AlojamientoService } from '../../services/alojamiento.service';
 import { MainHeaderHost } from '../../components/main-header-host/main-header-host';
 import { TokenService } from '../../services/token.service';
 import Swal from 'sweetalert2';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+
+
+
 
 @Component({
   selector: 'app-mis-alojamientos-host',
@@ -17,11 +22,13 @@ import Swal from 'sweetalert2';
 export class MisAlojamientosHost implements OnInit {
   alojamientos: AlojamientoDTO[] = [];
   cargando: boolean = false;
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private alojamientoService: AlojamientoService,
     private router: Router,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -43,25 +50,41 @@ export class MisAlojamientosHost implements OnInit {
       this.cargando = false;
       return;
     }
-    
-    // Obtener alojamientos del anfitrión desde el backend
-    this.alojamientoService.listarPorAnfitrion(userId, 0, 100).subscribe({
-      next: (page) => {
-        this.alojamientos = page.content;
-        this.cargando = false;
-      },
-      error: (error) => {
-        console.error('Error al cargar alojamientos:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudieron cargar los alojamientos',
-          confirmButtonColor: '#4CB0A6'
-        });
-        this.cargando = false;
-      }
-    });
+  
+
+    this.http.get<any>(`${this.apiUrl}/alojamiento/listarPorAnfitrion/${userId}?pagina=0&tamanio=100`)
+      .subscribe({
+        next: (res) => {
+          console.log('Respuesta completa del backend:', res);
+
+  if (res?.content?.content && Array.isArray(res.content.content)) {
+    this.alojamientos = res.content.content;
+  } else {
+    console.warn('⚠️ Estructura inesperada en la respuesta:', res);
+    this.alojamientos = [];
   }
+
+  this.cargando = false;
+
+  this.cargando = false;
+
+          // debug: mostrar galerías
+          this.alojamientos.forEach((alojamiento, index) => {
+            console.log(`Alojamiento ${index}:`, alojamiento.titulo);
+            console.log('Galería:', alojamiento.galeria);
+          });
+        },
+        error: (error) => {
+          console.error('Error al cargar alojamientos:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudieron cargar los alojamientos',
+            confirmButtonColor: '#4CB0A6'
+          });
+          this.cargando = false;
+        }
+      });}
 
   agregarAlojamiento(): void {
     this.router.navigate(['/agregar-alojamiento-host']);

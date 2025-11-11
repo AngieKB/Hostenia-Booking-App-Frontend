@@ -1,6 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { RouterModule } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-root',

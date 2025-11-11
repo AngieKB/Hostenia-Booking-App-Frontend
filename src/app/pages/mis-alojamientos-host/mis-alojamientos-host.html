@@ -24,7 +24,8 @@
   <div class="alojamientos-grid" *ngIf="!cargando && alojamientos.length > 0">
     <div class="alojamiento-card" *ngFor="let alojamiento of alojamientos" (click)="verDetalles(alojamiento.id)">
       <div class="card-image">
-        <img [src]="alojamiento.galeria[0]" [alt]="alojamiento.titulo">
+        <img [src]="alojamiento.galeria?.[0]" [alt]="alojamiento.titulo">
+        
       </div>
       <div class="card-info">
         <h3>{{ alojamiento.titulo }}</h3>
