@@ -11,10 +11,10 @@
   <div class="profile-content">
     <div class="profile-main">
       <div class="profile-picture">
-        <div class="avatar-placeholder">
+        <div class="avatar-placeholder" *ngIf="!userData.fotoUrl">
           <span class="material-icons">person</span>
         </div>
-        <p class="upload-text">Sube una imagen</p>
+        <img *ngIf="userData.fotoUrl" [src]="userData.fotoUrl" alt="Foto de perfil" class="profile-image">
       </div>
 
       <div class="profile-info-card">

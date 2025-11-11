@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainHeader } from '../../components/main-header/main-header';
-import { ReservaAlojamientoDTO, EstadoReserva } from '../../models/reserva-dto';
+import { ReservaUsuarioDTO, EstadoReserva } from '../../models/reserva-dto';
 import { ReservaService } from '../../services/reserva.service';
-import { UsuarioService } from '../../services/usuario.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-mis-reservas',
@@ -13,13 +13,14 @@ import { UsuarioService } from '../../services/usuario.service';
   styleUrl: './mis-reservas.css',
 })
 export class MisReservas implements OnInit {
-  reservas: ReservaAlojamientoDTO[] = [];
+  reservas: ReservaUsuarioDTO[] = [];
+  todasReservas: ReservaUsuarioDTO[] = [];
   filtroActivo: EstadoReserva | 'TODAS' = EstadoReserva.CONFIRMADA;
   EstadoReserva = EstadoReserva;
+  cargando: boolean = false;
 
   constructor(
-    private reservaService: ReservaService,
-    private usuarioService: UsuarioService
+    private reservaService: ReservaService
   ) {}
 
   ngOnInit(): void {
@@ -27,11 +28,25 @@ export class MisReservas implements OnInit {
   }
 
   private loadReservas(): void {
-    const currentUser = this.usuarioService.getCurrentUser();
-    if (!currentUser) return;
-
-    const todasReservas = this.reservaService.getByHuespedId(currentUser.id!);
-    this.aplicarFiltro(todasReservas);
+    this.cargando = true;
+    
+    this.reservaService.obtenerMisReservas(0, 100).subscribe({
+      next: (page) => {
+        this.todasReservas = page.content;
+        this.aplicarFiltro();
+        this.cargando = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar reservas:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar las reservas',
+          confirmButtonColor: '#4CB0A6'
+        });
+        this.cargando = false;
+      }
+    });
   }
 
   cambiarFiltro(filtro: EstadoReserva | 'TODAS'): void {
@@ -39,22 +54,51 @@ export class MisReservas implements OnInit {
     this.loadReservas();
   }
 
-  private aplicarFiltro(reservas: ReservaAlojamientoDTO[]): void {
+  private aplicarFiltro(): void {
     if (this.filtroActivo === 'TODAS') {
-      this.reservas = reservas;
+      this.reservas = this.todasReservas;
     } else {
-      this.reservas = reservas.filter(r => r.estado === this.filtroActivo);
+      this.reservas = this.todasReservas.filter(r => r.estado === this.filtroActivo);
     }
   }
 
   cancelarReserva(reservaId: number): void {
-    if (confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {
-      this.reservaService.cancelar(reservaId);
-      this.loadReservas();
-    }
+    Swal.fire({
+      title: '¿Cancelar reserva?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.reservaService.cancelar(reservaId).subscribe({
+          next: (mensaje) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Éxito',
+              text: mensaje,
+              confirmButtonColor: '#4CB0A6'
+            });
+            this.loadReservas();
+          },
+          error: (error) => {
+            console.error('Error al cancelar reserva:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo cancelar la reserva',
+              confirmButtonColor: '#4CB0A6'
+            });
+          }
+        });
+      }
+    });
   }
 
-  formatearFecha(fecha: Date): string {
+  formatearFecha(fecha: string): string {
     return new Date(fecha).toLocaleDateString('es-ES', {
       day: 'numeric',
       month: 'short',

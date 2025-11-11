@@ -1,0 +1,185 @@
+<app-main-header-host></app-main-header-host>
+
+<div class="agregar-alojamiento-container">
+  <div class="content-wrapper">
+    <div class="form-section">
+      <h1>Agregar Nuevo Alojamiento</h1>
+      
+      <form (ngSubmit)="guardarAlojamiento()">
+        <!-- Información básica -->
+        <div class="form-group">
+          <label>Título *</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="alojamientoData.titulo"
+            name="titulo"
+            placeholder="Ej: Casa moderna en el centro"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label>Descripción *</label>
+          <textarea 
+            class="form-control" 
+            [(ngModel)]="alojamientoData.descripcion"
+            name="descripcion"
+            rows="4"
+            placeholder="Describe tu alojamiento..."
+            required></textarea>
+        </div>
+
+        <!-- Ubicación -->
+        <div class="section-title">Ubicación</div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ciudad *</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              [(ngModel)]="alojamientoData.ciudad"
+              name="ciudad"
+              placeholder="Ej: Bogotá"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label>País *</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              [(ngModel)]="alojamientoData.pais"
+              name="pais"
+              required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Dirección *</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="alojamientoData.direccion"
+            name="direccion"
+            placeholder="Ej: Calle 123 #45-67"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label>Coordenadas (Haz clic en el mapa) *</label>
+          <div class="coordenadas-display">
+            <span *ngIf="ubicacionSeleccionada" class="coordenadas-text">
+              📍 Lat: {{ latitud.toFixed(4) }}, Lng: {{ longitud.toFixed(4) }}
+            </span>
+            <span *ngIf="!ubicacionSeleccionada" class="coordenadas-placeholder">
+              Haz clic en el mapa para seleccionar la ubicación
+            </span>
+          </div>
+        </div>
+
+        <!-- Detalles -->
+        <div class="section-title">Detalles</div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Precio por noche (COP) *</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              [(ngModel)]="alojamientoData.precioNoche"
+              name="precioNoche"
+              min="0"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label>Capacidad máxima *</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              [(ngModel)]="alojamientoData.capacidadMax"
+              name="capacidadMax"
+              min="1"
+              required>
+          </div>
+        </div>
+
+        <!-- Servicios -->
+        <div class="section-title">Servicios</div>
+        <div class="servicios-grid">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="alojamientoData.servicios.wifi" name="wifi">
+            <span>WiFi</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="alojamientoData.servicios.piscina" name="piscina">
+            <span>Piscina</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="alojamientoData.servicios.cocina" name="cocina">
+            <span>Cocina</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="alojamientoData.servicios.mascotas" name="mascotas">
+            <span>Mascotas</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="alojamientoData.servicios.tv" name="tv">
+            <span>TV</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="alojamientoData.servicios.aire" name="aire">
+            <span>Aire Acondicionado</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="alojamientoData.servicios.calefaccion" name="calefaccion">
+            <span>Calefacción</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="alojamientoData.servicios.estacionamiento" name="estacionamiento">
+            <span>Estacionamiento</span>
+          </label>
+        </div>
+
+        <!-- Galería -->
+        <div class="section-title">Imágenes *</div>
+        <div class="form-group">
+          <input 
+            type="file" 
+            class="form-control" 
+            (change)="onFileSelected($event)"
+            accept="image/*"
+            multiple
+            required>
+          <small class="form-text">Selecciona una o más imágenes del alojamiento</small>
+          <div *ngIf="alojamientoData.galeria.length > 0" class="files-selected">
+            {{ alojamientoData.galeria.length }} archivo(s) seleccionado(s)
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="cancelar()" [disabled]="guardando">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="guardando">
+            <span *ngIf="guardando" class="spinner-border spinner-border-sm me-2"></span>
+            {{ guardando ? 'Guardando...' : 'Guardar Alojamiento' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Mapa -->
+    <div class="map-section">
+      <div class="map-container">
+        <div id="map"></div>
+      </div>
+      <div class="map-instructions">
+        <p><strong>Instrucciones:</strong></p>
+        <p>Haz clic en el mapa para seleccionar la ubicación exacta de tu alojamiento.</p>
+      </div>
+    </div>
+  </div>
+</div>

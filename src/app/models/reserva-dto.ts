@@ -5,11 +5,58 @@ export enum EstadoReserva {
   COMPLETADA = 'COMPLETADA'
 }
 
+// DTO para crear una reserva
+export interface RealizarReservaDTO {
+  fechaCheckIn: string; // ISO string
+  fechaCheckOut: string; // ISO string
+  cantidadHuespedes: number;
+  alojamientoId: number;
+}
+
+// DTO para editar una reserva
+export interface EditarReservaDTO {
+  fechaCheckIn: string; // ISO string
+  fechaCheckOut: string; // ISO string
+  cantidadHuespedes: number;
+  total: number;
+}
+
+// DTO combinado para editar reserva con ubicación
+export interface EditarReservaConUbicacionDTO {
+  reserva: EditarReservaDTO;
+  ubicacion: UbicacionDTO;
+}
+
+// DTO de ubicación
+export interface UbicacionDTO {
+  direccion: string;
+  ciudad: string;
+  pais: string;
+  latitud: number;
+  longitud: number;
+}
+
+// DTO para reservas del usuario (huésped)
+export interface ReservaUsuarioDTO {
+  id: number;
+  fechaCheckIn: string;
+  fechaCheckOut: string;
+  cantidadHuespedes: number;
+  total: number;
+  estado: EstadoReserva;
+  alojamientoId: number;
+  alojamientoTitulo: string;
+  alojamientoCiudad: string;
+  alojamientoImagen: string;
+}
+
+// DTO para reservas de un alojamiento (anfitrión)
 export interface ReservaAlojamientoDTO {
   id: number;
   idHuesped: number;
-  fechaCheckIn: Date;
-  fechaCheckOut: Date;
+  nombreHuesped: string;
+  fechaCheckIn: string;
+  fechaCheckOut: string;
   cantidadHuespedes: number;
   total: number;
   estado: EstadoReserva;

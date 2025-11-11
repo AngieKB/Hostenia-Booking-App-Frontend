@@ -13,6 +13,8 @@ import { Footer } from '../../components/footer/footer';
 import Swal from 'sweetalert2';
 import { MapService } from '../../services/map-service';
 import { TokenService } from '../../services/token.service';
+import { Observable, forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-principal',
@@ -67,13 +69,6 @@ export class Principal implements OnInit {
     this.cargarAlojamientos();
     this.cargarFavoritosLocalStorage();
     this.mapService.create();
-  // Esperar a que el mapa se cargue completamente antes de dibujar
-  setTimeout(() => {
-    const places = this.ubicacionService.getAll();
-    const markers = this.mapItemToMarker(places);
-    this.mapService.drawMarkers(markers);
-  }, 2000);
-    
   }
 
   // Inicializar fecha mínima (hoy)
@@ -84,9 +79,27 @@ export class Principal implements OnInit {
 
   // Método para cargar alojamientos desde el servicio
   cargarAlojamientos() {
-    // Obtener alojamientos del servicio
-    this.alojamientos = this.alojamientoService.getAll();
-    this.alojamientosFiltrados = [...this.alojamientos];
+    // Obtener alojamientos del backend
+    this.alojamientoService.listarTodos(0, 100).subscribe({
+      next: (page) => {
+        this.alojamientos = page.content;
+        this.alojamientosFiltrados = [...this.alojamientos];
+        // Actualizar marcadores en el mapa
+        setTimeout(() => {
+          const markers = this.mapItemToMarker(this.alojamientos);
+          this.mapService.drawMarkers(markers);
+        }, 500);
+      },
+      error: (error) => {
+        console.error('Error al cargar alojamientos:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar los alojamientos',
+          confirmButtonColor: '#4CB0A6'
+        });
+      }
+    });
   }
   public mapItemToMarker(places: AlojamientoDTO[]): MarkerDTO[] {
     return places.map((item) => ({
@@ -97,47 +110,100 @@ export class Principal implements OnInit {
     }));
   }
 
-  // Método para buscar/filtrar alojamientos
+  // Método para buscar/filtrar alojamientos usando la API
   buscarAlojamientos() {
-    this.alojamientosFiltrados = this.alojamientos.filter(alojamiento => {
-      // Filtro por ciudad
-      const cumpleCiudad = !this.filtros.ciudad || 
-        alojamiento.ubicacion.ciudad.toLowerCase().includes(this.filtros.ciudad.toLowerCase());
-      
-      // Filtro por precio
-      const cumplePrecio = alojamiento.precioNoche >= this.filtros.precio.min && 
-        alojamiento.precioNoche <= this.filtros.precio.max;
-      
-      // Filtro por fechas (verificar disponibilidad)
-      let cumpleFechas = true;
-      if (this.filtros.fechaInicio && this.filtros.fechaFin) {
-        cumpleFechas = this.verificarDisponibilidad(alojamiento, this.filtros.fechaInicio, this.filtros.fechaFin);
-      }
-      
-      // Filtro por servicios
-      let cumpleServicios = true;
-      if (this.filtros.servicios.wifi) {
-        cumpleServicios = cumpleServicios && this.contarServicios(alojamiento, 'wifi');
-      }
-      if (this.filtros.servicios.piscina) {
-        cumpleServicios = cumpleServicios && this.contarServicios(alojamiento, 'piscina');
-      }
-      if (this.filtros.servicios.mascotas) {
-        cumpleServicios = cumpleServicios && this.contarServicios(alojamiento, 'mascotas');
-      }
-      
-      return cumpleCiudad && cumplePrecio && cumpleFechas && cumpleServicios;
-    });
-    if (this.alojamientosFiltrados.length === 0) {
-      Swal.fire({
-        icon: 'info',
-        title: 'Sin resultados',
-        text: 'No se encontraron alojamientos con los filtros seleccionados.',
-        timer: 3000,
-        timerProgressBar: true,
-        confirmButtonColor: '#4CB0A6'        
-      });
+    const busquedas: Observable<AlojamientoDTO[]>[] = [];
+    
+    // Búsqueda por ciudad
+    if (this.filtros.ciudad) {
+      busquedas.push(
+        this.alojamientoService.buscarPorCiudad(this.filtros.ciudad, 0, 100)
+          .pipe(map(page => page.content))
+      );
     }
+    
+    // Búsqueda por fechas
+    if (this.filtros.fechaInicio && this.filtros.fechaFin) {
+      const fechaInicio = new Date(this.filtros.fechaInicio);
+      const fechaFin = new Date(this.filtros.fechaFin);
+      busquedas.push(
+        this.alojamientoService.buscarPorFechas(fechaInicio, fechaFin, 0, 100)
+          .pipe(map(page => page.content))
+      );
+    }
+    
+    // Búsqueda por precio
+    if (this.filtros.precio.min > 0 || this.filtros.precio.max < 1000000) {
+      busquedas.push(
+        this.alojamientoService.buscarPorPrecio(this.filtros.precio.min, this.filtros.precio.max, 0, 100)
+          .pipe(map(page => page.content))
+      );
+    }
+    
+    // Búsqueda por servicios
+    const serviciosSeleccionados: string[] = [];
+    if (this.filtros.servicios.wifi) serviciosSeleccionados.push('wifi');
+    if (this.filtros.servicios.piscina) serviciosSeleccionados.push('piscina');
+    if (this.filtros.servicios.mascotas) serviciosSeleccionados.push('mascotas');
+    if (this.filtros.servicios.cocina) serviciosSeleccionados.push('cocina');
+    
+    if (serviciosSeleccionados.length > 0) {
+      busquedas.push(
+        this.alojamientoService.buscarPorServicios(serviciosSeleccionados, 0, 100)
+          .pipe(map(page => page.content))
+      );
+    }
+    
+    // Si no hay filtros, mostrar todos
+    if (busquedas.length === 0) {
+      this.cargarAlojamientos();
+      return;
+    }
+    
+    // Combinar todas las búsquedas y encontrar la intersección
+    forkJoin(busquedas).subscribe({
+      next: (resultados) => {
+        // Encontrar alojamientos que aparecen en todos los resultados
+        this.alojamientosFiltrados = this.interseccionAlojamientos(resultados);
+        
+        if (this.alojamientosFiltrados.length === 0) {
+          Swal.fire({
+            icon: 'info',
+            title: 'Sin resultados',
+            text: 'No se encontraron alojamientos con los filtros seleccionados.',
+            timer: 3000,
+            timerProgressBar: true,
+            confirmButtonColor: '#4CB0A6'
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error en búsqueda:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al realizar la búsqueda',
+          confirmButtonColor: '#4CB0A6'
+        });
+      }
+    });
+  }
+  
+  // Encontrar la intersección de múltiples arrays de alojamientos
+  private interseccionAlojamientos(resultados: AlojamientoDTO[][]): AlojamientoDTO[] {
+    if (resultados.length === 0) return [];
+    if (resultados.length === 1) return resultados[0];
+    
+    // Comenzar con el primer resultado
+    let interseccion = resultados[0];
+    
+    // Intersectar con cada resultado subsecuente
+    for (let i = 1; i < resultados.length; i++) {
+      const idsActuales = new Set(resultados[i].map(a => a.id));
+      interseccion = interseccion.filter(a => idsActuales.has(a.id));
+    }
+    
+    return interseccion;
   }
 
   // Verificar si el alojamiento está disponible en el rango de fechas
@@ -186,12 +252,39 @@ export class Principal implements OnInit {
   }
 
   toggleFavorito(id: number) {
-    if (this.favoritos.has(id)) {
-      this.favoritos.delete(id);
-    } else {
-      this.favoritos.add(id);
+    if (!this.isLogged) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Inicia sesión',
+        text: 'Debes iniciar sesión para agregar favoritos',
+        confirmButtonColor: '#4CB0A6'
+      });
+      return;
     }
-    this.guardarFavoritosLocalStorage();
+    
+    if (this.favoritos.has(id)) {
+      // Quitar de favoritos
+      this.alojamientoService.quitarDeFavoritos(id).subscribe({
+        next: () => {
+          this.favoritos.delete(id);
+          this.guardarFavoritosLocalStorage();
+        },
+        error: (error) => {
+          console.error('Error al quitar de favoritos:', error);
+        }
+      });
+    } else {
+      // Agregar a favoritos
+      this.alojamientoService.agregarAFavoritos(id).subscribe({
+        next: () => {
+          this.favoritos.add(id);
+          this.guardarFavoritosLocalStorage();
+        },
+        error: (error) => {
+          console.error('Error al agregar a favoritos:', error);
+        }
+      });
+    }
   }
 
   esFavorito(id: number): boolean {
@@ -224,8 +317,14 @@ export class Principal implements OnInit {
   // Navegar a detalles del alojamiento
   verDetalles(id: number): void {
     if (!this.tokenService.isLogged()) {
-      alert('Debes iniciar sesión para ver los detalles del alojamiento');
-      this.router.navigate(['/login']);
+      Swal.fire({
+        icon: 'warning',
+        title: 'Inicia sesión',
+        text: 'Debes iniciar sesión para ver los detalles del alojamiento',
+        confirmButtonColor: '#4CB0A6'
+      }).then(() => {
+        this.router.navigate(['/login']);
+      });
       return;
     }
     this.router.navigate(['/detalles-alojamiento', id]);

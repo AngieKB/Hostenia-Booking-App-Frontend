@@ -94,6 +94,14 @@
   color: white;
 }
 
+.profile-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #80cbc4;
+}
+
 .upload-text {
   font-size: 14px;
   color: #666;

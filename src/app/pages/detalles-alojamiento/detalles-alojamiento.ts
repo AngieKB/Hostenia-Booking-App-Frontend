@@ -5,6 +5,7 @@ import { AlojamientoDTO, Comentario } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
 import { MainHeader } from '../../components/main-header/main-header';
 import { CalificarModal } from '../../components/calificar-modal/calificar-modal';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-detalles-alojamiento',
@@ -17,6 +18,7 @@ export class DetallesAlojamiento implements OnInit {
   alojamiento: AlojamientoDTO | null = null;
   imagenPrincipal: string = '';
   showCalificarModal: boolean = false;
+  cargando: boolean = false;
   
   // Paginación de comentarios
   comentariosPaginados: Comentario[] = [];
@@ -38,12 +40,28 @@ export class DetallesAlojamiento implements OnInit {
   }
 
   private loadAlojamiento(id: number): void {
-    this.alojamiento = this.alojamientoService.getById(id) || null;
-    if (this.alojamiento) {
-      this.imagenPrincipal = this.alojamiento.galeria[0] || '';
-      this.calcularPaginacionComentarios();
-      this.cargarComentariosPagina();
-    }
+    this.cargando = true;
+    this.alojamientoService.obtenerPorId(id).subscribe({
+      next: (alojamiento) => {
+        this.alojamiento = alojamiento;
+        this.imagenPrincipal = this.alojamiento.galeria[0] || '';
+        this.calcularPaginacionComentarios();
+        this.cargarComentariosPagina();
+        this.cargando = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar alojamiento:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo cargar el alojamiento',
+          confirmButtonColor: '#4CB0A6'
+        }).then(() => {
+          this.router.navigate(['/']);
+        });
+        this.cargando = false;
+      }
+    });
   }
 
   seleccionarImagen(imagen: string): void {

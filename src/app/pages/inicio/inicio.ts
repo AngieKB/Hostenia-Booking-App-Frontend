@@ -7,17 +7,17 @@ import { Footer } from '../../components/footer/footer';
 import { EmptyHeader } from '../../components/empty-header/empty-header';
 import { AuthService } from '../../services/auth.service';
 import { TokenService } from '../../services/token.service';
-
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, FormsModule,RouterModule, EmptyHeader, Footer],
+  imports: [CommonModule, FormsModule, RouterModule, EmptyHeader, Footer],
   templateUrl: './inicio.html',
   styleUrls: ['./inicio.css']
 })
 export class Inicio {
-  
+
   // Variables para el formulario de registro
   registroData = {
     nombre: '',
@@ -46,20 +46,16 @@ export class Inicio {
   codigoEnviado = false;
   enviandoCodigo = false;
   enviandoPassword = false;
-  mensajeError = '';
-  mensajeExito = '';
-  
+
   // Estados de carga
   registrando = false;
   iniciandoSesion = false;
-  mensajeErrorRegistro = '';
-  mensajeErrorLogin = '';
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private tokenService: TokenService
-  ) {}
+  ) { }
 
   // Método para manejar la selección de archivo
   onFileSelected(event: any) {
@@ -72,14 +68,18 @@ export class Inicio {
 
   // Método para registrar usuario
   registrar() {
-    if (!this.registroData.nombre || !this.registroData.email || !this.registroData.password || 
-        !this.registroData.telefono || !this.registroData.fechaNacimiento) {
-      this.mensajeErrorRegistro = 'Por favor complete todos los campos';
+    if (!this.registroData.nombre || !this.registroData.email || !this.registroData.password ||
+      !this.registroData.telefono || !this.registroData.fechaNacimiento) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor complete todos los campos',
+        confirmButtonColor: '#4CB0A6'
+      });
       return;
     }
 
     this.registrando = true;
-    this.mensajeErrorRegistro = '';
 
     const usuarioDTO = {
       nombre: this.registroData.nombre,
@@ -96,7 +96,12 @@ export class Inicio {
       .subscribe({
         next: (response) => {
           console.log('Registro exitoso:', response);
-          alert('Registro exitoso. Ya puede iniciar sesión.');
+          Swal.fire({
+            icon: 'success',
+            title: 'Registro exitoso',
+            text: 'Ya puede iniciar sesión',
+            confirmButtonColor: '#4CB0A6'
+          });
           // Limpiar formulario
           this.registroData = {
             nombre: '',
@@ -111,19 +116,27 @@ export class Inicio {
         error: (error) => {
           console.error('Error en registro:', error);
           console.error('Detalles del error:', error.error);
-          
-          // Intentar obtener el mensaje de error del backend
+
+          // Manejar errores de validación del backend
           let mensajeError = 'Error al registrar usuario. Intente nuevamente.';
-          
-          if (error.error?.content) {
+
+          if (error.error?.content && Array.isArray(error.error.content)) {
+            // Si es un array de errores de validación
+            mensajeError = error.error.content.map((err: any) => err.message).join('\n');
+          } else if (error.error?.content) {
             mensajeError = error.error.content;
           } else if (error.error?.message) {
             mensajeError = error.error.message;
           } else if (typeof error.error === 'string') {
             mensajeError = error.error;
           }
-          
-          this.mensajeErrorRegistro = mensajeError;
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Error en el registro',
+            text: mensajeError,
+            confirmButtonColor: '#4CB0A6'
+          });
           this.registrando = false;
         }
       });
@@ -132,12 +145,16 @@ export class Inicio {
   // Método para iniciar sesión
   iniciarSesion() {
     if (!this.loginData.email || !this.loginData.password) {
-      this.mensajeErrorLogin = 'Por favor complete todos los campos';
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor complete todos los campos',
+        confirmButtonColor: '#4CB0A6'
+      });
       return;
     }
 
     this.iniciandoSesion = true;
-    this.mensajeErrorLogin = '';
 
     this.authService.login(this.loginData)
       .subscribe({
@@ -146,7 +163,7 @@ export class Inicio {
           // Guardar token
           this.authService.saveToken(response.content.token);
           this.iniciandoSesion = false;
-          
+
           // Redirigir según el rol del usuario
           const role = this.tokenService.getRole();
           if (role === 'ANFITRION') {
@@ -157,7 +174,26 @@ export class Inicio {
         },
         error: (error) => {
           console.error('Error en login:', error);
-          this.mensajeErrorLogin = error.error?.content || 'Credenciales incorrectas. Intente nuevamente.';
+          console.error('Detalles del error:', error.error);
+
+          // Manejar errores de validación del backend
+          let mensajeError = 'Credenciales incorrectas. Intente nuevamente.';
+
+          if (error.error?.content && Array.isArray(error.error.content)) {
+            // Si es un array de errores de validación
+            mensajeError = error.error.content.map((err: any) => err.message).join('\n');
+          } else if (error.error?.content) {
+            mensajeError = error.error.content;
+          } else if (error.error?.message) {
+            mensajeError = error.error.message;
+          }
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al iniciar sesión',
+            text: mensajeError,
+            confirmButtonColor: '#4CB0A6'
+          });
           this.iniciandoSesion = false;
         }
       });
@@ -172,8 +208,6 @@ export class Inicio {
   cerrarModal() {
     this.showModal = false;
     this.codigoEnviado = false;
-    this.mensajeError = '';
-    this.mensajeExito = '';
     this.recuperarData = {
       email: '',
       codigo: '',
@@ -184,23 +218,45 @@ export class Inicio {
   // Método para enviar código de verificación
   enviarCodigo() {
     if (!this.recuperarData.email) {
-      this.mensajeError = 'Por favor ingrese su correo electrónico';
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campo requerido',
+        text: 'Por favor ingrese su correo electrónico',
+        confirmButtonColor: '#4CB0A6'
+      });
       return;
     }
 
     this.enviandoCodigo = true;
-    this.mensajeError = '';
-    this.mensajeExito = '';
 
     this.authService.sendVerificationCode({ email: this.recuperarData.email })
       .subscribe({
         next: (response) => {
           this.codigoEnviado = true;
-          this.mensajeExito = 'Código enviado exitosamente a su correo electrónico';
+          Swal.fire({
+            icon: 'success',
+            title: 'Código enviado',
+            text: 'Código enviado exitosamente a su correo electrónico',
+            confirmButtonColor: '#4CB0A6',
+            timer: 3000
+          });
           this.enviandoCodigo = false;
         },
         error: (error) => {
-          this.mensajeError = error.error?.content || 'Error al enviar el código. Verifique su correo electrónico.';
+          let mensajeError = 'Error al enviar el código. Verifique su correo electrónico.';
+
+          if (error.error?.content && Array.isArray(error.error.content)) {
+            mensajeError = error.error.content.map((err: any) => err.message).join('\n');
+          } else if (error.error?.content) {
+            mensajeError = error.error.content;
+          }
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: mensajeError,
+            confirmButtonColor: '#4CB0A6'
+          });
           this.enviandoCodigo = false;
         }
       });
@@ -214,12 +270,16 @@ export class Inicio {
   // Método para establecer nueva contraseña
   establecerPassword() {
     if (!this.recuperarData.codigo || !this.recuperarData.nuevaPassword) {
-      this.mensajeError = 'Por favor complete todos los campos';
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor complete todos los campos',
+        confirmButtonColor: '#4CB0A6'
+      });
       return;
     }
 
     this.enviandoPassword = true;
-    this.mensajeError = '';
 
     const resetData = {
       email: this.recuperarData.email,
@@ -230,14 +290,33 @@ export class Inicio {
     this.authService.resetPassword(resetData)
       .subscribe({
         next: (response) => {
-          this.mensajeExito = 'Contraseña cambiada exitosamente';
+          Swal.fire({
+            icon: 'success',
+            title: 'Contraseña cambiada',
+            text: 'Contraseña cambiada exitosamente',
+            confirmButtonColor: '#4CB0A6',
+            timer: 2000
+          });
           this.enviandoPassword = false;
           setTimeout(() => {
             this.cerrarModal();
           }, 2000);
         },
         error: (error) => {
-          this.mensajeError = error.error?.content || 'Error al cambiar la contraseña. Verifique el código.';
+          let mensajeError = 'Error al cambiar la contraseña. Verifique el código.';
+
+          if (error.error?.content && Array.isArray(error.error.content)) {
+            mensajeError = error.error.content.map((err: any) => err.message).join('\n');
+          } else if (error.error?.content) {
+            mensajeError = error.error.content;
+          }
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: mensajeError,
+            confirmButtonColor: '#4CB0A6'
+          });
           this.enviandoPassword = false;
         }
       });

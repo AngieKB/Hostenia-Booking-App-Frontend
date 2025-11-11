@@ -43,3 +43,50 @@ export interface AlojamientoDTO {
   reservas: Reserva[];
   estado: EstadoAlojamiento;
 }
+
+export interface CrearAlojamientoDTO {
+  titulo: string;
+  descripcion: string;
+  servicios: string[];
+  galeria: File[];
+  ciudad: string;
+  direccion: string;
+  latitud: number;
+  longitud: number;
+  precioNoche: number;
+  capacidadMax: number;
+  pais: string;
+}
+
+export interface EditarAlojamientoDTO {
+  titulo?: string;
+  descripcion?: string;
+  servicios?: string[];
+  galeria?: string[];
+  ciudad?: string;
+  direccion?: string;
+  latitud?: number;
+  longitud?: number;
+  precioNoche?: number;
+  capacidadMax?: number;
+}
+
+export interface EditarAlojamientoRequest {
+  alojamientoDTO: EditarAlojamientoDTO;
+  ubicacionDTO: UbicacionDTO;
+}
+
+export interface MetricasDTO {
+  totalReservas: number;
+  ingresosTotales: number;
+  promedioCalificacion: number;
+  tasaOcupacion: number;
+}
+
+export interface Page<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}

@@ -11,12 +11,6 @@
           <h5 class="mb-0">Registrarse</h5>
         </div>
         <div class="card-body">
-          <!-- Mensaje de error -->
-          <div *ngIf="mensajeErrorRegistro" class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ mensajeErrorRegistro }}
-            <button type="button" class="btn-close" (click)="mensajeErrorRegistro = ''"></button>
-          </div>
-
           <form (ngSubmit)="registrar()">
             <!-- Nombre -->
             <div class="mb-3">
@@ -110,12 +104,6 @@
           <h5 class="mb-0">Iniciar Sesión</h5>
         </div>
         <div class="card-body">
-          <!-- Mensaje de error -->
-          <div *ngIf="mensajeErrorLogin" class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ mensajeErrorLogin }}
-            <button type="button" class="btn-close" (click)="mensajeErrorLogin = ''"></button>
-          </div>
-
           <form (ngSubmit)="iniciarSesion()">
             <!-- Correo electrónico -->
             <div class="mb-3">
@@ -172,16 +160,6 @@
         <button type="button" class="btn-close" (click)="cerrarModal()"></button>
       </div>
       <div class="modal-body">
-        <!-- Mensajes de error y éxito -->
-        <div *ngIf="mensajeError" class="alert alert-danger alert-dismissible fade show" role="alert">
-          {{ mensajeError }}
-          <button type="button" class="btn-close" (click)="mensajeError = ''"></button>
-        </div>
-        <div *ngIf="mensajeExito" class="alert alert-success alert-dismissible fade show" role="alert">
-          {{ mensajeExito }}
-          <button type="button" class="btn-close" (click)="mensajeExito = ''"></button>
-        </div>
-
         <!-- Paso 1: Ingresar email y solicitar código -->
         <div *ngIf="!codigoEnviado">
           <p class="text-muted small">Ingrese su correo electrónico para recibir un código de verificación</p>

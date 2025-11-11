@@ -3,8 +3,11 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlojamientoDTO, Comentario } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
+import { RespuestaService } from '../../services/respuesta.service';
+import { ResponderDTO } from '../../models/comentario-dto';
 import { EditarAlojamientoModal } from '../../components/editar-alojamiento-modal/editar-alojamiento-modal';
 import { MainHeaderHost } from '../../components/main-header-host/main-header-host';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-detalles-alojamiento-host',
@@ -18,6 +21,7 @@ export class DetallesAlojamientoHost implements OnInit {
   imagenPrincipal: string = '';
   showEditModal: boolean = false;
   favoritosCount: number = 0;
+  cargando: boolean = false;
   
   // Paginación de comentarios
   comentariosPaginados: Comentario[] = [];
@@ -28,7 +32,8 @@ export class DetallesAlojamientoHost implements OnInit {
   constructor(
     private route: ActivatedRoute,
     public router: Router,
-    private alojamientoService: AlojamientoService
+    private alojamientoService: AlojamientoService,
+    private respuestaService: RespuestaService
   ) {}
 
   ngOnInit(): void {
@@ -39,14 +44,40 @@ export class DetallesAlojamientoHost implements OnInit {
   }
 
   private loadAlojamiento(id: number): void {
-    this.alojamiento = this.alojamientoService.getById(id) || null;
-    if (this.alojamiento) {
-      this.imagenPrincipal = this.alojamiento.galeria[0] || '';
-      this.calcularPaginacionComentarios();
-      this.cargarComentariosPagina();
-      // Simular conteo de favoritos
-      this.favoritosCount = Math.floor(Math.random() * 50) + 10;
-    }
+    this.cargando = true;
+    this.alojamientoService.obtenerPorId(id).subscribe({
+      next: (alojamiento) => {
+        this.alojamiento = alojamiento;
+        this.imagenPrincipal = this.alojamiento.galeria[0] || '';
+        this.calcularPaginacionComentarios();
+        this.cargarComentariosPagina();
+        
+        // Cargar conteo de favoritos desde el backend
+        this.alojamientoService.contarUsuariosFavorito(id).subscribe({
+          next: (count) => {
+            this.favoritosCount = count;
+          },
+          error: (error) => {
+            console.error('Error al cargar favoritos:', error);
+            this.favoritosCount = 0;
+          }
+        });
+        
+        this.cargando = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar alojamiento:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo cargar el alojamiento',
+          confirmButtonColor: '#4CB0A6'
+        }).then(() => {
+          this.router.navigate(['/mis-alojamientos-host']);
+        });
+        this.cargando = false;
+      }
+    });
   }
 
   seleccionarImagen(imagen: string): void {
@@ -92,8 +123,67 @@ export class DetallesAlojamientoHost implements OnInit {
   }
 
   responderComentario(comentarioId: number): void {
-    console.log('Responder comentario:', comentarioId);
-    // Implementar lógica de respuesta
+    Swal.fire({
+      title: 'Responder comentario',
+      input: 'textarea',
+      inputLabel: 'Tu respuesta',
+      inputPlaceholder: 'Escribe tu respuesta aquí...',
+      inputAttributes: {
+        'aria-label': 'Escribe tu respuesta aquí',
+        'maxlength': '300'
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Enviar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#4CB0A6',
+      cancelButtonColor: '#6c757d',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Debes escribir una respuesta';
+        }
+        if (value.length > 300) {
+          return 'La respuesta no puede exceder 300 caracteres';
+        }
+        return null;
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const responderDTO: ResponderDTO = {
+          respuesta: result.value,
+          idComentario: comentarioId
+        };
+        
+        this.respuestaService.responderComentario(responderDTO).subscribe({
+          next: (mensaje) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Éxito',
+              text: mensaje,
+              confirmButtonColor: '#4CB0A6'
+            });
+            // Recargar el alojamiento para mostrar la respuesta
+            if (this.alojamiento?.id) {
+              this.loadAlojamiento(this.alojamiento.id);
+            }
+          },
+          error: (error) => {
+            console.error('Error al responder comentario:', error);
+            let mensajeError = 'No se pudo enviar la respuesta';
+            
+            if (error.error?.content) {
+              mensajeError = error.error.content;
+            }
+            
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: mensajeError,
+              confirmButtonColor: '#4CB0A6'
+            });
+          }
+        });
+      }
+    });
   }
 
   // Métodos de paginación de comentarios

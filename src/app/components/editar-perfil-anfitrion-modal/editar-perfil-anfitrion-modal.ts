@@ -26,6 +26,7 @@ export class EditarPerfilAnfitrionModal implements OnInit {
   };
 
   editedPerfil: PerfilAnfitrionDTO = {
+    id: 0,
     usuarioId: 0,
     descripcion: '',
     documentosLegales: [],

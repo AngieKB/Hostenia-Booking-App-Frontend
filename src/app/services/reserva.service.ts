@@ -1,92 +1,65 @@
 import { Injectable } from '@angular/core';
-import { ReservaAlojamientoDTO, EstadoReserva } from '../models/reserva-dto';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { 
+  ReservaAlojamientoDTO, 
+  ReservaUsuarioDTO,
+  RealizarReservaDTO,
+  EditarReservaConUbicacionDTO
+} from '../models/reserva-dto';
+import { ResponseDTO } from '../models/response-dto';
+import { Page } from '../models/alojamiento';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReservaService {
-  private reservas: ReservaAlojamientoDTO[] = [];
+  private apiUrl = 'http://localhost:8080/api/reserva';
 
-  constructor() {
-    this.initializeTestData();
+  constructor(private http: HttpClient) {}
+
+  // Crear una nueva reserva (HUESPED)
+  public crear(reservaDTO: RealizarReservaDTO): Observable<string> {
+    return this.http.post<ResponseDTO<string>>(`${this.apiUrl}/crear`, reservaDTO)
+      .pipe(map(response => response.content));
   }
 
-  // Obtener todas las reservas
-  public getAll(): ReservaAlojamientoDTO[] {
-    return this.reservas;
+  // Editar una reserva (HUESPED)
+  public editar(id: number, dto: EditarReservaConUbicacionDTO): Observable<string> {
+    return this.http.put<ResponseDTO<string>>(`${this.apiUrl}/${id}`, dto)
+      .pipe(map(response => response.content));
   }
 
-  // Obtener todas las reservas de un huésped
-  public getByHuespedId(huespedId: number): ReservaAlojamientoDTO[] {
-    return this.reservas.filter(r => r.idHuesped === huespedId);
+  // Cancelar una reserva (HUESPED o ANFITRION)
+  public cancelar(id: number): Observable<string> {
+    return this.http.delete<ResponseDTO<string>>(`${this.apiUrl}/${id}`)
+      .pipe(map(response => response.content));
   }
 
-  // Obtener reservas por estado
-  public getByEstado(huespedId: number, estado: EstadoReserva): ReservaAlojamientoDTO[] {
-    return this.reservas.filter(r => r.idHuesped === huespedId && r.estado === estado);
+  // Actualizar reservas completadas (HUESPED o ANFITRION)
+  public actualizarReservasCompletadas(): Observable<string> {
+    return this.http.put<ResponseDTO<string>>(`${this.apiUrl}/actualizar-completadas`, {})
+      .pipe(map(response => response.content));
   }
 
-  // Crear una nueva reserva
-  public create(reserva: Omit<ReservaAlojamientoDTO, 'id'>): ReservaAlojamientoDTO {
-    const newReserva: ReservaAlojamientoDTO = {
-      ...reserva,
-      id: this.generateId()
-    };
+  // Obtener mis reservas como huésped (HUESPED)
+  public obtenerMisReservas(page: number = 0, size: number = 12): Observable<Page<ReservaUsuarioDTO>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
     
-    this.reservas.push(newReserva);
-    return newReserva;
+    return this.http.get<ResponseDTO<Page<ReservaUsuarioDTO>>>(`${this.apiUrl}/mis-reservas`, { params })
+      .pipe(map(response => response.content));
   }
 
-  // Cancelar una reserva
-  public cancelar(reservaId: number): boolean {
-    const reserva = this.reservas.find(r => r.id === reservaId);
-    if (!reserva) return false;
-
-    reserva.estado = EstadoReserva.CANCELADA;
-    return true;
-  }
-
-  // Generar un ID único
-  private generateId(): number {
-    return Math.max(0, ...this.reservas.map(r => r.id)) + 1;
-  }
-
-  // Inicializar datos de prueba
-  private initializeTestData(): void {
-    this.reservas = [
-      {
-        id: 1,
-        idHuesped: 1,
-        fechaCheckIn: new Date('2021-03-13'),
-        fechaCheckOut: new Date('2021-03-15'),
-        cantidadHuespedes: 2,
-        total: 1000000,
-        estado: EstadoReserva.CONFIRMADA,
-        alojamientoTitulo: 'Casa Moderna en el Centro',
-        alojamientoCiudad: 'Bogotá'
-      },
-      {
-        id: 2,
-        idHuesped: 1,
-        fechaCheckIn: new Date('2021-04-20'),
-        fechaCheckOut: new Date('2021-04-22'),
-        cantidadHuespedes: 4,
-        total: 1000000,
-        estado: EstadoReserva.CONFIRMADA,
-        alojamientoTitulo: 'Apartamento Acogedor',
-        alojamientoCiudad: 'Medellín'
-      },
-      {
-        id: 3,
-        idHuesped: 1,
-        fechaCheckIn: new Date('2021-02-10'),
-        fechaCheckOut: new Date('2021-02-12'),
-        cantidadHuespedes: 2,
-        total: 800000,
-        estado: EstadoReserva.PENDIENTE,
-        alojamientoTitulo: 'Casa de Playa',
-        alojamientoCiudad: 'Cartagena'
-      }
-    ];
+  // Obtener reservas de un alojamiento específico (ANFITRION)
+  public obtenerReservasPorAlojamiento(alojamientoId: number, page: number = 0, size: number = 12): Observable<Page<ReservaAlojamientoDTO>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    
+    return this.http.get<ResponseDTO<Page<ReservaAlojamientoDTO>>>(`${this.apiUrl}/mis-reservas-aloja/${alojamientoId}`, { params })
+      .pipe(map(response => response.content));
   }
 }

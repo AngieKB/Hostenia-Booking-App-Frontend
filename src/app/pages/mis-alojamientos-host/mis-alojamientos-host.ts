@@ -1,72 +1,106 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AlojamientoDTO, EstadoAlojamiento } from '../../models/alojamiento';
+import { AlojamientoDTO } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
 import { MainHeaderHost } from '../../components/main-header-host/main-header-host';
-import { AgregarAlojamientoModal } from '../../components/agregar-alojamiento-modal/agregar-alojamiento-modal';
-import { MapService } from '../../services/map-service';
-import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { TokenService } from '../../services/token.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-mis-alojamientos-host',
   standalone: true,
-  imports: [CommonModule, MainHeaderHost, AgregarAlojamientoModal,FormsModule],
+  imports: [CommonModule, MainHeaderHost],
   templateUrl: './mis-alojamientos-host.html',
   styleUrl: './mis-alojamientos-host.css',
 })
 export class MisAlojamientosHost implements OnInit {
-  latitud: number = 0;
-  longitud: number = 0;
   alojamientos: AlojamientoDTO[] = [];
-  showAddModal: boolean = false;
+  cargando: boolean = false;
 
   constructor(
     private alojamientoService: AlojamientoService,
     private router: Router,
-    private mapService: MapService
+    private tokenService: TokenService
   ) {}
 
   ngOnInit(): void {
-  // Cargar alojamientos existentes
-  this.cargarAlojamientos();
-
-  // Crear el mapa
-  this.mapService.create();
-
-  // Escuchar clics en el mapa y actualizar coordenadas
-  this.mapService.addMarker().subscribe((marker) => {
-    this.latitud = marker.lat;
-    this.longitud = marker.lng;
-  });
-}
-
-
-  cargarAlojamientos(): void {
-    // Obtener solo alojamientos activos
-    this.alojamientos = this.alojamientoService.getAll();
-  }
-
-  openAddModal(): void {
-    this.showAddModal = true;
-  }
-
-  closeAddModal(): void {
-    this.showAddModal = false;
-  }
-
-  onAgregarAlojamiento(data: any): void {
-    console.log('Agregar alojamiento:', data);
-    this.closeAddModal();
     this.cargarAlojamientos();
   }
 
-  eliminarAlojamiento(id: number): void {
-    if (confirm('¿Estás seguro de que deseas eliminar este alojamiento?')) {
-      this.alojamientoService.delete(id);
-      this.cargarAlojamientos();
+
+  cargarAlojamientos(): void {
+    this.cargando = true;
+    const userId = this.tokenService.getUserId();
+    
+    if (!userId) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo obtener el ID del usuario',
+        confirmButtonColor: '#4CB0A6'
+      });
+      this.cargando = false;
+      return;
     }
+    
+    // Obtener alojamientos del anfitrión desde el backend
+    this.alojamientoService.listarPorAnfitrion(userId, 0, 100).subscribe({
+      next: (page) => {
+        this.alojamientos = page.content;
+        this.cargando = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar alojamientos:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar los alojamientos',
+          confirmButtonColor: '#4CB0A6'
+        });
+        this.cargando = false;
+      }
+    });
+  }
+
+  agregarAlojamiento(): void {
+    this.router.navigate(['/agregar-alojamiento-host']);
+  }
+
+  eliminarAlojamiento(id: number): void {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará el alojamiento',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.alojamientoService.eliminar(id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Eliminado',
+              text: 'El alojamiento ha sido eliminado',
+              confirmButtonColor: '#4CB0A6'
+            });
+            this.cargarAlojamientos();
+          },
+          error: (error) => {
+            console.error('Error al eliminar:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo eliminar el alojamiento',
+              confirmButtonColor: '#4CB0A6'
+            });
+          }
+        });
+      }
+    });
   }
 
   verDetalles(id: number): void {

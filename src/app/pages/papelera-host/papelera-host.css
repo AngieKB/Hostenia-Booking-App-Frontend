@@ -34,6 +34,7 @@
   transition: all 0.2s;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 }
 
 .alojamiento-card:hover {
@@ -68,23 +69,46 @@
 .card-info p {
   font-size: 14px;
   color: #333;
-  margin: 0;
+  margin: 0 0 8px 0;
 }
 
-.btn-reponer {
-  width: 100%;
-  padding: 12px;
-  background-color: #80cbc4;
-  color: #2d5016;
-  border: none;
-  font-size: 14px;
+.estado-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: #ff9800;
+  color: white;
+  border-radius: 12px;
+  font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
 }
 
-.btn-reponer:hover {
-  background-color: #4db6ac;
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #4CB0A6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  color: #666;
+  font-size: 16px;
 }
 
 /* Empty Message */

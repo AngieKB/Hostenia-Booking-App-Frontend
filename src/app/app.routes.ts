@@ -9,6 +9,7 @@ import { MisReservas } from './pages/mis-reservas/mis-reservas';
 import { DetallesAlojamiento } from './pages/detalles-alojamiento/detalles-alojamiento';
 import { DetallesAlojamientoHost } from './pages/detalles-alojamiento-host/detalles-alojamiento-host';
 import { MisAlojamientosHost } from './pages/mis-alojamientos-host/mis-alojamientos-host';
+import { AgregarAlojamientoHost } from './pages/agregar-alojamiento-host/agregar-alojamiento-host';
 import { PapeleraHost } from './pages/papelera-host/papelera-host';
 import { ReservasHost } from './pages/reservas-host/reservas-host';
 import { Forbidden } from './pages/forbidden/forbidden';
@@ -33,6 +34,7 @@ export const routes: Routes = [
     // Rutas del Host (ANFITRION)
     { path: 'perfil-anfitrion', component: PerfilAnfitrion, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
     { path: 'mis-alojamientos-host', component: MisAlojamientosHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
+    { path: 'agregar-alojamiento-host', component: AgregarAlojamientoHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
     { path: 'detalles-alojamiento-host/:id', component: DetallesAlojamientoHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
     { path: 'papelera-host', component: PapeleraHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
     { path: 'reservas-host', component: ReservasHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
