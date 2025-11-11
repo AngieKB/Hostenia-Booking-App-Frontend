@@ -1,4 +1,9 @@
-<app-main-header [currentPage]="'principal'"></app-main-header>
+<!-- Mostrar header según estado de login -->
+@if (isLogged) {
+  <app-main-header [currentPage]="'principal'"></app-main-header>
+} @else {
+  <app-empty-header></app-empty-header>
+}
 
 <!-- Hero Section con título -->
 <div class="hero-section">

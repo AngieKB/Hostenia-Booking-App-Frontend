@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { UserService } from '../../services/user.service';
+import { UsuarioService } from '../../services/usuario.service';
 import { PerfilAnfitrionService } from '../../services/perfil-anfitrion.service';
 import { UserDTO } from '../../models/user-dto';
 import { PerfilAnfitrionDTO } from '../../models/perfil-anfitrion-dto';
@@ -22,7 +22,7 @@ export class PerfilAnfitrion implements OnInit {
   showPasswordModal: boolean = false;
 
   constructor(
-    private userService: UserService,
+    private usuarioService: UsuarioService,
     private perfilAnfitrionService: PerfilAnfitrionService,
     private router: Router
   ) {}
@@ -33,11 +33,11 @@ export class PerfilAnfitrion implements OnInit {
 
   private loadData(): void {
     // Obtener usuario actual
-    this.userData = this.userService.getCurrentUser();
+    this.userData = this.usuarioService.getCurrentUser();
     
     if (!this.userData) {
       // Redirigir al login si no hay usuario
-      this.router.navigate(['/']);
+      this.router.navigate(['/login']);
       return;
     }
 
@@ -46,7 +46,7 @@ export class PerfilAnfitrion implements OnInit {
   }
 
   onBackClick(): void {
-    this.router.navigate(['/principal']);
+    this.router.navigate(['/']);
   }
 
   onEditClick(): void {
@@ -66,7 +66,7 @@ export class PerfilAnfitrion implements OnInit {
   }
 
   onSaveProfile(data: { user: UserDTO; perfil: PerfilAnfitrionDTO }): void {
-    this.userService.updateUser(data.user);
+    this.usuarioService.updateUser(data.user);
     if (this.perfilAnfitrion?.id) {
       this.perfilAnfitrionService.update(this.perfilAnfitrion.id, data.perfil);
     }

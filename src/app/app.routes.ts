@@ -11,22 +11,35 @@ import { DetallesAlojamientoHost } from './pages/detalles-alojamiento-host/detal
 import { MisAlojamientosHost } from './pages/mis-alojamientos-host/mis-alojamientos-host';
 import { PapeleraHost } from './pages/papelera-host/papelera-host';
 import { ReservasHost } from './pages/reservas-host/reservas-host';
+import { Forbidden } from './pages/forbidden/forbidden';
+import { loginGuard } from './guards/login.guard';
+import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
-    { path: '', component: Inicio },
-    { path: 'principal', component: Principal},
-    { path: 'realizar-reserva', component: RealizarReserva},
-    { path: 'perfil-usuario', component: PerfilUsuario},
-    { path: 'perfil-anfitrion', component: PerfilAnfitrion},
-    { path: 'favoritos', component: Favoritos},
-    { path: 'reservas', component: MisReservas},
-    { path: 'detalles-alojamiento/:id', component: DetallesAlojamiento},
+    // Ruta de login (solo para usuarios no autenticados)
+    { path: 'login', component: Inicio, canActivate: [loginGuard] },
     
-    // Rutas del Host
-    { path: 'mis-alojamientos-host', component: MisAlojamientosHost},
-    { path: 'detalles-alojamiento-host/:id', component: DetallesAlojamientoHost},
-    { path: 'papelera-host', component: PapeleraHost},
-    { path: 'reservas-host', component: ReservasHost},
+    // Ruta por defecto (página principal - accesible sin login)
+    { path: '', component: Principal },
+    { path: 'principal', redirectTo: '', pathMatch: 'full' },
     
-    { path: "**", pathMatch: "full", redirectTo: "" }
+    // Rutas de usuario autenticado (HUESPED)
+    { path: 'realizar-reserva', component: RealizarReserva, canActivate: [roleGuard], data: { expectedRole: ["HUESPED", "ANFITRION"] } },
+    { path: 'perfil-usuario', component: PerfilUsuario, canActivate: [roleGuard], data: { expectedRole: ["HUESPED", "ANFITRION"] } },
+    { path: 'favoritos', component: Favoritos, canActivate: [roleGuard], data: { expectedRole: ["HUESPED", "ANFITRION"] } },
+    { path: 'reservas', component: MisReservas, canActivate: [roleGuard], data: { expectedRole: ["HUESPED", "ANFITRION"] } },
+    { path: 'detalles-alojamiento/:id', component: DetallesAlojamiento },
+    
+    // Rutas del Host (ANFITRION)
+    { path: 'perfil-anfitrion', component: PerfilAnfitrion, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
+    { path: 'mis-alojamientos-host', component: MisAlojamientosHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
+    { path: 'detalles-alojamiento-host/:id', component: DetallesAlojamientoHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
+    { path: 'papelera-host', component: PapeleraHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
+    { path: 'reservas-host', component: ReservasHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
+    
+    // Página de acceso denegado
+    { path: 'forbidden', component: Forbidden },
+    
+    // Redirección por defecto
+    { path: "**", pathMatch: "full", redirectTo: "principal" }
 ];

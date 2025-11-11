@@ -1,12 +1,46 @@
 <header class="auth-header">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-6" style="background: linear-gradient(90deg, #8B7355 0%, #A0926F 50%);">
-        <h1 class="m-0 p-3 text-white">HOSTENIA</h1>
-      </div>
-      <div class="col-6" style="background: linear-gradient(90deg, #A0926F 0%, #C8DC8F 100%);">
-        <div class="p-3"></div>
+  <div class="container-fluid p-0">
+    <div class="header-content">
+      <h1 class="m-0 p-3 text-white cursor-pointer" (click)="goToHome()">HOSTENIA</h1>
+      <div class="header-actions p-3">
+        @if (!isLogged) {
+          @if (isLoginPage) {
+            <button type="button" class="btn btn-outline-light" (click)="navigateTo('/')">
+              Página Principal
+            </button>
+          } @else {
+            <button type="button" class="btn btn-outline-light" (click)="navigateTo('/login')">
+              Ingresar
+            </button>
+          }
+        } @else {
+          <div class="user-menu-container">
+            <button class="user-button" (click)="toggleUserMenu()">
+              <span class="material-icons">menu</span>
+              <span class="material-icons user-icon">account_circle</span>
+            </button>
+
+            @if (showUserMenu) {
+              <div class="dropdown-menu-custom">
+                <div class="dropdown-header">{{ email }}</div>
+                <a (click)="navigateTo('/perfil-usuario')" class="dropdown-item-custom">
+                  <span class="material-icons">person</span>
+                  Ver perfil
+                </a>
+                <a (click)="logout()" class="dropdown-item-custom">
+                  <span class="material-icons">logout</span>
+                  Cerrar sesión
+                </a>
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
   </div>
 </header>
+
+<!-- Overlay to close menu when clicking outside -->
+@if (showUserMenu) {
+  <div class="menu-overlay" (click)="closeUserMenu()"></div>
+}

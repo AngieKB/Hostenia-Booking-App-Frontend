@@ -1,7 +1,6 @@
 export enum Rol {
-  USUARIO = 'USUARIO',
-  ADMIN = 'ADMIN',
-  PROPIETARIO = 'PROPIETARIO'
+  HUESPED = 'HUESPED',
+  ANFITRION = 'ANFITRION'
 }
 
 export interface UserDTO {

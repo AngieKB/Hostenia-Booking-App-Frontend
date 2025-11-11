@@ -17,7 +17,7 @@
           type="text"
           id="nombre"
           name="nombre"
-          [(ngModel)]="editedUser.nombre"
+          [(ngModel)]="nombre"
           placeholder="Nombre"
           required
           class="form-input"
@@ -31,7 +31,7 @@
           type="tel"
           id="telefono"
           name="telefono"
-          [(ngModel)]="editedUser.telefono"
+          [(ngModel)]="telefono"
           placeholder="Teléfono"
           required
           class="form-input"
@@ -41,8 +41,10 @@
       <!-- Profile Picture Upload -->
       <div class="upload-section">
         <div class="avatar-preview">
-          <div class="avatar-circle" [style.background-image]="editedUser.fotoUrl ? 'url(' + editedUser.fotoUrl + ')' : 'none'">
-            <span class="material-icons" *ngIf="!editedUser.fotoUrl">person</span>
+          <div class="avatar-circle" [style.background-image]="previewUrl ? 'url(' + previewUrl + ')' : 'none'">
+            @if (!previewUrl) {
+              <span class="material-icons">person</span>
+            }
           </div>
         </div>
         <label for="fileUpload" class="upload-label">

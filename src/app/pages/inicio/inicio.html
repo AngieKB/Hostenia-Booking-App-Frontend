@@ -41,29 +41,6 @@
                 required>
             </div>
 
-            <!-- Selección de rol -->
-            <div class="mb-3">
-              <label class="form-label">Elija el rol con el que desea registrarte</label>
-              <div class="d-flex gap-2">
-                <button 
-                  type="button" 
-                  class="btn flex-fill"
-                  [class.btn-success]="registroData.rol === 'Usuario'"
-                  [class.btn-outline-secondary]="registroData.rol !== 'Usuario'"
-                  (click)="seleccionarRol('Usuario')">
-                  Usuario
-                </button>
-                <button 
-                  type="button" 
-                  class="btn flex-fill"
-                  [class.btn-success]="registroData.rol === 'Anfitrion'"
-                  [class.btn-outline-secondary]="registroData.rol !== 'Anfitrion'"
-                  (click)="seleccionarRol('Anfitrion')">
-                  Anfitrión
-                </button>
-              </div>
-            </div>
-
             <!-- Contraseña -->
             <div class="mb-3">
               <label class="form-label">Contraseña</label>

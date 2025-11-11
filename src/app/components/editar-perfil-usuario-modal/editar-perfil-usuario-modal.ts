@@ -13,20 +13,19 @@ import { UserDTO } from '../../models/user-dto';
 export class EditarPerfilUsuarioModal implements OnInit {
   @Input() userData!: UserDTO;
   @Output() close = new EventEmitter<void>();
-  @Output() save = new EventEmitter<UserDTO>();
+  @Output() save = new EventEmitter<{ nombre: string; telefono: string; fotoUrl?: File }>();
 
-  editedUser: UserDTO = {
-    nombre: '',
-    telefono: '',
-    email: '',
-    rol: 'USUARIO' as any,
-    fotoUrl: ''
-  };
+  nombre: string = '';
+  telefono: string = '';
+  selectedFile: File | null = null;
+  previewUrl: string = '';
 
   ngOnInit(): void {
     // Copiar los datos del usuario para editar
     if (this.userData) {
-      this.editedUser = { ...this.userData };
+      this.nombre = this.userData.nombre;
+      this.telefono = this.userData.telefono;
+      this.previewUrl = this.userData.fotoUrl || '';
     }
   }
 
@@ -35,16 +34,28 @@ export class EditarPerfilUsuarioModal implements OnInit {
   }
 
   onSubmit(): void {
-    this.save.emit(this.editedUser);
+    const data: { nombre: string; telefono: string; fotoUrl?: File } = {
+      nombre: this.nombre,
+      telefono: this.telefono
+    };
+    
+    if (this.selectedFile) {
+      data.fotoUrl = this.selectedFile;
+    }
+    
+    this.save.emit(data);
   }
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      // Aquí puedes implementar la lógica para subir la imagen
-      console.log('Archivo seleccionado:', file);
-      // Por ahora, solo simularemos una URL
-      this.editedUser.fotoUrl = URL.createObjectURL(file);
+      this.selectedFile = file;
+      // Crear preview de la imagen
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.previewUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
   }
 }

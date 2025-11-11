@@ -1,0 +1,75 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Convertirse en Anfitrión</h2>
+      <button class="close-btn" (click)="onClose()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Mensaje de error -->
+      <div *ngIf="mensajeError" class="alert alert-danger">
+        {{ mensajeError }}
+      </div>
+
+      <form (ngSubmit)="onSubmit()">
+        <!-- Descripción -->
+        <div class="form-group">
+          <label for="descripcion">Descripción sobre ti como anfitrión *</label>
+          <textarea
+            id="descripcion"
+            class="form-control"
+            rows="4"
+            [(ngModel)]="descripcion"
+            name="descripcion"
+            placeholder="Cuéntanos sobre tu experiencia como anfitrión, qué tipo de alojamientos ofreces, etc."
+            maxlength="300"
+            required>
+          </textarea>
+          <small class="text-muted">{{ descripcion.length }}/300 caracteres</small>
+        </div>
+
+        <!-- Documentos Legales -->
+        <div class="form-group">
+          <label>Documentos Legales *</label>
+          <p class="text-muted small">Agrega los nombres o URLs de tus documentos legales (licencias, permisos, etc.)</p>
+          
+          <div class="documento-input-group">
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="nuevoDocumento"
+              name="nuevoDocumento"
+              placeholder="Ej: Licencia turística #12345"
+              (keyup.enter)="agregarDocumento()">
+            <button type="button" class="btn btn-primary" (click)="agregarDocumento()">
+              <span class="material-icons">add</span>
+              Agregar
+            </button>
+          </div>
+
+          <!-- Lista de documentos -->
+          <div class="documentos-lista" *ngIf="documentosLegales.length > 0">
+            <div class="documento-item" *ngFor="let doc of documentosLegales; let i = index">
+              <span class="documento-texto">{{ doc }}</span>
+              <button type="button" class="btn-eliminar" (click)="eliminarDocumento(i)">
+                <span class="material-icons">delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="onClose()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-success">
+            Convertirse en Anfitrión
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

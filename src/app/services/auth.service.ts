@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { TokenService } from './token.service';
 import {
   LoginDTO,
   CrearUsuarioDTO,
@@ -18,7 +19,10 @@ import {
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private tokenService: TokenService
+  ) { }
 
   login(loginDTO: LoginDTO): Observable<ResponseDTO<TokenDTO>> {
     return this.http.post<ResponseDTO<TokenDTO>>(`${this.apiUrl}/login`, loginDTO);
@@ -51,20 +55,20 @@ export class AuthService {
     return this.http.put<ResponseDTO<string>>(`${this.apiUrl}/reset-password`, resetPasswordDTO);
   }
 
-  // Métodos auxiliares para manejo de token
+  // Métodos auxiliares para manejo de token (delegados a TokenService)
   saveToken(token: string): void {
-    localStorage.setItem('authToken', token);
+    this.tokenService.login(token);
   }
 
   getToken(): string | null {
-    return localStorage.getItem('authToken');
+    return this.tokenService.getToken();
   }
 
   removeToken(): void {
-    localStorage.removeItem('authToken');
+    this.tokenService.logout();
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    return this.tokenService.isLogged();
   }
 }

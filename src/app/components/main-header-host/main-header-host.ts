@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-main-header-host',
@@ -12,7 +13,10 @@ import { Router } from '@angular/router';
 export class MainHeaderHost {
   showUserMenu: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   toggleUserMenu(): void {
     this.showUserMenu = !this.showUserMenu;
@@ -28,11 +32,8 @@ export class MainHeaderHost {
   }
 
   logout(): void {
-    // Implementar lógica de logout
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('userRole');
-    console.log('Logout');
-    this.router.navigate(['/']);
+    this.authService.removeToken();
+    this.router.navigate(['/login']);
     this.showUserMenu = false;
   }
 }

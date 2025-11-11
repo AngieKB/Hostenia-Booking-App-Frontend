@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { UserService } from '../../services/user.service';
+import { UsuarioService } from '../../services/usuario.service';
 
 @Component({
   selector: 'app-main-header',
@@ -16,7 +16,7 @@ export class MainHeader {
 
   constructor(
     private router: Router,
-    private userService: UserService
+    private usuarioService: UsuarioService
   ) {}
 
   toggleUserMenu(): void {
@@ -33,13 +33,17 @@ export class MainHeader {
   }
 
   onVerPerfil(): void {
-    this.router.navigate(['/perfil-usuario']);
+    console.log('MainHeader: Navegando a perfil-usuario');
     this.closeUserMenu();
+    this.router.navigate(['/perfil-usuario']).then(
+      success => console.log('MainHeader: Navegación exitosa:', success),
+      error => console.error('MainHeader: Error en navegación:', error)
+    );
   }
 
   onCerrarSesion(): void {
-    this.userService.logout();
-    this.router.navigate(['/']);
+    this.usuarioService.logout();
+    this.router.navigate(['/login']);
     this.closeUserMenu();
   }
 

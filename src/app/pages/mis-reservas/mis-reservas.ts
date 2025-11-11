@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MainHeader } from '../../components/main-header/main-header';
 import { ReservaAlojamientoDTO, EstadoReserva } from '../../models/reserva-dto';
 import { ReservaService } from '../../services/reserva.service';
-import { UserService } from '../../services/user.service';
+import { UsuarioService } from '../../services/usuario.service';
 
 @Component({
   selector: 'app-mis-reservas',
@@ -19,7 +19,7 @@ export class MisReservas implements OnInit {
 
   constructor(
     private reservaService: ReservaService,
-    private userService: UserService
+    private usuarioService: UsuarioService
   ) {}
 
   ngOnInit(): void {
@@ -27,7 +27,7 @@ export class MisReservas implements OnInit {
   }
 
   private loadReservas(): void {
-    const currentUser = this.userService.getCurrentUser();
+    const currentUser = this.usuarioService.getCurrentUser();
     if (!currentUser) return;
 
     const todasReservas = this.reservaService.getByHuespedId(currentUser.id!);

@@ -37,6 +37,18 @@
           <button class="btn-action btn-password" (click)="onChangePasswordClick()">
             Cambiar contraseña
           </button>
+          <button *ngIf="!esAnfitrion" class="btn-action btn-anfitrion" (click)="onConvertirseAnfitrionClick()">
+            <span class="material-icons">star</span>
+            Convertirse en Anfitrión
+          </button>
+        </div>
+
+        <!-- Mensajes de éxito/error -->
+        <div *ngIf="mensajeExito" class="alert alert-success">
+          {{ mensajeExito }}
+        </div>
+        <div *ngIf="mensajeError" class="alert alert-danger">
+          {{ mensajeError }}
         </div>
       </div>
     </div>
@@ -56,3 +68,9 @@
   (close)="onClosePasswordModal()"
   (save)="onSavePassword($event)">
 </app-cambiar-contrasena-modal>
+
+<app-convertirse-anfitrion-modal
+  *ngIf="showAnfitrionModal"
+  (close)="onCloseAnfitrionModal()"
+  (save)="onSaveAnfitrion($event)">
+</app-convertirse-anfitrion-modal>

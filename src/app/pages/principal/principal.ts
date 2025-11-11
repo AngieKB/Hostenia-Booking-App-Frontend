@@ -4,13 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlojamientoDTO } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
+import { EmptyHeader } from '../../components/empty-header/empty-header';
 import { MainHeader } from '../../components/main-header/main-header';
 import { Footer } from '../../components/footer/footer';
+import { TokenService } from '../../services/token.service';
 
 @Component({
   selector: 'app-principal',
   standalone: true,
-  imports: [CommonModule, FormsModule, MainHeader, Footer],
+  imports: [CommonModule, FormsModule, EmptyHeader, MainHeader, Footer],
   templateUrl: './principal.html',
   styleUrls: ['./principal.css']
 })
@@ -40,10 +42,16 @@ export class Principal implements OnInit {
   // En una app real, podrías guardarlos en localStorage o en el backend
   favoritos: Set<number> = new Set();
 
+  // Variable para saber si el usuario está logueado
+  isLogged: boolean = false;
+
   constructor(
     private alojamientoService: AlojamientoService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private tokenService: TokenService
+  ) {
+    this.isLogged = this.tokenService.isLogged();
+  }
 
   ngOnInit() {
     this.inicializarFechaMinima();
@@ -180,6 +188,11 @@ export class Principal implements OnInit {
 
   // Navegar a detalles del alojamiento
   verDetalles(id: number): void {
+    if (!this.tokenService.isLogged()) {
+      alert('Debes iniciar sesión para ver los detalles del alojamiento');
+      this.router.navigate(['/login']);
+      return;
+    }
     this.router.navigate(['/detalles-alojamiento', id]);
   }
 }

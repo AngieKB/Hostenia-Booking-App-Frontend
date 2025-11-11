@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Footer } from '../../components/footer/footer';
 import { EmptyHeader } from '../../components/empty-header/empty-header';
 import { AuthService } from '../../services/auth.service';
+import { TokenService } from '../../services/token.service';
 
 @Component({
   selector: 'app-inicio',
@@ -17,7 +19,6 @@ export class Inicio {
   registroData = {
     nombre: '',
     email: '',
-    rol: '',
     password: '',
     telefono: '',
     fechaNacimiento: '',
@@ -51,12 +52,11 @@ export class Inicio {
   mensajeErrorRegistro = '';
   mensajeErrorLogin = '';
 
-  constructor(private authService: AuthService) {}
-
-  // Método para seleccionar el rol
-  seleccionarRol(rol: string) {
-    this.registroData.rol = rol;
-  }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private tokenService: TokenService
+  ) {}
 
   // Método para manejar la selección de archivo
   onFileSelected(event: any) {
@@ -70,7 +70,7 @@ export class Inicio {
   // Método para registrar usuario
   registrar() {
     if (!this.registroData.nombre || !this.registroData.email || !this.registroData.password || 
-        !this.registroData.telefono || !this.registroData.fechaNacimiento || !this.registroData.rol) {
+        !this.registroData.telefono || !this.registroData.fechaNacimiento) {
       this.mensajeErrorRegistro = 'Por favor complete todos los campos';
       return;
     }
@@ -98,7 +98,6 @@ export class Inicio {
           this.registroData = {
             nombre: '',
             email: '',
-            rol: '',
             password: '',
             telefono: '',
             fechaNacimiento: '',
@@ -143,10 +142,15 @@ export class Inicio {
           console.log('Login exitoso:', response);
           // Guardar token
           this.authService.saveToken(response.content.token);
-          alert('Inicio de sesión exitoso');
-          // Aquí podrías redirigir al usuario a otra página
-          // this.router.navigate(['/dashboard']);
           this.iniciandoSesion = false;
+          
+          // Redirigir según el rol del usuario
+          const role = this.tokenService.getRole();
+          if (role === 'ANFITRION') {
+            this.router.navigate(['/mis-alojamientos-host']);
+          } else {
+            this.router.navigate(['/']);
+          }
         },
         error: (error) => {
           console.error('Error en login:', error);
