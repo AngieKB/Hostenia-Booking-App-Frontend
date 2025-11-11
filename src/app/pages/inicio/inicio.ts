@@ -1,20 +1,23 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { Footer } from '../../components/footer/footer';
 import { EmptyHeader } from '../../components/empty-header/empty-header';
 import { AuthService } from '../../services/auth.service';
 import { TokenService } from '../../services/token.service';
 
+
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, FormsModule, EmptyHeader, Footer],
+  imports: [CommonModule, FormsModule,RouterModule, EmptyHeader, Footer],
   templateUrl: './inicio.html',
   styleUrls: ['./inicio.css']
 })
 export class Inicio {
+  
   // Variables para el formulario de registro
   registroData = {
     nombre: '',

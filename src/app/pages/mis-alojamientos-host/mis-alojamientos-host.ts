@@ -5,26 +5,43 @@ import { AlojamientoDTO, EstadoAlojamiento } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
 import { MainHeaderHost } from '../../components/main-header-host/main-header-host';
 import { AgregarAlojamientoModal } from '../../components/agregar-alojamiento-modal/agregar-alojamiento-modal';
+import { MapService } from '../../services/map-service';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-mis-alojamientos-host',
   standalone: true,
-  imports: [CommonModule, MainHeaderHost, AgregarAlojamientoModal],
+  imports: [CommonModule, MainHeaderHost, AgregarAlojamientoModal,FormsModule],
   templateUrl: './mis-alojamientos-host.html',
   styleUrl: './mis-alojamientos-host.css',
 })
 export class MisAlojamientosHost implements OnInit {
+  latitud: number = 0;
+  longitud: number = 0;
   alojamientos: AlojamientoDTO[] = [];
   showAddModal: boolean = false;
 
   constructor(
     private alojamientoService: AlojamientoService,
-    private router: Router
+    private router: Router,
+    private mapService: MapService
   ) {}
 
   ngOnInit(): void {
-    this.cargarAlojamientos();
-  }
+  // Cargar alojamientos existentes
+  this.cargarAlojamientos();
+
+  // Crear el mapa
+  this.mapService.create();
+
+  // Escuchar clics en el mapa y actualizar coordenadas
+  this.mapService.addMarker().subscribe((marker) => {
+    this.latitud = marker.lat;
+    this.longitud = marker.lng;
+  });
+}
+
 
   cargarAlojamientos(): void {
     // Obtener solo alojamientos activos
@@ -41,7 +58,6 @@ export class MisAlojamientosHost implements OnInit {
 
   onAgregarAlojamiento(data: any): void {
     console.log('Agregar alojamiento:', data);
-    // Aquí implementarías la lógica para crear en el backend
     this.closeAddModal();
     this.cargarAlojamientos();
   }

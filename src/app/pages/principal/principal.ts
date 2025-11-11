@@ -2,21 +2,29 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { AlojamientoDTO } from '../../models/alojamiento';
+import { MarkerDTO } from '../../models/marker-dto';
 import { AlojamientoService } from '../../services/alojamiento.service';
+import { UbicacionService } from '../../services/ubicacion.service';
 import { EmptyHeader } from '../../components/empty-header/empty-header';
 import { MainHeader } from '../../components/main-header/main-header';
 import { Footer } from '../../components/footer/footer';
+import Swal from 'sweetalert2';
+import { MapService } from '../../services/map-service';
 import { TokenService } from '../../services/token.service';
 
 @Component({
   selector: 'app-principal',
   standalone: true,
+  imports: [CommonModule, FormsModule,RouterModule, MainHeader, Footer],
   imports: [CommonModule, FormsModule, EmptyHeader, MainHeader, Footer],
   templateUrl: './principal.html',
   styleUrls: ['./principal.css']
 })
 export class Principal implements OnInit {
+  
+  
   // Filtros de búsqueda (estos NO vienen del backend, son locales)
   filtros = {
     ciudad: '',
@@ -48,6 +56,10 @@ export class Principal implements OnInit {
   constructor(
     private alojamientoService: AlojamientoService,
     private router: Router,
+    private mapService: MapService,
+    private ubicacionService: UbicacionService
+  ) {}
+    private router: Router,
     private tokenService: TokenService
   ) {
     this.isLogged = this.tokenService.isLogged();
@@ -57,6 +69,14 @@ export class Principal implements OnInit {
     this.inicializarFechaMinima();
     this.cargarAlojamientos();
     this.cargarFavoritosLocalStorage();
+    this.mapService.create();
+  // Esperar a que el mapa se cargue completamente antes de dibujar
+  setTimeout(() => {
+    const places = this.ubicacionService.getAll();
+    const markers = this.mapItemToMarker(places);
+    this.mapService.drawMarkers(markers);
+  }, 2000);
+    
   }
 
   // Inicializar fecha mínima (hoy)
@@ -70,6 +90,14 @@ export class Principal implements OnInit {
     // Obtener alojamientos del servicio
     this.alojamientos = this.alojamientoService.getAll();
     this.alojamientosFiltrados = [...this.alojamientos];
+  }
+  public mapItemToMarker(places: AlojamientoDTO[]): MarkerDTO[] {
+    return places.map((item) => ({
+      id: item.id,
+      location: item.ubicacion,
+      title: item.titulo,
+      photoUrl: item.galeria[0] || "",
+    }));
   }
 
   // Método para buscar/filtrar alojamientos
@@ -103,6 +131,16 @@ export class Principal implements OnInit {
       
       return cumpleCiudad && cumplePrecio && cumpleFechas && cumpleServicios;
     });
+    if (this.alojamientosFiltrados.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Sin resultados',
+        text: 'No se encontraron alojamientos con los filtros seleccionados.',
+        timer: 3000,
+        timerProgressBar: true,
+        confirmButtonColor: '#4CB0A6'        
+      });
+    }
   }
 
   // Verificar si el alojamiento está disponible en el rango de fechas
