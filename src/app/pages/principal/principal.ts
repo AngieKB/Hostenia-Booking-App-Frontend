@@ -17,8 +17,7 @@ import { TokenService } from '../../services/token.service';
 @Component({
   selector: 'app-principal',
   standalone: true,
-  imports: [CommonModule, FormsModule,RouterModule, MainHeader, Footer],
-  imports: [CommonModule, FormsModule, EmptyHeader, MainHeader, Footer],
+  imports: [CommonModule, FormsModule, RouterModule, EmptyHeader, MainHeader, Footer],
   templateUrl: './principal.html',
   styleUrls: ['./principal.css']
 })
@@ -57,9 +56,7 @@ export class Principal implements OnInit {
     private alojamientoService: AlojamientoService,
     private router: Router,
     private mapService: MapService,
-    private ubicacionService: UbicacionService
-  ) {}
-    private router: Router,
+    private ubicacionService: UbicacionService,
     private tokenService: TokenService
   ) {
     this.isLogged = this.tokenService.isLogged();
