@@ -4,14 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlojamientoService } from '../../services/alojamiento.service';
 import { CrearAlojamientoDTO } from '../../models/alojamiento';
-import { MainHeaderHost } from '../../components/main-header-host/main-header-host';
 import { MapService } from '../../services/map-service';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-agregar-alojamiento-host',
   standalone: true,
-  imports: [CommonModule, FormsModule, MainHeaderHost],
+  imports: [CommonModule, FormsModule],
   templateUrl: './agregar-alojamiento-host.html',
   styleUrl: './agregar-alojamiento-host.css',
 })
