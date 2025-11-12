@@ -18,7 +18,6 @@ export interface EditarReservaDTO {
   fechaCheckIn: string; // ISO string
   fechaCheckOut: string; // ISO string
   cantidadHuespedes: number;
-  total: number;
 }
 
 // DTO combinado para editar reserva con ubicación
@@ -47,7 +46,7 @@ export interface ReservaUsuarioDTO {
   alojamientoId: number;
   alojamientoTitulo: string;
   alojamientoCiudad: string;
-  alojamientoImagen: string;
+  alojamientoGaleria: string[];
 }
 
 // DTO para reservas de un alojamiento (anfitrión)

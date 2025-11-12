@@ -7,10 +7,13 @@ import { PerfilAnfitrion } from './pages/perfil-anfitrion/perfil-anfitrion';
 import { Favoritos } from './pages/favoritos/favoritos';
 import { MisReservas } from './pages/mis-reservas/mis-reservas';
 import { DetallesAlojamiento } from './pages/detalles-alojamiento/detalles-alojamiento';
+import { DetallesReserva } from './pages/detalles-reserva/detalles-reserva';
 import { DetallesAlojamientoHost } from './pages/detalles-alojamiento-host/detalles-alojamiento-host';
 import { MisAlojamientosHost } from './pages/mis-alojamientos-host/mis-alojamientos-host';
 import { AgregarAlojamientoHost } from './pages/agregar-alojamiento-host/agregar-alojamiento-host';
 import { EditarAlojamientoHost } from './pages/editar-alojamiento-host/editar-alojamiento-host';
+
+
 import { PapeleraHost } from './pages/papelera-host/papelera-host';
 import { ReservasHost } from './pages/reservas-host/reservas-host';
 import { VerMetricasHost } from './pages/ver-metricas-host/ver-metricas-host';
@@ -31,6 +34,7 @@ export const routes: Routes = [
     { path: 'perfil-usuario', component: PerfilUsuario, canActivate: [roleGuard], data: { expectedRole: ["HUESPED"] } },
     { path: 'favoritos', component: Favoritos, canActivate: [roleGuard], data: { expectedRole: ["HUESPED"] } },
     { path: 'reservas', component: MisReservas, canActivate: [roleGuard], data: { expectedRole: ["HUESPED"] } },
+    { path: 'detalles-reserva/:id', component: DetallesReserva, canActivate: [roleGuard], data: { expectedRole: ["HUESPED"] } },
     { path: 'detalles-alojamiento/:id', component: DetallesAlojamiento, canActivate: [roleGuard], data: { expectedRole: ["HUESPED"], allowUnauthenticated: true } },
     
     // Rutas del Host (ANFITRION)

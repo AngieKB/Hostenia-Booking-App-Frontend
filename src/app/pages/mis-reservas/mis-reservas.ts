@@ -5,6 +5,8 @@ import { MainHeader } from '../../components/main-header/main-header';
 import { ReservaUsuarioDTO, EstadoReserva } from '../../models/reserva-dto';
 import { ReservaService } from '../../services/reserva.service';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-mis-reservas',
@@ -21,7 +23,9 @@ export class MisReservas implements OnInit {
   cargando: boolean = false;
 
   constructor(
-    private reservaService: ReservaService
+    private reservaService: ReservaService,
+    private router: Router
+
   ) {}
 
   ngOnInit(): void {
@@ -34,7 +38,7 @@ export class MisReservas implements OnInit {
     this.reservaService.obtenerMisReservas(0, 100).subscribe({
       next: (page) => {
         this.todasReservas = page.content;
-        this.aplicarFiltro();
+        this.aplicarFiltro();  
         this.cargando = false;
       },
       error: (error) => {
@@ -105,6 +109,9 @@ export class MisReservas implements OnInit {
       month: 'short',
       year: 'numeric'
     });
+  }
+  verDetalles(reservaId: number): void {
+    this.router.navigate(['/detalles-reserva', reservaId]);
   }
 
   formatearPrecio(precio: number): string {

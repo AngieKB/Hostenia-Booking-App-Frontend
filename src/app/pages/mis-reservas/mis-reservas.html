@@ -33,37 +33,44 @@
 
   <!-- Lista de Reservas -->
   <div class="reservas-list" *ngIf="reservas.length > 0">
-    <div class="reserva-card" *ngFor="let reserva of reservas">
-      <div class="reserva-image">
-        <img 
-          *ngIf="reserva.alojamientoImagen && reserva.alojamientoImagen.trim() !== ''"
-          [src]="reserva.alojamientoImagen" 
-          [alt]="reserva.alojamientoTitulo"
-          class="alojamiento-img"
-          (error)="onImageError($event)">
+  <div 
+    class="reserva-card" 
+    *ngFor="let reserva of reservas"
+    (click)="verDetalles(reserva.id)"
+  >
+    <div class="reserva-image">
+      <img 
+        *ngIf="reserva.alojamientoGaleria && reserva.alojamientoGaleria.length > 0 && reserva.alojamientoGaleria[0]?.trim() !== ''"
+        [src]="reserva.alojamientoGaleria[0]" 
+        [alt]="reserva.alojamientoTitulo"
+        class="alojamiento-img"
+        (error)="onImageError($event)">
         
-        <!-- Fallback cuando no hay imagen -->
-        <div 
-          *ngIf="!reserva.alojamientoImagen || reserva.alojamientoImagen.trim() === ''"
-          class="image-placeholder">
-          <span class="material-icons placeholder-icon">image</span>
-        </div>
-      </div>
-      <div class="reserva-info">
-        <h3 class="alojamiento-nombre">{{ reserva.alojamientoTitulo }}</h3>
-        <p class="check-in">Check in: {{ formatearFecha(reserva.fechaCheckIn) }}</p>
-        <p class="precio">{{ formatearPrecio(reserva.total) }}</p>
-      </div>
-      <div class="reserva-actions">
-        <button 
-          class="btn-cancelar" 
-          *ngIf="reserva.estado === EstadoReserva.CONFIRMADA"
-          (click)="cancelarReserva(reserva.id)">
-          Cancelar reserva
-        </button>
+      <!-- Fallback cuando no hay imagen -->
+      <div 
+          *ngIf="!reserva.alojamientoGaleria || reserva.alojamientoGaleria.length === 0 || reserva.alojamientoGaleria[0]?.trim() === ''"
+        class="image-placeholder">
+        <span class="material-icons placeholder-icon">image</span>
       </div>
     </div>
+
+    <div class="reserva-info">
+      <h3 class="alojamiento-nombre">{{ reserva.alojamientoTitulo }}</h3>
+      <p class="check-in">Check in: {{ formatearFecha(reserva.fechaCheckIn) }}</p>
+      <p class="precio">{{ formatearPrecio(reserva.total) }}</p>
+    </div>
+
+    <div class="reserva-actions">
+      <button 
+        class="btn-cancelar" 
+        *ngIf="reserva.estado === EstadoReserva.CONFIRMADA"
+        (click)="cancelarReserva(reserva.id); $event.stopPropagation()">
+        Cancelar reserva
+      </button>
+    </div>
   </div>
+</div>
+
 
   <!-- No hay reservas -->
   <div class="no-reservas" *ngIf="reservas.length === 0">

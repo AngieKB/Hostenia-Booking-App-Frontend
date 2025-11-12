@@ -1,0 +1,72 @@
+<app-main-header></app-main-header>
+
+<div class="detalles-reserva-container" *ngIf="reserva">
+  <h1 class="page-title">Detalles de la Reserva</h1>
+
+  <div class="info-section">
+    <!-- Información principal -->
+    <div class="info-left">
+      <div class="reserva-header">
+        <div>
+          <h2 class="reserva-titulo">{{ reserva.alojamientoTitulo }}</h2>
+          <p class="ubicacion">{{ reserva.alojamientoCiudad }}</p>
+        </div>
+        <div class="estado-badge" [ngClass]="reserva.estado.toLowerCase()">
+          {{ reserva.estado }}
+        </div>
+      </div>
+
+      <!-- Datos de la reserva -->
+      <div class="detalle-card">
+        <div class="detalle-item">
+          <span class="detalle-label">Check-In:</span>
+          <span class="detalle-valor">{{ formatearFecha(reserva.fechaCheckIn) }}</span>
+        </div>
+        <div class="detalle-item">
+          <span class="detalle-label">Check-Out:</span>
+          <span class="detalle-valor">{{ formatearFecha(reserva.fechaCheckOut) }}</span>
+        </div>
+        <div class="detalle-item">
+          <span class="detalle-label">Cantidad de Huéspedes:</span>
+          <span class="detalle-valor">{{ reserva.cantidadHuespedes }}</span>
+        </div>
+    
+        <div class="detalle-item">
+          <span class="detalle-label">Total:</span>
+          <span class="detalle-valor">{{ formatearPrecio(reserva.total) }}</span>
+        </div>
+        
+      </div>
+
+      
+
+      <!-- Botones de acción -->
+      <div class="acciones-reserva">
+        <button class="btn-editar" (click)="openEditModal()">
+          <span class="material-icons">edit</span>
+          Editar Reserva
+        </button>
+        <button class="btn-cancelar" (click)="cancelarReserva()">
+          <span class="material-icons">cancel</span>
+          Cancelar Reserva
+        </button>
+      </div>
+    </div>
+
+    <!-- Imagen del alojamiento -->
+    <div class="info-right">
+      <div class="alojamiento-imagen">
+        <img [src]="reserva.alojamientoGaleria[0]" [alt]="reserva.alojamientoTitulo">
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL -->
+<app-editar-reserva-modal
+  *ngIf="showEditModal"
+  [reserva]="reserva"
+  (close)="closeEditModal()"
+  (guardar)="onGuardarEdicion($event)">
+</app-editar-reserva-modal>
+
+<app-footer></app-footer>

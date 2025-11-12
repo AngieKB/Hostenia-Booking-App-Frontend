@@ -1,0 +1,61 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>Editar reserva</h2>
+      <button class="close-button" (click)="onClose()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="modal-form">
+      <!-- Fecha Check-In -->
+      <div class="form-group">
+        <label for="checkIn">Fecha Check-In</label>
+        <input
+          type="datetime-local"
+          id="checkIn"
+          name="checkIn"
+          [(ngModel)]="fechaCheckIn"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <!-- Fecha Check-Out -->
+      <div class="form-group">
+        <label for="checkOut">Fecha Check-Out</label>
+        <input
+          type="datetime-local"
+          id="checkOut"
+          name="checkOut"
+          [(ngModel)]="fechaCheckOut"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <!-- Cantidad de huéspedes -->
+      <div class="form-group">
+        <label for="huespedes">Cantidad de huéspedes</label>
+        <input
+          type="number"
+          id="huespedes"
+          name="huespedes"
+          [(ngModel)]="cantidadHuespedes"
+          placeholder="Ej. 2"
+          required
+          class="form-input"
+        />
+      </div>
+
+
+
+      <!-- Submit -->
+      <button type="submit" class="submit-button">
+        Guardar Cambios
+      </button>
+    </form>
+  </div>
+</div>

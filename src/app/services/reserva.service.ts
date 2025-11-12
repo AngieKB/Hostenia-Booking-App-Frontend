@@ -6,7 +6,7 @@ import {
   ReservaAlojamientoDTO, 
   ReservaUsuarioDTO,
   RealizarReservaDTO,
-  EditarReservaConUbicacionDTO
+  EditarReservaDTO
 } from '../models/reserva-dto';
 import { ResponseDTO } from '../models/response-dto';
 import { Page } from '../models/alojamiento';
@@ -26,7 +26,7 @@ export class ReservaService {
   }
 
   // Editar una reserva (HUESPED)
-  public editar(id: number, dto: EditarReservaConUbicacionDTO): Observable<string> {
+  public editar(id: number, dto: EditarReservaDTO): Observable<string> {
     return this.http.put<ResponseDTO<string>>(`${this.apiUrl}/${id}`, dto)
       .pipe(map(response => response.content));
   }
@@ -69,4 +69,10 @@ export class ReservaService {
       params: new HttpParams().set('page', '0').set('size', '1000')
     }).pipe(map(response => response.content.content));
   }
+
+  // Obtener reserva por ID
+    public obtenerPorId(id: number): Observable<ReservaUsuarioDTO> {
+      return this.http.get<ResponseDTO<ReservaUsuarioDTO>>(`${this.apiUrl}/${id}`)
+        .pipe(map(response => response.content));
+    }
 }
