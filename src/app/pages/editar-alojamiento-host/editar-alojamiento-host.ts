@@ -4,14 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AlojamientoService } from '../../services/alojamiento.service';
 import { AlojamientoDTO } from '../../models/alojamiento';
-import { MainHeaderHost } from '../../components/main-header-host/main-header-host';
 import { MapService } from '../../services/map-service';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-editar-alojamiento-host',
   standalone: true,
-  imports: [CommonModule, FormsModule, MainHeaderHost],
+  imports: [CommonModule, FormsModule],
   templateUrl: './editar-alojamiento-host.html',
   styleUrl: './editar-alojamiento-host.css',
 })
