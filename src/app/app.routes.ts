@@ -13,6 +13,7 @@ import { AgregarAlojamientoHost } from './pages/agregar-alojamiento-host/agregar
 import { EditarAlojamientoHost } from './pages/editar-alojamiento-host/editar-alojamiento-host';
 import { PapeleraHost } from './pages/papelera-host/papelera-host';
 import { ReservasHost } from './pages/reservas-host/reservas-host';
+import { VerMetricasHost } from './pages/ver-metricas-host/ver-metricas-host';
 import { Forbidden } from './pages/forbidden/forbidden';
 import { loginGuard } from './guards/login.guard';
 import { roleGuard } from './guards/role.guard';
@@ -40,6 +41,7 @@ export const routes: Routes = [
     { path: 'detalles-alojamiento-host/:id', component: DetallesAlojamientoHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
     { path: 'papelera-host', component: PapeleraHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
     { path: 'reservas-host', component: ReservasHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
+    { path: 'ver-metricas-host', component: VerMetricasHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
     
     // Página de acceso denegado
     { path: 'forbidden', component: Forbidden },

@@ -1,0 +1,87 @@
+<app-main-header-host></app-main-header-host>
+
+<div class="metricas-container">
+  <h1 class="page-title">Métricas de Alojamientos</h1>
+
+  <!-- Filtros de fecha -->
+  <div class="filtros-fecha">
+    <div class="fecha-group">
+      <label class="form-label">Fecha de inicio</label>
+      <input 
+        type="date" 
+        class="form-control" 
+        [(ngModel)]="fechaInicio"
+        [max]="fechaFin">
+    </div>
+    <div class="fecha-group">
+      <label class="form-label">Fecha de fin</label>
+      <input 
+        type="date" 
+        class="form-control" 
+        [(ngModel)]="fechaFin"
+        [min]="fechaInicio">
+    </div>
+    <button 
+      class="btn-aplicar" 
+      (click)="aplicarFiltros()"
+      [disabled]="cargandoMetricas">
+      {{ cargandoMetricas ? 'Cargando...' : 'Aplicar Filtros' }}
+    </button>
+  </div>
+
+  <!-- Estado de carga -->
+  <div *ngIf="cargando" class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando alojamientos...</p>
+  </div>
+
+  <!-- Lista de métricas -->
+  <div class="metricas-list" *ngIf="!cargando && alojamientos.length > 0">
+    <div class="metrica-card" *ngFor="let alojamiento of alojamientos">
+      <div class="alojamiento-image">
+        <img 
+          *ngIf="alojamiento.galeria && alojamiento.galeria.length > 0"
+          [src]="alojamiento.galeria[0]" 
+          [alt]="alojamiento.titulo"
+          class="alojamiento-img"
+          (error)="$event.target.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjODBjYmM0Ii8+CjxwYXRoIGQ9Ik0zMCA0MEg3MFY2MEgzMFY0MFoiIGZpbGw9IndoaXRlIi8+CjxjaXJjbGUgY3g9IjQwIiBjeT0iNTAiIHI9IjMiIGZpbGw9IiM4MGNiYzQiLz4KPC9zdmc+'">
+        
+        <!-- Fallback cuando no hay imagen -->
+        <div 
+          *ngIf="!alojamiento.galeria || alojamiento.galeria.length === 0"
+          class="image-placeholder">
+          <span class="material-icons placeholder-icon">image</span>
+        </div>
+      </div>
+      
+      <div class="metrica-info">
+        <h3 class="alojamiento-nombre">{{ alojamiento.titulo }}</h3>
+        <div class="metricas-datos" *ngIf="!cargandoMetricas">
+          <p class="metrica-item">
+            <strong>Número de reservas:</strong> 
+            {{ formatearReservas(obtenerMetricas(alojamiento.id).totalReservas) }}
+          </p>
+          <p class="metrica-item">
+            <strong>Promedio de calificaciones:</strong> 
+            {{ formatearCalificacion(obtenerMetricas(alojamiento.id).promedioCalificaciones) }}
+          </p>
+        </div>
+        
+        <!-- Loading de métricas -->
+        <div class="metricas-loading" *ngIf="cargandoMetricas">
+          <div class="spinner-small"></div>
+          <span>Cargando métricas...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No hay alojamientos -->
+  <div class="no-alojamientos" *ngIf="!cargando && alojamientos.length === 0">
+    <span class="material-icons no-alojamientos-icon">home</span>
+    <p>No tienes alojamientos activos</p>
+    <p class="subtitle">Crea tu primer alojamiento para ver las métricas</p>
+  </div>
+</div>
+
+<app-footer></app-footer>
