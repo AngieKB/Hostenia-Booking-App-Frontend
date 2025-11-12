@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -23,7 +23,7 @@ import { map } from 'rxjs/operators';
   templateUrl: './principal.html',
   styleUrls: ['./principal.css']
 })
-export class Principal implements OnInit {
+export class Principal implements OnInit, OnDestroy {
   
   
   // Filtros de búsqueda (estos NO vienen del backend, son locales)
@@ -47,12 +47,14 @@ export class Principal implements OnInit {
   alojamientos: AlojamientoDTO[] = [];
   alojamientosFiltrados: AlojamientoDTO[] = [];
 
-  // Favoritos (manejados localmente, NO vienen del backend)
-  // En una app real, podrías guardarlos en localStorage o en el backend
+  // Favoritos del usuario actual (desde backend)
   favoritos: Set<number> = new Set();
 
   // Variable para saber si el usuario está logueado
   isLogged: boolean = false;
+  
+  // Listener para cambios en sessionStorage
+  private storageListener?: () => void;
 
   constructor(
     private alojamientoService: AlojamientoService,
@@ -67,8 +69,37 @@ export class Principal implements OnInit {
   ngOnInit() {
     this.inicializarFechaMinima();
     this.cargarAlojamientos();
-    this.cargarFavoritosLocalStorage();
+    this.actualizarEstadoLogin();
     this.mapService.create();
+    
+    // Listener para detectar cambios en sessionStorage (logout desde otra pestaña)
+    this.storageListener = () => {
+      this.actualizarEstadoLogin();
+    };
+    window.addEventListener('storage', this.storageListener);
+  }
+
+  ngOnDestroy() {
+    // Limpiar listener
+    if (this.storageListener) {
+      window.removeEventListener('storage', this.storageListener);
+    }
+  }
+
+  // Método para actualizar estado de login y cargar favoritos
+  actualizarEstadoLogin() {
+    const nuevoEstadoLogin = this.tokenService.isLogged();
+    
+    // Si cambió el estado de login, limpiar favoritos
+    if (this.isLogged !== nuevoEstadoLogin) {
+      this.favoritos.clear();
+    }
+    
+    this.isLogged = nuevoEstadoLogin;
+    
+    if (this.isLogged) {
+      this.cargarFavoritos();
+    }
   }
 
   // Inicializar fecha mínima (hoy)
@@ -79,10 +110,11 @@ export class Principal implements OnInit {
 
   // Método para cargar alojamientos desde el servicio
   cargarAlojamientos() {
-    // Obtener alojamientos del backend
+    // Obtener alojamientos del backend (solo activos)
     this.alojamientoService.listarTodos(0, 100).subscribe({
       next: (page) => {
-        this.alojamientos = page.content;
+        // Filtrar solo alojamientos activos
+        this.alojamientos = page.content.filter(alojamiento => alojamiento.estado === 'ACTIVO');
         this.alojamientosFiltrados = [...this.alojamientos];
         // Actualizar marcadores en el mapa
         setTimeout(() => {
@@ -118,7 +150,7 @@ export class Principal implements OnInit {
     if (this.filtros.ciudad) {
       busquedas.push(
         this.alojamientoService.buscarPorCiudad(this.filtros.ciudad, 0, 100)
-          .pipe(map(page => page.content))
+          .pipe(map(page => page.content.filter(a => a.estado === 'ACTIVO')))
       );
     }
     
@@ -128,7 +160,7 @@ export class Principal implements OnInit {
       const fechaFin = new Date(this.filtros.fechaFin);
       busquedas.push(
         this.alojamientoService.buscarPorFechas(fechaInicio, fechaFin, 0, 100)
-          .pipe(map(page => page.content))
+          .pipe(map(page => page.content.filter(a => a.estado === 'ACTIVO')))
       );
     }
     
@@ -136,7 +168,7 @@ export class Principal implements OnInit {
     if (this.filtros.precio.min > 0 || this.filtros.precio.max < 1000000) {
       busquedas.push(
         this.alojamientoService.buscarPorPrecio(this.filtros.precio.min, this.filtros.precio.max, 0, 100)
-          .pipe(map(page => page.content))
+          .pipe(map(page => page.content.filter(a => a.estado === 'ACTIVO')))
       );
     }
     
@@ -150,7 +182,7 @@ export class Principal implements OnInit {
     if (serviciosSeleccionados.length > 0) {
       busquedas.push(
         this.alojamientoService.buscarPorServicios(serviciosSeleccionados, 0, 100)
-          .pipe(map(page => page.content))
+          .pipe(map(page => page.content.filter(a => a.estado === 'ACTIVO')))
       );
     }
     
@@ -239,16 +271,22 @@ export class Principal implements OnInit {
     }
   }
 
-  // Gestión de favoritos (LOCAL - no viene del backend)
-  cargarFavoritosLocalStorage() {
-    const favoritosGuardados = localStorage.getItem('favoritos');
-    if (favoritosGuardados) {
-      this.favoritos = new Set(JSON.parse(favoritosGuardados));
+  // Gestión de favoritos (desde backend)
+  cargarFavoritos() {
+    if (!this.isLogged) {
+      this.favoritos.clear();
+      return;
     }
-  }
-
-  guardarFavoritosLocalStorage() {
-    localStorage.setItem('favoritos', JSON.stringify(Array.from(this.favoritos)));
+    
+    this.alojamientoService.listarFavoritos(0, 1000).subscribe({
+      next: (page) => {
+        this.favoritos = new Set(page.content.map(alojamiento => alojamiento.id));
+      },
+      error: (error) => {
+        console.error('Error al cargar favoritos:', error);
+        this.favoritos.clear();
+      }
+    });
   }
 
   toggleFavorito(id: number) {
@@ -258,6 +296,8 @@ export class Principal implements OnInit {
         title: 'Inicia sesión',
         text: 'Debes iniciar sesión para agregar favoritos',
         confirmButtonColor: '#4CB0A6'
+      }).then(() => {
+        this.router.navigate(['/login']);
       });
       return;
     }
@@ -267,10 +307,15 @@ export class Principal implements OnInit {
       this.alojamientoService.quitarDeFavoritos(id).subscribe({
         next: () => {
           this.favoritos.delete(id);
-          this.guardarFavoritosLocalStorage();
         },
         error: (error) => {
           console.error('Error al quitar de favoritos:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo quitar de favoritos',
+            confirmButtonColor: '#4CB0A6'
+          });
         }
       });
     } else {
@@ -278,10 +323,15 @@ export class Principal implements OnInit {
       this.alojamientoService.agregarAFavoritos(id).subscribe({
         next: () => {
           this.favoritos.add(id);
-          this.guardarFavoritosLocalStorage();
         },
         error: (error) => {
           console.error('Error al agregar a favoritos:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo agregar a favoritos',
+            confirmButtonColor: '#4CB0A6'
+          });
         }
       });
     }

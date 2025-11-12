@@ -4,12 +4,13 @@ import { Router } from '@angular/router';
 import { MainHeader } from '../../components/main-header/main-header';
 import { AlojamientoDTO } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
+import { Footer } from '../../components/footer/footer';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-favoritos',
   standalone: true,
-  imports: [CommonModule, MainHeader],
+  imports: [CommonModule, MainHeader, Footer],
   templateUrl: './favoritos.html',
   styleUrl: './favoritos.css',
 })

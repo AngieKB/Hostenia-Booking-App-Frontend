@@ -163,8 +163,9 @@
             <img [src]="alojamiento.galeria[0] || 'assets/placeholder.jpg'" 
                  [alt]="alojamiento.titulo"
                  class="w-100">
-            <!-- Botón favorito -->
+            <!-- Botón favorito (solo si está logueado) -->
             <button 
+              *ngIf="isLogged"
               class="btn-favorito" 
               [class.active]="esFavorito(alojamiento.id)"
               (click)="toggleFavorito(alojamiento.id)">

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { 
   AlojamientoDTO, 
   CrearAlojamientoDTO, 
@@ -115,8 +115,21 @@ export class AlojamientoService {
 
   // Eliminar un alojamiento
   public eliminar(id: number): Observable<string> {
-    return this.http.delete<ResponseDTO<string>>(`${this.apiUrl}/${id}`)
-      .pipe(map(response => response.content));
+    return this.http.delete<any>(`${this.apiUrl}/${id}`)
+      .pipe(
+        map(response => {
+          // Si la respuesta es exitosa (status 200-299), consideramos que fue eliminado
+          return 'Alojamiento eliminado exitosamente';
+        }),
+        catchError(error => {
+          // Si el error es por parsing pero el status es 200, consideramos éxito
+          if (error.status === 200) {
+            return of('Alojamiento eliminado exitosamente');
+          }
+          // Para otros errores, los propagamos
+          throw error;
+        })
+      );
   }
 
 

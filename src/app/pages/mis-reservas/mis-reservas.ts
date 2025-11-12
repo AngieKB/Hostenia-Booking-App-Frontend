@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Footer } from '../../components/footer/footer';
 import { MainHeader } from '../../components/main-header/main-header';
 import { ReservaUsuarioDTO, EstadoReserva } from '../../models/reserva-dto';
 import { ReservaService } from '../../services/reserva.service';
@@ -8,7 +9,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-mis-reservas',
   standalone: true,
-  imports: [CommonModule, MainHeader],
+  imports: [CommonModule, MainHeader, Footer],
   templateUrl: './mis-reservas.html',
   styleUrl: './mis-reservas.css',
 })
@@ -112,5 +113,10 @@ export class MisReservas implements OnInit {
       currency: 'COP',
       minimumFractionDigits: 0
     }).format(precio);
+  }
+
+  // Manejar error de imagen
+  onImageError(event: any): void {
+    event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjODBjYmM0Ii8+CjxwYXRoIGQ9Ik0zMCA0MEg3MFY2MEgzMFY0MFoiIGZpbGw9IndoaXRlIi8+CjxjaXJjbGUgY3g9IjQwIiBjeT0iNTAiIHI9IjMiIGZpbGw9IiM4MGNiYzQiLz4KPC9zdmc+';
   }
 }

@@ -26,7 +26,7 @@ export const routes: Routes = [
     { path: 'principal', redirectTo: '', pathMatch: 'full' },
     
     // Rutas de usuario autenticado (solo HUESPED)
-    { path: 'realizar-reserva', component: RealizarReserva, canActivate: [roleGuard], data: { expectedRole: ["HUESPED"] } },
+    { path: 'realizar-reserva/:id', component: RealizarReserva, canActivate: [roleGuard], data: { expectedRole: ["HUESPED"] } },
     { path: 'perfil-usuario', component: PerfilUsuario, canActivate: [roleGuard], data: { expectedRole: ["HUESPED"] } },
     { path: 'favoritos', component: Favoritos, canActivate: [roleGuard], data: { expectedRole: ["HUESPED"] } },
     { path: 'reservas', component: MisReservas, canActivate: [roleGuard], data: { expectedRole: ["HUESPED"] } },

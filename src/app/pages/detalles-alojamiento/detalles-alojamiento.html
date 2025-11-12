@@ -8,7 +8,6 @@
     <div class="imagen-principal">
       <img [src]="imagenPrincipal" [alt]="alojamiento.titulo">
       <div class="host-badge">
-        <div class="host-avatar"></div>
         <div class="host-info">
           <span class="host-label">Alojado por:</span>
           <span class="host-name">{{ nombreAnfitrion }}</span>
@@ -149,3 +148,4 @@
   (close)="closeCalificarModal()"
   (guardar)="onGuardarCalificacion($event)">
 </app-calificar-modal>
+<app-footer></app-footer>

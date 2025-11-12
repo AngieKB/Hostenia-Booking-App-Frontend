@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Footer } from '../../components/footer/footer';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlojamientoDTO, Comentario } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
@@ -14,7 +15,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-detalles-alojamiento',
   standalone: true,
-  imports: [CommonModule, MainHeader, CalificarModal],
+  imports: [CommonModule, MainHeader, CalificarModal, Footer],
   templateUrl: './detalles-alojamiento.html',
   styleUrl: './detalles-alojamiento.css',
 })

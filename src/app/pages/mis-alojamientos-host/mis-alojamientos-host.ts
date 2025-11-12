@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Footer } from '../../components/footer/footer';
 import { AlojamientoDTO } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
 import { PerfilAnfitrionService } from '../../services/perfil-anfitrion.service';
@@ -14,21 +15,16 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-mis-alojamientos-host',
   standalone: true,
-  imports: [CommonModule, MainHeaderHost],
+  imports: [CommonModule, MainHeaderHost, Footer],
   templateUrl: './mis-alojamientos-host.html',
   styleUrl: './mis-alojamientos-host.css',
 })
 export class MisAlojamientosHost implements OnInit {
   alojamientos: AlojamientoDTO[] = [];
   cargando: boolean = false;
-  vistaActual: 'activos' | 'inactivos' = 'activos';
 
   get alojamientosActivos(): AlojamientoDTO[] {
     return this.alojamientos.filter(alojamiento => alojamiento.estado === 'ACTIVO');
-  }
-
-  get alojamientosInactivos(): AlojamientoDTO[] {
-    return this.alojamientos.filter(alojamiento => alojamiento.estado === 'INACTIVO');
   }
 
   constructor(
@@ -93,8 +89,9 @@ export class MisAlojamientosHost implements OnInit {
             console.log('✅ Respuesta del servicio:', page);
             console.log('📦 Contenido de la página:', page.content);
             
-            this.alojamientos = page.content;
-            console.log(`✅ ${this.alojamientos.length} alojamientos cargados`);
+            // Filtrar solo alojamientos activos
+            this.alojamientos = page.content.filter(alojamiento => alojamiento.estado === 'ACTIVO');
+            console.log(`✅ ${this.alojamientos.length} alojamientos activos cargados`);
             
             this.cargando = false;
             
@@ -145,9 +142,6 @@ export class MisAlojamientosHost implements OnInit {
     this.router.navigate(['/agregar-alojamiento-host']);
   }
 
-  cambiarVista(vista: 'activos' | 'inactivos'): void {
-    this.vistaActual = vista;
-  }
 
   eliminarAlojamiento(id: number): void {
     Swal.fire({
@@ -162,15 +156,19 @@ export class MisAlojamientosHost implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.alojamientoService.eliminar(id).subscribe({
-          next: () => {
+          next: (mensaje) => {
+            // Primero actualizar la lista localmente para feedback inmediato
+            this.alojamientos = this.alojamientos.filter(alojamiento => alojamiento.id !== id);
+            
             Swal.fire({
               icon: 'success',
               title: 'Eliminado',
-              text: 'El alojamiento ha sido eliminado exitosamente',
+              text: 'El alojamiento ha sido desactivado exitosamente',
               confirmButtonColor: '#4CB0A6'
             });
+            
+            // Recargar desde el servidor para asegurar consistencia
             this.cargarAlojamientos();
-            this.cambiarVista('inactivos'); // Cambiar automáticamente a la vista de inactivos
           },
           error: (error) => {
             console.error('Error al eliminar:', error);
@@ -178,6 +176,8 @@ export class MisAlojamientosHost implements OnInit {
             
             if (error.error?.content) {
               mensajeError = error.error.content;
+            } else if (error.message) {
+              mensajeError = error.message;
             }
             
             Swal.fire({

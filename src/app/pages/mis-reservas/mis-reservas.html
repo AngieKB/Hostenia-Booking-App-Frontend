@@ -35,8 +35,19 @@
   <div class="reservas-list" *ngIf="reservas.length > 0">
     <div class="reserva-card" *ngFor="let reserva of reservas">
       <div class="reserva-image">
-        <!-- Placeholder image -->
-        <div class="image-placeholder"></div>
+        <img 
+          *ngIf="reserva.alojamientoImagen && reserva.alojamientoImagen.trim() !== ''"
+          [src]="reserva.alojamientoImagen" 
+          [alt]="reserva.alojamientoTitulo"
+          class="alojamiento-img"
+          (error)="onImageError($event)">
+        
+        <!-- Fallback cuando no hay imagen -->
+        <div 
+          *ngIf="!reserva.alojamientoImagen || reserva.alojamientoImagen.trim() === ''"
+          class="image-placeholder">
+          <span class="material-icons placeholder-icon">image</span>
+        </div>
       </div>
       <div class="reserva-info">
         <h3 class="alojamiento-nombre">{{ reserva.alojamientoTitulo }}</h3>
@@ -60,3 +71,4 @@
     <p>No tienes reservas {{ filtroActivo.toLowerCase() }}s</p>
   </div>
 </div>
+<app-footer></app-footer>

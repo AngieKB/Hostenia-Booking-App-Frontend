@@ -7,8 +7,8 @@ export enum EstadoReserva {
 
 // DTO para crear una reserva
 export interface RealizarReservaDTO {
-  fechaCheckIn: string; // ISO string
-  fechaCheckOut: string; // ISO string
+  fechaCheckIn: string; // ISO LocalDateTime string (YYYY-MM-DDTHH:mm:ss)
+  fechaCheckOut: string; // ISO LocalDateTime string (YYYY-MM-DDTHH:mm:ss)
   cantidadHuespedes: number;
   alojamientoId: number;
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Footer } from '../../components/footer/footer';
 import { AlojamientoDTO } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
 import { MainHeaderHost } from '../../components/main-header-host/main-header-host';
@@ -10,7 +11,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-papelera-host',
   standalone: true,
-  imports: [CommonModule, MainHeaderHost],
+  imports: [CommonModule, MainHeaderHost, Footer],
   templateUrl: './papelera-host.html',
   styleUrl: './papelera-host.css',
 })

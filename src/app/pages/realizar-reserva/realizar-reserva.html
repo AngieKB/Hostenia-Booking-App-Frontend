@@ -1,19 +1,19 @@
-<div class="reserva-container">
+<div class="reserva-container" *ngIf="!cargando && alojamiento">
   <div class="reserva-card">
-    <!-- Botón cerrar -->
-    <button class="btn-close-modal" (click)="cerrarModal()">
-      <i class="bi bi-x-lg"></i>
-    </button>
-
     <!-- Header -->
     <div class="reserva-header">
-      <h2 class="reserva-titulo">Formulario de Reserva</h2>
-      <div class="anfitrion-info">
-        <div class="anfitrion-avatar"></div>
-        <div class="anfitrion-texto">
-          <small>Hospedado por:</small>
-          <p class="mb-0"><strong>{{ anfitrion.nombre }}</strong></p>
-          <p class="mb-0"><strong>{{ anfitrion.apellido }}</strong></p>
+      <div class="header-top">
+        <button class="btn-volver" (click)="volver()">
+          <i class="bi bi-arrow-left"></i> Volver
+        </button>
+        <h2 class="reserva-titulo">Realizar Reserva</h2>
+      </div>
+      <div class="alojamiento-info">
+        <h3>{{ alojamiento.titulo }}</h3>
+        <p class="ubicacion">{{ alojamiento.ubicacion.ciudad }}, {{ alojamiento.ubicacion.direccion }}</p>
+        <div class="precio-info">
+          <span class="precio">{{ formatearPrecio(alojamiento.precioNoche) }}</span>
+          <span class="precio-label">por noche</span>
         </div>
       </div>
     </div>
@@ -72,11 +72,17 @@
             </div>
           </div>
 
-          <!-- Botones de acción -->
-          <div class="calendario-footer">
-            <button class="btn btn-outline-secondary btn-sm">Cancel</button>
-            <button class="btn btn-success btn-sm">Ok</button>
-          </div>
+        </div>
+        
+        <!-- Hora Check-in -->
+        <div class="hora-section">
+          <label class="form-label">Hora de check-in</label>
+          <input 
+            type="time" 
+            class="form-control" 
+            [(ngModel)]="reserva.horaCheckIn"
+            min="06:00"
+            max="23:00">
         </div>
       </div>
 
@@ -132,11 +138,17 @@
             </div>
           </div>
 
-          <!-- Botones de acción -->
-          <div class="calendario-footer">
-            <button class="btn btn-outline-secondary btn-sm">Cancel</button>
-            <button class="btn btn-success btn-sm">Ok</button>
-          </div>
+        </div>
+        
+        <!-- Hora Check-out -->
+        <div class="hora-section">
+          <label class="form-label">Hora de check-out</label>
+          <input 
+            type="time" 
+            class="form-control" 
+            [(ngModel)]="reserva.horaCheckOut"
+            min="06:00"
+            max="18:00">
         </div>
       </div>
     </div>
@@ -157,4 +169,10 @@
       Realizar Reserva
     </button>
   </div>
+</div>
+
+<!-- Estado de carga -->
+<div *ngIf="cargando" class="loading-container">
+  <div class="spinner"></div>
+  <p>Cargando alojamiento...</p>
 </div>

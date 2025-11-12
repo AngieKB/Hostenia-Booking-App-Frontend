@@ -86,6 +86,22 @@
   height: 100px;
   background-color: #80cbc4;
   border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-icon {
+  color: white;
+  font-size: 32px;
+}
+
+.alojamiento-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
 }
 
 /* Reserva Info */

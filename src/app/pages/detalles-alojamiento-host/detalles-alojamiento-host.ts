@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Footer } from '../../components/footer/footer';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlojamientoDTO, Comentario } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
@@ -12,7 +13,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-detalles-alojamiento-host',
   standalone: true,
-  imports: [CommonModule, EditarAlojamientoModal, MainHeaderHost],
+  imports: [CommonModule, EditarAlojamientoModal, MainHeaderHost, Footer],
   templateUrl: './detalles-alojamiento-host.html',
   styleUrl: './detalles-alojamiento-host.css',
 })
@@ -109,8 +110,15 @@ export class DetallesAlojamientoHost implements OnInit {
   }
 
   openEditModal(): void {
-    if (this.alojamiento?.id) {
+    if (this.alojamiento?.id && this.alojamiento.estado === 'ACTIVO') {
       this.router.navigate(['/editar-alojamiento-host', this.alojamiento.id]);
+    } else if (this.alojamiento?.estado === 'INACTIVO') {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No disponible',
+        text: 'No puedes editar un alojamiento inactivo',
+        confirmButtonColor: '#4CB0A6'
+      });
     }
   }
 

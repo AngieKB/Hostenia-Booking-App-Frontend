@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { Footer } from '../../components/footer/footer';
 import { ReservaAlojamientoDTO, EstadoReserva } from '../../models/reserva-dto';
 import { ReservaService } from '../../services/reserva.service';
 import { MainHeaderHost } from '../../components/main-header-host/main-header-host';
@@ -10,7 +11,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-reservas-host',
   standalone: true,
-  imports: [CommonModule, FormsModule, MainHeaderHost],
+  imports: [CommonModule, FormsModule, MainHeaderHost, Footer],
   templateUrl: './reservas-host.html',
   styleUrl: './reservas-host.css',
 })
