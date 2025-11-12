@@ -97,4 +97,20 @@ export class TokenService {
     
     return null;
   }
+
+  public getAnfitrionId(): number | null {
+    const payload = this.getPayload();
+    console.log('TokenService - getAnfitrionId - Payload:', payload);
+    
+    const anfitrionId = payload?.anfitrionId;
+    console.log('TokenService - getAnfitrionId - ID extraído:', anfitrionId);
+    
+    if (anfitrionId) {
+      const numId = typeof anfitrionId === 'string' ? parseInt(anfitrionId, 10) : anfitrionId;
+      console.log('TokenService - getAnfitrionId - ID final:', numId);
+      return numId;
+    }
+    
+    return null;
+  }
 }

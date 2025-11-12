@@ -34,11 +34,7 @@ export class AgregarAlojamientoHost implements OnInit {
       wifi: false,
       piscina: false,
       cocina: false,
-      mascotas: false,
-      tv: false,
-      aire: false,
-      calefaccion: false,
-      estacionamiento: false
+      mascotas: false
     },
     galeria: [] as File[]
   };
@@ -127,10 +123,6 @@ export class AgregarAlojamientoHost implements OnInit {
     if (this.alojamientoData.servicios.piscina) serviciosSeleccionados.push('Piscina');
     if (this.alojamientoData.servicios.cocina) serviciosSeleccionados.push('Cocina');
     if (this.alojamientoData.servicios.mascotas) serviciosSeleccionados.push('Mascotas');
-    if (this.alojamientoData.servicios.tv) serviciosSeleccionados.push('TV');
-    if (this.alojamientoData.servicios.aire) serviciosSeleccionados.push('Aire Acondicionado');
-    if (this.alojamientoData.servicios.calefaccion) serviciosSeleccionados.push('Calefacción');
-    if (this.alojamientoData.servicios.estacionamiento) serviciosSeleccionados.push('Estacionamiento');
 
     if (serviciosSeleccionados.length === 0) {
       Swal.fire({
@@ -175,8 +167,20 @@ export class AgregarAlojamientoHost implements OnInit {
       error: (error) => {
         console.error('Error al crear alojamiento:', error);
         let mensajeError = 'Error al crear el alojamiento. Intente nuevamente.';
+        let titulo = 'Error';
         
-        if (error.error?.content && Array.isArray(error.error.content)) {
+        // Error de conexión (backend no disponible)
+        if (error.status === 0) {
+          titulo = 'Error de Conexión';
+          mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080';
+        }
+        // Error de autenticación
+        else if (error.status === 401 || error.status === 403) {
+          titulo = 'Error de Autenticación';
+          mensajeError = 'No tienes permisos para crear alojamientos. Asegúrate de estar logueado como ANFITRION.';
+        }
+        // Errores de validación del backend
+        else if (error.error?.content && Array.isArray(error.error.content)) {
           mensajeError = error.error.content.map((err: any) => err.message).join('\n');
         } else if (error.error?.content) {
           mensajeError = error.error.content;
@@ -184,7 +188,7 @@ export class AgregarAlojamientoHost implements OnInit {
         
         Swal.fire({
           icon: 'error',
-          title: 'Error',
+          title: titulo,
           text: mensajeError,
           confirmButtonColor: '#4CB0A6'
         });

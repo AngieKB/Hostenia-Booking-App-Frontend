@@ -38,35 +38,40 @@ export class MisAlojamientosHost implements OnInit {
 
   cargarAlojamientos(): void {
     this.cargando = true;
-    const userId = this.tokenService.getUserId();
+    const anfitrionId = this.tokenService.getAnfitrionId();
     
-    if (!userId) {
+    console.log('🔍 MisAlojamientos - Anfitrion ID del token:', anfitrionId);
+    
+    if (!anfitrionId) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'No se pudo obtener el ID del usuario',
+        text: 'No se pudo obtener el ID del perfil de anfitrión. Por favor, vuelve a iniciar sesión.',
         confirmButtonColor: '#4CB0A6'
       });
       this.cargando = false;
       return;
     }
-  
+    
+    const url = `${this.apiUrl}/alojamiento/listarPorAnfitrion/${anfitrionId}?pagina=0&tamanio=100`;
+    console.log('📡 Llamando a:', url);
 
-    this.http.get<any>(`${this.apiUrl}/alojamiento/listarPorAnfitrion/${userId}?pagina=0&tamanio=100`)
+    this.http.get<any>(url)
       .subscribe({
         next: (res) => {
-          console.log('Respuesta completa del backend:', res);
+          console.log('✅ Respuesta completa del backend:', res);
+          console.log('📦 Estructura de content:', res?.content);
+          console.log('📊 Tipo de content:', typeof res?.content);
 
-  if (res?.content?.content && Array.isArray(res.content.content)) {
-    this.alojamientos = res.content.content;
-  } else {
-    console.warn('⚠️ Estructura inesperada en la respuesta:', res);
-    this.alojamientos = [];
-  }
+          if (res?.content?.content && Array.isArray(res.content.content)) {
+            this.alojamientos = res.content.content;
+            console.log(`✅ ${this.alojamientos.length} alojamientos cargados`);
+          } else {
+            console.warn('⚠️ Estructura inesperada en la respuesta:', res);
+            this.alojamientos = [];
+          }
 
-  this.cargando = false;
-
-  this.cargando = false;
+          this.cargando = false;
 
           // debug: mostrar galerías
           this.alojamientos.forEach((alojamiento, index) => {
@@ -75,16 +80,28 @@ export class MisAlojamientosHost implements OnInit {
           });
         },
         error: (error) => {
-          console.error('Error al cargar alojamientos:', error);
+          console.error('❌ Error al cargar alojamientos:', error);
+          console.error('Status:', error.status);
+          console.error('Message:', error.message);
+          
+          let mensajeError = 'No se pudieron cargar los alojamientos';
+          
+          if (error.status === 403) {
+            mensajeError = 'No tienes permisos para ver estos alojamientos. Asegúrate de tener un perfil de anfitrión creado.';
+          } else if (error.status === 404) {
+            mensajeError = 'No se encontró tu perfil de anfitrión. Por favor, crea uno primero.';
+          }
+          
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'No se pudieron cargar los alojamientos',
+            text: mensajeError,
             confirmButtonColor: '#4CB0A6'
           });
           this.cargando = false;
         }
-      });}
+      });
+  }
 
   agregarAlojamiento(): void {
     this.router.navigate(['/agregar-alojamiento-host']);
