@@ -22,6 +22,8 @@ export class UbicacionService {
       },
       precioNoche: 250000,
       capacidadMax: 6,
+      idAnfitrion: 1001,
+      nombreAnfitrion: 'Anfitrión Demo 1',
       comentarios: [
         {
           id: 1,
@@ -54,6 +56,8 @@ export class UbicacionService {
       },
       precioNoche: 350000,
       capacidadMax: 4,
+      idAnfitrion: 1002,
+      nombreAnfitrion: 'Anfitrión Demo 2',
       comentarios: [],
       reservas: [],
       estado: EstadoAlojamiento.ACTIVO

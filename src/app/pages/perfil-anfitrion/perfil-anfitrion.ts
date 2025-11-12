@@ -55,8 +55,12 @@ export class PerfilAnfitrion implements OnInit {
     // Obtener perfil de anfitrión desde el backend
     this.perfilAnfitrionService.listarPerfiles().subscribe({
       next: (perfiles) => {
+        console.log('🔍 Perfiles obtenidos:', perfiles);
+        console.log('🔍 Buscando perfil para userId:', userId);
+        
         // Buscar el perfil que corresponde al usuario actual
         const perfil = perfiles.find(p => p.usuarioId === userId);
+        console.log('🔍 Perfil encontrado:', perfil);
         
         if (!perfil) {
           Swal.fire({
@@ -70,9 +74,28 @@ export class PerfilAnfitrion implements OnInit {
         }
         
         this.perfilAnfitrion = perfil;
-        // Cargar datos del usuario desde el servicio local o token
-        this.userData = this.usuarioService.getCurrentUser();
-        this.cargando = false;
+        
+        // Cargar datos del usuario desde el backend
+        this.usuarioService.get(userId).subscribe({
+          next: (response: any) => {
+            console.log('✅ Datos del usuario cargados:', response);
+            this.userData = response.content;
+            this.cargando = false;
+          },
+          error: (error: any) => {
+            console.error('❌ Error al cargar datos del usuario:', error);
+            // Crear datos básicos por defecto
+            this.userData = {
+              id: userId,
+              nombre: 'Anfitrión',
+              email: 'No disponible',
+              telefono: 'No disponible',
+              fotoUrl: '',
+              rol: 'ANFITRION' as any
+            };
+            this.cargando = false;
+          }
+        });
       },
       error: (error) => {
         console.error('Error al cargar perfil de anfitrión:', error);
@@ -221,5 +244,28 @@ export class PerfilAnfitrion implements OnInit {
         });
       }
     });
+  }
+
+  obtenerNombreDocumento(url: string): string {
+    try {
+      // Extraer el nombre del archivo de la URL
+      const nombreCompleto = url.split('/').pop() || url;
+      
+      // Si tiene parámetros de query, removerlos
+      const nombreSinQuery = nombreCompleto.split('?')[0];
+      
+      // Decodificar caracteres especiales
+      const nombreDecodificado = decodeURIComponent(nombreSinQuery);
+      
+      // Si el nombre es muy largo, truncarlo
+      if (nombreDecodificado.length > 50) {
+        return nombreDecodificado.substring(0, 47) + '...';
+      }
+      
+      return nombreDecodificado || 'Documento';
+    } catch (error) {
+      console.error('Error al extraer nombre del documento:', error);
+      return 'Documento';
+    }
   }
 }

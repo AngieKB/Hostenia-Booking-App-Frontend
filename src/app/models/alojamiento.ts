@@ -42,6 +42,8 @@ export interface AlojamientoDTO {
   comentarios: Comentario[];
   reservas: Reserva[];
   estado: EstadoAlojamiento;
+  idAnfitrion: number;
+  nombreAnfitrion: string;
 }
 
 export interface CrearAlojamientoDTO {
@@ -81,6 +83,10 @@ export interface MetricasDTO {
   ingresosTotales: number;
   promedioCalificacion: number;
   tasaOcupacion: number;
+}
+
+export interface DesactivarAlojamientoDTO {
+  alojamiento: AlojamientoDTO;
 }
 
 export interface Page<T> {

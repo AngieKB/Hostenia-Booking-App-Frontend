@@ -4,7 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AlojamientoDTO, Comentario } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
 import { ComentarioService } from '../../services/comentario.service';
+import { ReservaService } from '../../services/reserva.service';
 import { ComentarioDTO, ComentarDTO } from '../../models/comentario-dto';
+import { EstadoReserva } from '../../models/reserva-dto';
 import { MainHeader } from '../../components/main-header/main-header';
 import { CalificarModal } from '../../components/calificar-modal/calificar-modal';
 import Swal from 'sweetalert2';
@@ -20,6 +22,7 @@ export class DetallesAlojamiento implements OnInit {
   alojamiento: AlojamientoDTO | null = null;
   imagenPrincipal: string = '';
   showCalificarModal: boolean = false;
+  nombreAnfitrion: string = 'Anfitrión';
   
   // Paginación de comentarios desde API
   comentariosPaginados: ComentarioDTO[] = [];
@@ -33,7 +36,8 @@ export class DetallesAlojamiento implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private alojamientoService: AlojamientoService,
-    private comentarioService: ComentarioService
+    private comentarioService: ComentarioService,
+    private reservaService: ReservaService
   ) {}
 
   ngOnInit(): void {
@@ -48,6 +52,7 @@ export class DetallesAlojamiento implements OnInit {
       next: (alojamiento) => {
         this.alojamiento = alojamiento;
         this.imagenPrincipal = alojamiento.galeria[0] || '';
+        this.nombreAnfitrion = alojamiento.nombreAnfitrion || 'Anfitrión';
         this.cargarComentariosDesdeAPI(id);
       },
       error: (error) => {
@@ -149,34 +154,46 @@ export class DetallesAlojamiento implements OnInit {
   onGuardarCalificacion(data: { calificacion: number; comentario: string }): void {
     if (!this.alojamiento) return;
 
-    // Solicitar ID de reserva al usuario
+    const alojamientoId = this.alojamiento.id;
+
+    // Mostrar loading mientras se verifica
     Swal.fire({
-      title: 'ID de Reserva',
-      text: 'Ingrese el ID de su reserva para comentar',
-      input: 'number',
-      inputAttributes: {
-        min: '1',
-        step: '1'
-      },
-      showCancelButton: true,
-      confirmButtonText: 'Enviar comentario',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#4CB0A6',
-      inputValidator: (value) => {
-        if (!value || parseInt(value) <= 0) {
-          return 'Debe ingresar un ID de reserva válido';
-        }
-        return null;
+      title: 'Verificando...',
+      text: 'Comprobando si tienes una reserva completada en este alojamiento',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
       }
-    }).then((result) => {
-      if (result.isConfirmed && result.value && this.alojamiento) {
-        const reservaId = parseInt(result.value);
+    });
+
+    // Verificar si el usuario tiene reservas completadas en este alojamiento
+    this.reservaService.obtenerTodasMisReservas().subscribe({
+      next: (reservas) => {
+        // Filtrar reservas completadas de este alojamiento
+        const reservasCompletadas = reservas.filter(
+          r => r.alojamientoId === alojamientoId && r.estado === EstadoReserva.COMPLETADA
+        );
+
+        if (reservasCompletadas.length === 0) {
+          // No tiene reservas completadas
+          Swal.fire({
+            icon: 'warning',
+            title: 'No puedes comentar',
+            text: 'No tienes ninguna reserva completada en este alojamiento. Solo puedes comentar si has completado una estadía.',
+            confirmButtonColor: '#4CB0A6'
+          });
+          return;
+        }
+
+        // Usar la primera reserva completada encontrada
+        const reservaId = reservasCompletadas[0].id;
         const comentarDTO: ComentarDTO = {
           texto: data.comentario,
           calificacion: data.calificacion,
-          idAlojamiento: this.alojamiento.id
+          idAlojamiento: alojamientoId
         };
 
+        // Enviar el comentario
         this.comentarioService.crearComentario(reservaId, comentarDTO).subscribe({
           next: (mensaje) => {
             Swal.fire({
@@ -208,6 +225,15 @@ export class DetallesAlojamiento implements OnInit {
               confirmButtonColor: '#4CB0A6'
             });
           }
+        });
+      },
+      error: (error) => {
+        console.error('Error al verificar reservas:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo verificar tus reservas. Por favor, intenta de nuevo.',
+          confirmButtonColor: '#4CB0A6'
         });
       }
     });

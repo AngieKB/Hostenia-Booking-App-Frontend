@@ -162,6 +162,16 @@ export class EditarAlojamientoHost implements OnInit, AfterViewInit {
       return;
     }
 
+    if (this.alojamientoData.galeria.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Imágenes requeridas',
+        text: 'Por favor agregue al menos una imagen del alojamiento',
+        confirmButtonColor: '#4CB0A6'
+      });
+      return;
+    }
+
     // Obtener servicios seleccionados
     const serviciosSeleccionados: string[] = [];
     if (this.alojamientoData.servicios.wifi) serviciosSeleccionados.push('WiFi');

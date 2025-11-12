@@ -21,6 +21,15 @@ import Swal from 'sweetalert2';
 export class MisAlojamientosHost implements OnInit {
   alojamientos: AlojamientoDTO[] = [];
   cargando: boolean = false;
+  vistaActual: 'activos' | 'inactivos' = 'activos';
+
+  get alojamientosActivos(): AlojamientoDTO[] {
+    return this.alojamientos.filter(alojamiento => alojamiento.estado === 'ACTIVO');
+  }
+
+  get alojamientosInactivos(): AlojamientoDTO[] {
+    return this.alojamientos.filter(alojamiento => alojamiento.estado === 'INACTIVO');
+  }
 
   constructor(
     private alojamientoService: AlojamientoService,
@@ -136,13 +145,17 @@ export class MisAlojamientosHost implements OnInit {
     this.router.navigate(['/agregar-alojamiento-host']);
   }
 
+  cambiarVista(vista: 'activos' | 'inactivos'): void {
+    this.vistaActual = vista;
+  }
+
   eliminarAlojamiento(id: number): void {
     Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción eliminará el alojamiento',
+      title: '¿Eliminar alojamiento?',
+      text: 'El alojamiento pasará a estado inactivo y no será visible para los huéspedes',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
+      confirmButtonColor: '#f39c12',
       cancelButtonColor: '#6c757d',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
@@ -153,17 +166,24 @@ export class MisAlojamientosHost implements OnInit {
             Swal.fire({
               icon: 'success',
               title: 'Eliminado',
-              text: 'El alojamiento ha sido eliminado',
+              text: 'El alojamiento ha sido eliminado exitosamente',
               confirmButtonColor: '#4CB0A6'
             });
             this.cargarAlojamientos();
+            this.cambiarVista('inactivos'); // Cambiar automáticamente a la vista de inactivos
           },
           error: (error) => {
             console.error('Error al eliminar:', error);
+            let mensajeError = 'No se pudo eliminar el alojamiento';
+            
+            if (error.error?.content) {
+              mensajeError = error.error.content;
+            }
+            
             Swal.fire({
               icon: 'error',
               title: 'Error',
-              text: 'No se pudo eliminar el alojamiento',
+              text: mensajeError,
               confirmButtonColor: '#4CB0A6'
             });
           }

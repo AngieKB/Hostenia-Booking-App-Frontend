@@ -76,52 +76,41 @@ export class AlojamientoService {
     precioNoche: number,
     capacidadMax: number
   ): Observable<string> {
-    // Si hay imágenes nuevas, usar FormData
+
+    // Usar FormData con claves anidadas para mapear a EditarAlojamientoRequest
+    const formData = new FormData();
+    
+    // Campos del alojamientoDTO
+    formData.append('titulo', titulo);
+    formData.append('descripcion', descripcion);
+    formData.append('ciudad', ciudad);
+    formData.append('direccion', direccion);
+    formData.append('latitud', latitud.toString());
+    formData.append('longitud', longitud.toString());
+    formData.append('precioNoche', precioNoche.toString());
+    formData.append('capacidadMax', capacidadMax.toString());
+    
+    // Agregar servicios con clave anidada
+    servicios.forEach(servicio => {
+      formData.append('servicios', servicio);
+    });
+    
+    // Agregar imágenes solo si hay
     if (galeria && galeria.length > 0) {
-      const formData = new FormData();
-      formData.append('titulo', titulo);
-      formData.append('descripcion', descripcion);
-      formData.append('ciudad', ciudad);
-      formData.append('direccion', direccion);
-      formData.append('latitud', latitud.toString());
-      formData.append('longitud', longitud.toString());
-      formData.append('precioNoche', precioNoche.toString());
-      formData.append('capacidadMax', capacidadMax.toString());
-      
-      // Agregar servicios
-      servicios.forEach(servicio => {
-        formData.append('servicios', servicio);
-      });
-      
-      // Agregar imágenes
       galeria.forEach(file => {
         formData.append('galeria', file);
       });
-      
-      return this.http.put<ResponseDTO<string>>(`${this.apiUrl}/${id}`, formData)
-        .pipe(map(response => response.content));
-    } else {
-      // Sin imágenes nuevas, enviar JSON
-      const request: EditarAlojamientoRequest = {
-        alojamientoDTO: {
-          titulo,
-          descripcion,
-          servicios,
-          precioNoche,
-          capacidadMax
-        },
-        ubicacionDTO: {
-          ciudad,
-          direccion,
-          latitud,
-          longitud,
-          pais: 'Colombia'
-        }
-      };
-      
-      return this.http.put<ResponseDTO<string>>(`${this.apiUrl}/${id}`, request)
-        .pipe(map(response => response.content));
     }
+    
+    // Campos del ubicacionDTO
+    formData.append('ubicacionDTO.ciudad', ciudad);
+    formData.append('ubicacionDTO.direccion', direccion);
+    formData.append('ubicacionDTO.latitud', latitud.toString());
+    formData.append('ubicacionDTO.longitud', longitud.toString());
+    formData.append('ubicacionDTO.pais', 'Colombia');
+    
+    return this.http.put<ResponseDTO<string>>(`${this.apiUrl}/${id}`, formData)
+      .pipe(map(response => response.content));
   }
 
   // Eliminar un alojamiento
@@ -129,6 +118,7 @@ export class AlojamientoService {
     return this.http.delete<ResponseDTO<string>>(`${this.apiUrl}/${id}`)
       .pipe(map(response => response.content));
   }
+
 
   // Ver métricas de un alojamiento
   public verMetricas(id: number, fechaMin: Date, fechaMax: Date): Observable<MetricasDTO> {

@@ -62,4 +62,11 @@ export class ReservaService {
     return this.http.get<ResponseDTO<Page<ReservaAlojamientoDTO>>>(`${this.apiUrl}/mis-reservas-aloja/${alojamientoId}`, { params })
       .pipe(map(response => response.content));
   }
+
+  // Obtener todas las reservas del usuario (sin paginación) para verificar si puede comentar
+  public obtenerTodasMisReservas(): Observable<ReservaUsuarioDTO[]> {
+    return this.http.get<ResponseDTO<Page<ReservaUsuarioDTO>>>(`${this.apiUrl}/mis-reservas`, {
+      params: new HttpParams().set('page', '0').set('size', '1000')
+    }).pipe(map(response => response.content.content));
+  }
 }

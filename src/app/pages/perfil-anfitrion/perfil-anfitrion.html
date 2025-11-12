@@ -51,6 +51,22 @@
       <h2>Descripción</h2>
       <p class="description-text">{{ perfilAnfitrion.descripcion }}</p>
     </div>
+
+    <!-- Legal Documents Section -->
+    <div class="documents-section">
+      <h2>Documentos Legales</h2>
+      <div class="documents-list" *ngIf="perfilAnfitrion.documentosLegales && perfilAnfitrion.documentosLegales.length > 0">
+        <div class="document-item" *ngFor="let documento of perfilAnfitrion.documentosLegales; let i = index">
+          <span class="material-icons document-icon">description</span>
+          <a [href]="documento" target="_blank" class="document-link">
+            {{ obtenerNombreDocumento(documento) }}
+          </a>
+        </div>
+      </div>
+      <p class="no-documents" *ngIf="!perfilAnfitrion.documentosLegales || perfilAnfitrion.documentosLegales.length === 0">
+        No hay documentos legales registrados
+      </p>
+    </div>
   </div>
 
   <!-- No Profile Message -->
