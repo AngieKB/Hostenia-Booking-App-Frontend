@@ -76,30 +76,52 @@ export class AlojamientoService {
     precioNoche: number,
     capacidadMax: number
   ): Observable<string> {
-    const formData = new FormData();
-    formData.append('titulo', titulo);
-    formData.append('descripcion', descripcion);
-    formData.append('ciudad', ciudad);
-    formData.append('direccion', direccion);
-    formData.append('latitud', latitud.toString());
-    formData.append('longitud', longitud.toString());
-    formData.append('precioNoche', precioNoche.toString());
-    formData.append('capacidadMax', capacidadMax.toString());
-    
-    // Agregar servicios
-    servicios.forEach(servicio => {
-      formData.append('servicios', servicio);
-    });
-    
-    // Agregar imágenes solo si hay nuevas
+    // Si hay imágenes nuevas, usar FormData
     if (galeria && galeria.length > 0) {
+      const formData = new FormData();
+      formData.append('titulo', titulo);
+      formData.append('descripcion', descripcion);
+      formData.append('ciudad', ciudad);
+      formData.append('direccion', direccion);
+      formData.append('latitud', latitud.toString());
+      formData.append('longitud', longitud.toString());
+      formData.append('precioNoche', precioNoche.toString());
+      formData.append('capacidadMax', capacidadMax.toString());
+      
+      // Agregar servicios
+      servicios.forEach(servicio => {
+        formData.append('servicios', servicio);
+      });
+      
+      // Agregar imágenes
       galeria.forEach(file => {
         formData.append('galeria', file);
       });
+      
+      return this.http.put<ResponseDTO<string>>(`${this.apiUrl}/${id}`, formData)
+        .pipe(map(response => response.content));
+    } else {
+      // Sin imágenes nuevas, enviar JSON
+      const request: EditarAlojamientoRequest = {
+        alojamientoDTO: {
+          titulo,
+          descripcion,
+          servicios,
+          precioNoche,
+          capacidadMax
+        },
+        ubicacionDTO: {
+          ciudad,
+          direccion,
+          latitud,
+          longitud,
+          pais: 'Colombia'
+        }
+      };
+      
+      return this.http.put<ResponseDTO<string>>(`${this.apiUrl}/${id}`, request)
+        .pipe(map(response => response.content));
     }
-    
-    return this.http.put<ResponseDTO<string>>(`${this.apiUrl}/${id}`, formData)
-      .pipe(map(response => response.content));
   }
 
   // Eliminar un alojamiento
