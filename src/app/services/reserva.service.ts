@@ -52,6 +52,12 @@ export class ReservaService {
     return this.http.get<ResponseDTO<Page<ReservaUsuarioDTO>>>(`${this.apiUrl}/mis-reservas`, { params })
       .pipe(map(response => response.content));
   }
+  // Confirmar una reserva (ANFITRION)
+public aprobarReserva(id: number): Observable<string> {
+  return this.http.put<ResponseDTO<string>>(`${this.apiUrl}/confirmar/${id}`, {})
+    .pipe(map(response => response.content));
+}
+
 
   // Obtener reservas de un alojamiento específico (ANFITRION)
   public obtenerReservasPorAlojamiento(alojamientoId: number, page: number = 0, size: number = 12): Observable<Page<ReservaAlojamientoDTO>> {

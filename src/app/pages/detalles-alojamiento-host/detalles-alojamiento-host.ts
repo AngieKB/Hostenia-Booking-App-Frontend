@@ -131,6 +131,16 @@ export class DetallesAlojamientoHost implements OnInit {
     // Aquí implementarías la lógica para actualizar en el backend
     this.closeEditModal();
   }
+  verReservas(): void {
+  if (this.alojamiento && this.alojamiento.id) {
+    // Navega a la vista de reservas del alojamiento actual
+    this.router.navigate(['/reservas-host', this.alojamiento.id]);
+  } else {
+    console.error('No se pudo obtener el ID del alojamiento');
+  }
+}
+
+
 
   responderComentario(comentarioId: number): void {
     Swal.fire({

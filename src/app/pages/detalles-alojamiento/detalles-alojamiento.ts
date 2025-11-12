@@ -156,6 +156,7 @@ export class DetallesAlojamiento implements OnInit {
     if (!this.alojamiento) return;
 
     const alojamientoId = this.alojamiento.id;
+    const alojamientoTitulo = this.alojamiento.titulo;
 
     // Mostrar loading mientras se verifica
     Swal.fire({
@@ -170,9 +171,11 @@ export class DetallesAlojamiento implements OnInit {
     // Verificar si el usuario tiene reservas completadas en este alojamiento
     this.reservaService.obtenerTodasMisReservas().subscribe({
       next: (reservas) => {
+    
+
         // Filtrar reservas completadas de este alojamiento
         const reservasCompletadas = reservas.filter(
-          r => r.alojamientoId === alojamientoId && r.estado === EstadoReserva.COMPLETADA
+          r => r.alojamientoTitulo === alojamientoTitulo && r.estado === EstadoReserva.COMPLETADA
         );
 
         if (reservasCompletadas.length === 0) {

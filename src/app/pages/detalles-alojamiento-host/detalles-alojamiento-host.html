@@ -5,6 +5,13 @@
   <div class="page-header">
     <h1 class="page-title">Mi Alojamiento</h1>
     <button 
+     class="btn-editar" 
+    *ngIf="alojamiento.estado === 'ACTIVO'"
+     (click)="verReservas()">
+      Mis Reservas
+    </button>
+
+    <button 
       class="btn-editar" 
       *ngIf="alojamiento.estado === 'ACTIVO'"
       (click)="openEditModal()">
@@ -94,7 +101,7 @@
         <div class="comentario-header">
           <div class="comentario-avatar"></div>
           <div class="comentario-info">
-            <span class="comentario-autor">John Doberman</span>
+            <span class="comentario-autor">Usuario</span>
             <span class="comentario-fecha">{{ formatearFecha(comentario.fecha) }}</span>
           </div>
         </div>

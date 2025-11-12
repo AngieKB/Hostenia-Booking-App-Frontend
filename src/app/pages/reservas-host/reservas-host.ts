@@ -109,17 +109,45 @@ export class ReservasHost implements OnInit {
     this.aplicarFiltros();
   }
 
-  aprobarReserva(id: number): void {
-    // Nota: El backend no tiene un endpoint específico para aprobar
-    // Podrías usar el endpoint de editar para cambiar el estado
-    //TODO: Implementar endpoint para aprobar reservas, o cambiar el editarReservaDTO para que acepte el estado
+  aprobarReserva(id: number, estadoActual: string): void {
+  // Verificar si la reserva ya está confirmada o completada
+  if (estadoActual === 'CONFIRMADA' || estadoActual === 'COMPLETADA') {
     Swal.fire({
-      icon: 'info',
-      title: 'Función no disponible',
-      text: 'La aprobación de reservas requiere un endpoint específico en el backend',
-      confirmButtonColor: '#4CB0A6'
+      icon: 'warning',
+      title: 'Acción no permitida',
+      text: 'Esta reserva ya fue confirmada o completada.',
+      confirmButtonColor: '#f8bb86'
     });
+    return;
   }
+
+  // Confirmación antes de aprobar
+  Swal.fire({
+    title: '¿Confirmar reserva?',
+    text: '¿Deseas confirmar esta reserva?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, confirmar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#4CB0A6',
+    cancelButtonColor: '#d33'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Llamar al servicio para confirmar la reserva
+      this.reservaService.aprobarReserva(id).subscribe({
+        next: () => {
+          Swal.fire('Éxito', 'La reserva ha sido confirmada correctamente.', 'success');
+          this.cargarReservas(); // Recarga la lista de reservas
+        },
+        error: (err) => {
+          console.error(err);
+          Swal.fire('Error', 'No se pudo confirmar la reserva.', 'error');
+        }
+      });
+    }
+  });
+}
+
 
   denegarReserva(id: number): void {
     Swal.fire({

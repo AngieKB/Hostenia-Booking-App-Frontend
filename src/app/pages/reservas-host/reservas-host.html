@@ -68,32 +68,51 @@
     </button>
   </div>
 
-  <!-- Lista de Reservas -->
-  <div class="reservas-list">
-    <div class="reserva-card" *ngFor="let reserva of reservasFiltradas">
-      <div class="reserva-image">
-        <!-- Placeholder image -->
-        <div class="image-placeholder"></div>
+ <!-- Lista de Reservas -->
+<div class="reservas-list">
+  <div class="reserva-card" *ngFor="let reserva of reservasFiltradas">
+
+    <!-- Información principal -->
+    <div class="reserva-info">
+      <h3>{{ reserva.alojamientoTitulo }}</h3>
+      <p class="reserva-ciudad">{{ reserva.alojamientoCiudad }}</p>
+
+      <div class="reserva-details">
+        <p><strong>Check in:</strong> {{ formatearFecha(reserva.fechaCheckIn) }}</p>
+        <p><strong>Check out:</strong> {{ formatearFecha(reserva.fechaCheckOut) }}</p>
+        <p><strong>Huéspedes:</strong> {{ reserva.cantidadHuespedes }}</p>
+        <p><strong>Huésped que reserva:</strong> {{ reserva.nombreHuesped }}</p>
+
       </div>
-      <div class="reserva-info">
-        <h3>{{ reserva.alojamientoTitulo }}</h3>
-        <div class="reserva-details">
-          <p><strong>Check in:</strong> {{ formatearFecha(reserva.fechaCheckIn) }}</p>
-          <p><strong>Check out:</strong> {{ formatearFecha(reserva.fechaCheckOut) }}</p>
-          <p><strong>Huéspedes:</strong> {{ reserva.cantidadHuespedes }}</p>
-        </div>
-        <p class="reserva-total"><strong>Precio Total:</strong> {{ formatearPrecio(reserva.total) }}</p>
-      </div>
-      <div class="reserva-actions" *ngIf="filtroActivo === EstadoReserva.PENDIENTE">
-        <button class="btn-aprobar" (click)="aprobarReserva(reserva.id)">
-          Aprobar
-        </button>
-        <button class="btn-denegar" (click)="denegarReserva(reserva.id)">
-          Denegar
-        </button>
-      </div>
+
+      <p class="reserva-total">
+        <strong>Precio Total:</strong> {{ formatearPrecio(reserva.total) }}
+      </p>
+      
+
+      <!-- Estado visual -->
+      <p class="reserva-estado">
+        <strong>Estado:</strong>
+        <span [ngClass]="{
+            'estado-confirmada': reserva.estado === 'CONFIRMADA',
+            'estado-cancelada': reserva.estado === 'CANCELADA',
+            'estado-pendiente': reserva.estado === 'PENDIENTE'
+          }">
+          {{ reserva.estado }}
+        </span>
+      </p>
+      
     </div>
+
+    <!-- Acciones (solo si está pendiente) -->
+    <div class="reserva-actions" *ngIf="filtroActivo === EstadoReserva.PENDIENTE">
+      <button class="btn-aprobar" (click)="aprobarReserva(reserva.id,reserva.estado)">Aprobar</button>
+      <button class="btn-denegar" (click)="denegarReserva(reserva.id)">Denegar</button>
+    </div>
+
   </div>
+</div>
+
 
   <!-- Mensaje si no hay reservas -->
   <div class="empty-message" *ngIf="reservasFiltradas.length === 0">

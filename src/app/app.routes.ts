@@ -44,7 +44,7 @@ export const routes: Routes = [
     { path: 'editar-alojamiento-host/:id', component: EditarAlojamientoHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
     { path: 'detalles-alojamiento-host/:id', component: DetallesAlojamientoHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
     { path: 'papelera-host', component: PapeleraHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
-    { path: 'reservas-host', component: ReservasHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
+    { path: 'reservas-host/:id', component: ReservasHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
     { path: 'ver-metricas-host', component: VerMetricasHost, canActivate: [roleGuard], data: { expectedRole: ["ANFITRION"] } },
     
     // Página de acceso denegado
