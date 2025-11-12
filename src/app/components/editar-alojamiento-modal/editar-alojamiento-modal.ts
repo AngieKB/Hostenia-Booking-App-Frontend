@@ -19,10 +19,10 @@ export class EditarAlojamientoModal implements OnInit {
   nombre: string = '';
   precioNoche: number = 0;
   descripcion: string = '';
-  cocina: string = '';
-  wifi: string = '';
-  piscina: string = '';
-  permiteMascotas: string = '';
+  cocina: boolean = false;
+  wifi: boolean = false;
+  piscina: boolean = false;
+  permiteMascotas: boolean = false;
   capacidadMaxima: number = 0;
   ciudad: string = '';
   direccion: string = '';
@@ -41,11 +41,11 @@ export class EditarAlojamientoModal implements OnInit {
       this.latitud = this.alojamiento.ubicacion.latitud;
       this.longitud = this.alojamiento.ubicacion.longitud;
       
-      // Servicios
-      this.cocina = this.alojamiento.servicios.includes('Cocina') ? 'Si' : 'No';
-      this.wifi = this.alojamiento.servicios.includes('WiFi') ? 'Si' : 'No';
-      this.piscina = this.alojamiento.servicios.includes('Piscina') ? 'Si' : 'No';
-      this.permiteMascotas = this.alojamiento.servicios.includes('Permite Mascotas') ? 'Si' : 'No';
+      // Servicios - convertir a booleanos
+      this.cocina = this.alojamiento.servicios.includes('Cocina');
+      this.wifi = this.alojamiento.servicios.includes('WiFi');
+      this.piscina = this.alojamiento.servicios.includes('Piscina');
+      this.permiteMascotas = this.alojamiento.servicios.includes('Mascotas');
     }
   }
 
@@ -62,10 +62,10 @@ export class EditarAlojamientoModal implements OnInit {
 
   onSubmit(): void {
     const servicios: string[] = [];
-    if (this.cocina === 'Si') servicios.push('Cocina');
-    if (this.wifi === 'Si') servicios.push('WiFi');
-    if (this.piscina === 'Si') servicios.push('Piscina');
-    if (this.permiteMascotas === 'Si') servicios.push('Permite Mascotas');
+    if (this.cocina) servicios.push('Cocina');
+    if (this.wifi) servicios.push('WiFi');
+    if (this.piscina) servicios.push('Piscina');
+    if (this.permiteMascotas) servicios.push('Mascotas');
 
     const data = {
       nombre: this.nombre,

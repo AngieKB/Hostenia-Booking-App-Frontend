@@ -1,8 +1,8 @@
 export interface PerfilAnfitrionDTO {
   id: number;
-  usuarioId: number;
+  usuarioId?: number; // Opcional porque el backend no siempre lo incluye en la respuesta
   descripcion: string;
-  documentosLegales: string[];
+  documentosLegales: string[] | null;
   alojamientos: number[];
 }
 

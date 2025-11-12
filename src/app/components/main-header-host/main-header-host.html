@@ -14,18 +14,28 @@
 
     <!-- User Menu -->
     <div class="user-menu">
-      <button class="user-button" (click)="toggleUserMenu()">
+      <button class="user-button" (click)="toggleUserMenu($event)">
         <span class="material-icons">menu</span>
         <span class="material-icons user-icon">account_circle</span>
       </button>
 
       <!-- Dropdown Menu -->
-      <div class="dropdown-menu" *ngIf="showUserMenu" (click)="$event.stopPropagation()">
-        <a (click)="navigateTo('/perfil-anfitrion')" class="dropdown-item">
+      <div class="dropdown-menu" 
+           [style.display]="showUserMenu ? 'block' : 'none'"
+           [style.position]="'absolute'"
+           [style.top]="'100%'"
+           [style.right]="'0'"
+           [style.background-color]="'white'"
+           [style.border]="'2px solid #2d5016'"
+           [style.z-index]="'99999'"
+           [style.min-width]="'200px'"
+           [style.margin-top]="'8px'"
+           (click)="$event.stopPropagation()">
+        <a (click)="navigateTo('/perfil-anfitrion')" class="dropdown-item" style="padding: 14px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer;">
           <span class="material-icons">person</span>
           Ver perfil
         </a>
-        <a (click)="logout()" class="dropdown-item">
+        <a (click)="logout()" class="dropdown-item" style="padding: 14px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer;">
           <span class="material-icons">logout</span>
           Cerrar sesión
         </a>

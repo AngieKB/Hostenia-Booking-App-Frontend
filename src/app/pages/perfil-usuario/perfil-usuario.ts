@@ -8,6 +8,7 @@ import { EditarPerfilUsuarioModal } from '../../components/editar-perfil-usuario
 import { ConvertirseAnfitrionModal } from '../../components/convertirse-anfitrion-modal/convertirse-anfitrion-modal';
 import { AuthService } from '../../services/auth.service';
 import { TokenService } from '../../services/token.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-perfil-usuario',
@@ -191,8 +192,14 @@ export class PerfilUsuario implements OnInit {
           setTimeout(() => {
             this.tokenService.logout();
             this.router.navigate(['/login']).then(() => {
-              // Mostrar mensaje informativo
-              alert('Tu perfil de anfitrión ha sido creado. Por favor, inicia sesión nuevamente para acceder a todas las funciones.');
+              // Mostrar mensaje informativo con SweetAlert2
+              Swal.fire({
+                icon: 'info',
+                title: 'Perfil de anfitrión creado',
+                text: 'Tu perfil de anfitrión ha sido creado exitosamente. Por favor, inicia sesión nuevamente para acceder a todas las funciones de anfitrión.',
+                confirmButtonColor: '#4CB0A6',
+                confirmButtonText: 'Entendido'
+              });
             });
           }, 2000);
         },

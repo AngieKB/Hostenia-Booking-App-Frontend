@@ -53,8 +53,22 @@ export class PerfilAnfitrion implements OnInit {
     }
 
     // Obtener perfil de anfitrión desde el backend
-    this.perfilAnfitrionService.obtenerPerfil(userId).subscribe({
-      next: (perfil) => {
+    this.perfilAnfitrionService.listarPerfiles().subscribe({
+      next: (perfiles) => {
+        // Buscar el perfil que corresponde al usuario actual
+        const perfil = perfiles.find(p => p.usuarioId === userId);
+        
+        if (!perfil) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Perfil no encontrado',
+            text: 'No tienes un perfil de anfitrión creado.',
+            confirmButtonColor: '#4CB0A6'
+          });
+          this.cargando = false;
+          return;
+        }
+        
         this.perfilAnfitrion = perfil;
         // Cargar datos del usuario desde el servicio local o token
         this.userData = this.usuarioService.getCurrentUser();
@@ -74,7 +88,7 @@ export class PerfilAnfitrion implements OnInit {
   }
 
   onBackClick(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/mis-alojamientos-host']);
   }
 
   onEditClick(): void {
@@ -141,9 +155,71 @@ export class PerfilAnfitrion implements OnInit {
   }
 
   onSavePassword(passwords: { oldPassword: string; newPassword: string }): void {
-    // Aquí implementarías la lógica para cambiar la contraseña
-    console.log('Cambiar contraseña:', passwords);
-    this.showPasswordModal = false;
-    // Mostrar mensaje de éxito
+    console.log('🔐 Cambiar contraseña:', passwords);
+    
+    if (!this.userData?.id) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo obtener el ID del usuario',
+        confirmButtonColor: '#4CB0A6'
+      });
+      return;
+    }
+
+    const changePasswordDTO = {
+      oldPassword: passwords.oldPassword,
+      newPassword: passwords.newPassword
+    };
+
+    console.log('📤 Enviando petición de cambio de contraseña para usuario ID:', this.userData.id);
+    console.log('📦 DTO:', changePasswordDTO);
+
+    this.cargando = true;
+    this.usuarioService.changePassword(this.userData.id, changePasswordDTO).subscribe({
+      next: (response) => {
+        console.log('✅ Contraseña cambiada exitosamente:', response);
+        this.showPasswordModal = false;
+        this.cargando = false;
+        
+        Swal.fire({
+          icon: 'success',
+          title: '¡Contraseña actualizada!',
+          text: 'Tu contraseña ha sido cambiada exitosamente. Se ha enviado un correo de confirmación.',
+          confirmButtonColor: '#4CB0A6',
+          confirmButtonText: 'Entendido'
+        });
+      },
+      error: (error) => {
+        console.error('❌ Error al cambiar contraseña:', error);
+        this.cargando = false;
+        
+        let mensajeError = 'No se pudo cambiar la contraseña. Por favor, intenta nuevamente.';
+        
+        // Manejar errores de validación (array de errores)
+        if (error.error?.content && Array.isArray(error.error.content)) {
+          mensajeError = error.error.content
+            .map((err: any) => err.message)
+            .join('\n');
+        } 
+        // Manejar mensaje de error simple (string)
+        else if (error.error?.content && typeof error.error.content === 'string') {
+          mensajeError = error.error.content;
+        } 
+        // Manejar errores HTTP específicos
+        else if (error.status === 400) {
+          mensajeError = 'La contraseña actual es incorrecta o los datos no son válidos.';
+        } else if (error.status === 404) {
+          mensajeError = 'Usuario no encontrado.';
+        }
+        
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al cambiar contraseña',
+          text: mensajeError,
+          confirmButtonColor: '#4CB0A6'
+        });
+      }
+    });
   }
 }

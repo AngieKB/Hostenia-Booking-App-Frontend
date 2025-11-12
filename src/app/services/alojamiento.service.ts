@@ -63,8 +63,42 @@ export class AlojamientoService {
   }
 
   // Actualizar un alojamiento existente
-  public editar(id: number, request: EditarAlojamientoRequest): Observable<string> {
-    return this.http.put<ResponseDTO<string>>(`${this.apiUrl}/${id}`, request)
+  public editar(
+    id: number,
+    titulo: string,
+    descripcion: string,
+    servicios: string[],
+    galeria: File[],
+    ciudad: string,
+    direccion: string,
+    latitud: number,
+    longitud: number,
+    precioNoche: number,
+    capacidadMax: number
+  ): Observable<string> {
+    const formData = new FormData();
+    formData.append('titulo', titulo);
+    formData.append('descripcion', descripcion);
+    formData.append('ciudad', ciudad);
+    formData.append('direccion', direccion);
+    formData.append('latitud', latitud.toString());
+    formData.append('longitud', longitud.toString());
+    formData.append('precioNoche', precioNoche.toString());
+    formData.append('capacidadMax', capacidadMax.toString());
+    
+    // Agregar servicios
+    servicios.forEach(servicio => {
+      formData.append('servicios', servicio);
+    });
+    
+    // Agregar imágenes solo si hay nuevas
+    if (galeria && galeria.length > 0) {
+      galeria.forEach(file => {
+        formData.append('galeria', file);
+      });
+    }
+    
+    return this.http.put<ResponseDTO<string>>(`${this.apiUrl}/${id}`, formData)
       .pipe(map(response => response.content));
   }
 

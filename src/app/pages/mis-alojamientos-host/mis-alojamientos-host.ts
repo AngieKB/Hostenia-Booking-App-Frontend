@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AlojamientoDTO } from '../../models/alojamiento';
 import { AlojamientoService } from '../../services/alojamiento.service';
+import { PerfilAnfitrionService } from '../../services/perfil-anfitrion.service';
 import { MainHeaderHost } from '../../components/main-header-host/main-header-host';
 import { TokenService } from '../../services/token.service';
 import Swal from 'sweetalert2';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 
 
 
@@ -22,13 +21,12 @@ import { environment } from '../../../environments/environment';
 export class MisAlojamientosHost implements OnInit {
   alojamientos: AlojamientoDTO[] = [];
   cargando: boolean = false;
-  private apiUrl = environment.apiUrl;
 
   constructor(
     private alojamientoService: AlojamientoService,
+    private perfilAnfitrionService: PerfilAnfitrionService,
     private router: Router,
-    private tokenService: TokenService,
-    private http: HttpClient
+    private tokenService: TokenService
   ) {}
 
   ngOnInit(): void {
@@ -38,69 +36,100 @@ export class MisAlojamientosHost implements OnInit {
 
   cargarAlojamientos(): void {
     this.cargando = true;
-    const anfitrionId = this.tokenService.getAnfitrionId();
+    const userId = this.tokenService.getUserId();
     
-    console.log('🔍 MisAlojamientos - Anfitrion ID del token:', anfitrionId);
+    console.log('🔍 MisAlojamientos - User ID del token:', userId);
     
-    if (!anfitrionId) {
+    if (!userId) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'No se pudo obtener el ID del perfil de anfitrión. Por favor, vuelve a iniciar sesión.',
+        text: 'No se pudo obtener tu información de usuario. Por favor, vuelve a iniciar sesión.',
         confirmButtonColor: '#4CB0A6'
       });
       this.cargando = false;
       return;
     }
     
-    const url = `${this.apiUrl}/alojamiento/listarPorAnfitrion/${anfitrionId}?pagina=0&tamanio=100`;
-    console.log('📡 Llamando a:', url);
-
-    this.http.get<any>(url)
-      .subscribe({
-        next: (res) => {
-          console.log('✅ Respuesta completa del backend:', res);
-          console.log('📦 Estructura de content:', res?.content);
-          console.log('📊 Tipo de content:', typeof res?.content);
-
-          if (res?.content?.content && Array.isArray(res.content.content)) {
-            this.alojamientos = res.content.content;
-            console.log(`✅ ${this.alojamientos.length} alojamientos cargados`);
-          } else {
-            console.warn('⚠️ Estructura inesperada en la respuesta:', res);
-            this.alojamientos = [];
-          }
-
-          this.cargando = false;
-
-          // debug: mostrar galerías
-          this.alojamientos.forEach((alojamiento, index) => {
-            console.log(`Alojamiento ${index}:`, alojamiento.titulo);
-            console.log('Galería:', alojamiento.galeria);
-          });
-        },
-        error: (error) => {
-          console.error('❌ Error al cargar alojamientos:', error);
-          console.error('Status:', error.status);
-          console.error('Message:', error.message);
-          
-          let mensajeError = 'No se pudieron cargar los alojamientos';
-          
-          if (error.status === 403) {
-            mensajeError = 'No tienes permisos para ver estos alojamientos. Asegúrate de tener un perfil de anfitrión creado.';
-          } else if (error.status === 404) {
-            mensajeError = 'No se encontró tu perfil de anfitrión. Por favor, crea uno primero.';
-          }
-          
+    // Como el backend tiene la relación Usuario -> PerfilAnfitrion,
+    // y el usuario_id está en la BD, usamos el userId directamente
+    // El backend debería tener un endpoint GET /api/perfiles-anfitrion/usuario/{usuarioId}
+    // Por ahora, usamos listar y filtrar
+    this.perfilAnfitrionService.listarPerfiles().subscribe({
+      next: (perfiles) => {
+        console.log('✅ Perfiles obtenidos:', perfiles);
+        console.log('🔍 Buscando perfil para userId:', userId);
+        
+        // Buscar el perfil que corresponde al usuario actual
+        const perfil = perfiles.find(p => p.usuarioId === userId);
+        
+        if (!perfil || !perfil.id) {
+          console.warn('⚠️ No se encontró perfil para el usuario:', userId);
           Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: mensajeError,
+            icon: 'warning',
+            title: 'Perfil no encontrado',
+            text: 'No tienes un perfil de anfitrión creado. Por favor, crea uno primero.',
             confirmButtonColor: '#4CB0A6'
           });
           this.cargando = false;
+          return;
         }
-      });
+        
+        const anfitrionId = perfil.id;
+        console.log('✅ Perfil de anfitrión encontrado con ID:', anfitrionId);
+        
+        // Ahora cargar los alojamientos con el ID del perfil
+        this.alojamientoService.listarPorAnfitrion(anfitrionId, 0, 100).subscribe({
+          next: (page) => {
+            console.log('✅ Respuesta del servicio:', page);
+            console.log('📦 Contenido de la página:', page.content);
+            
+            this.alojamientos = page.content;
+            console.log(`✅ ${this.alojamientos.length} alojamientos cargados`);
+            
+            this.cargando = false;
+            
+            // debug: mostrar galerías
+            this.alojamientos.forEach((alojamiento, index) => {
+              console.log(`Alojamiento ${index}:`, alojamiento.titulo);
+              console.log('Galería:', alojamiento.galeria);
+            });
+          },
+          error: (error) => {
+            console.error('Error al cargar alojamientos:', error);
+            console.error('Status:', error.status);
+            console.error('Message:', error.message);
+            
+            let mensajeError = 'No se pudieron cargar los alojamientos';
+            
+            if (error.status === 403) {
+              mensajeError = 'No tienes permisos para ver estos alojamientos.';
+            } else if (error.status === 404) {
+              mensajeError = 'No se encontraron alojamientos.';
+            }
+            
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: mensajeError,
+              confirmButtonColor: '#4CB0A6'
+            });
+            this.cargando = false;
+          }
+        });
+      },
+      error: (error: any) => {
+        console.error('Error al obtener perfiles de anfitrión:', error);
+        
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo cargar tu perfil de anfitrión. Por favor, intenta nuevamente.',
+          confirmButtonColor: '#4CB0A6'
+        });
+        this.cargando = false;
+      }
+    });
   }
 
   agregarAlojamiento(): void {

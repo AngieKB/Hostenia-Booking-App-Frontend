@@ -74,47 +74,52 @@
 
       <!-- Servicios -->
       <div class="form-group">
-        <label>Cocina</label>
-        <input
-          type="text"
-          name="cocina"
-          [(ngModel)]="cocina"
-          placeholder="Si o No"
-          class="form-input"
-        />
-      </div>
+        <label class="servicios-label">Servicios disponibles</label>
+        <div class="servicios-grid">
+          <div class="servicio-checkbox">
+            <input
+              type="checkbox"
+              id="cocina"
+              name="cocina"
+              [(ngModel)]="cocina"
+              class="checkbox-input"
+            />
+            <label for="cocina" class="checkbox-label">Cocina</label>
+          </div>
 
-      <div class="form-group">
-        <label>Wifi</label>
-        <input
-          type="text"
-          name="wifi"
-          [(ngModel)]="wifi"
-          placeholder="Si o No"
-          class="form-input"
-        />
-      </div>
+          <div class="servicio-checkbox">
+            <input
+              type="checkbox"
+              id="wifi"
+              name="wifi"
+              [(ngModel)]="wifi"
+              class="checkbox-input"
+            />
+            <label for="wifi" class="checkbox-label">Wifi</label>
+          </div>
 
-      <div class="form-group">
-        <label>Piscina</label>
-        <input
-          type="text"
-          name="piscina"
-          [(ngModel)]="piscina"
-          placeholder="Si o No"
-          class="form-input"
-        />
-      </div>
+          <div class="servicio-checkbox">
+            <input
+              type="checkbox"
+              id="piscina"
+              name="piscina"
+              [(ngModel)]="piscina"
+              class="checkbox-input"
+            />
+            <label for="piscina" class="checkbox-label">Piscina</label>
+          </div>
 
-      <div class="form-group">
-        <label>Permite mascotas</label>
-        <input
-          type="text"
-          name="mascotas"
-          [(ngModel)]="permiteMascotas"
-          placeholder="Si o No"
-          class="form-input"
-        />
+          <div class="servicio-checkbox">
+            <input
+              type="checkbox"
+              id="mascotas"
+              name="mascotas"
+              [(ngModel)]="permiteMascotas"
+              class="checkbox-input"
+            />
+            <label for="mascotas" class="checkbox-label">Permite mascotas</label>
+          </div>
+        </div>
       </div>
 
       <!-- Capacidad máxima -->

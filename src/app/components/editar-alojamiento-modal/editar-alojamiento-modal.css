@@ -86,6 +86,50 @@
   color: #2d5016;
 }
 
+.servicios-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2d5016;
+  margin-bottom: 12px;
+}
+
+/* Servicios Grid */
+.servicios-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.servicio-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background-color: white;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.servicio-checkbox:hover {
+  background-color: #f5f5f5;
+}
+
+.checkbox-input {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #4CB0A6;
+}
+
+.checkbox-label {
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  margin: 0;
+  user-select: none;
+}
+
 /* Form Input */
 .form-input {
   padding: 14px 16px;

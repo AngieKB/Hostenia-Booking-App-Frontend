@@ -109,7 +109,9 @@ export class DetallesAlojamientoHost implements OnInit {
   }
 
   openEditModal(): void {
-    this.showEditModal = true;
+    if (this.alojamiento?.id) {
+      this.router.navigate(['/editar-alojamiento-host', this.alojamiento.id]);
+    }
   }
 
   closeEditModal(): void {

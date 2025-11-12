@@ -19,6 +19,12 @@ export class PerfilAnfitrionService {
       .pipe(map(response => response.content));
   }
 
+  // Obtener perfil de anfitrión por ID de usuario
+  public obtenerPorUsuarioId(usuarioId: number): Observable<PerfilAnfitrionDTO> {
+    return this.http.get<ResponseDTO<PerfilAnfitrionDTO>>(`${this.apiUrl}/usuario/${usuarioId}`)
+      .pipe(map(response => response.content));
+  }
+
   // Listar todos los perfiles de anfitrión
   public listarPerfiles(): Observable<PerfilAnfitrionDTO[]> {
     return this.http.get<ResponseDTO<PerfilAnfitrionDTO[]>>(`${this.apiUrl}`)

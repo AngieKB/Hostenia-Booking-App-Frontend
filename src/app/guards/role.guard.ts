@@ -6,14 +6,21 @@ export const roleGuard: CanActivateFn = (next: ActivatedRouteSnapshot, state: Ro
   const tokenService = inject(TokenService);
   const router = inject(Router);
 
+  const expectedRole: string[] = next.data["expectedRole"];
+  const allowUnauthenticated: boolean = next.data["allowUnauthenticated"] || false;
+
   // Verificar si está logueado
   if (!tokenService.isLogged()) {
+    // Si se permite acceso sin autenticación, permitir el acceso
+    if (allowUnauthenticated) {
+      console.log('RoleGuard: Usuario no autenticado, pero se permite acceso');
+      return true;
+    }
     console.log('RoleGuard: Usuario no está logueado');
     router.navigate(['/forbidden']);
     return false;
   }
 
-  const expectedRole: string[] = next.data["expectedRole"];
   const realRole = tokenService.getRole();
 
   console.log('RoleGuard - Rol esperado:', expectedRole);

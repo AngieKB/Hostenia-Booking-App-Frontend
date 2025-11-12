@@ -7,7 +7,7 @@
     <button class="btn-editar" (click)="openEditModal()">
       Editar
     </button>
-    <button class="btn-close" (click)="router.navigate(['/'])">
+    <button class="btn-close" (click)="router.navigate(['/mis-alojamientos-host'])">
       <span class="material-icons">close</span>
     </button>
   </div>
@@ -16,13 +16,6 @@
   <div class="galeria-section">
     <div class="imagen-principal">
       <img [src]="imagenPrincipal" [alt]="alojamiento.titulo">
-      <div class="host-badge">
-        <div class="host-avatar"></div>
-        <div class="host-info">
-          <span class="host-label">Alojado por:</span>
-          <span class="host-name">Nombre Anfitrión</span>
-        </div>
-      </div>
     </div>
     <div class="imagenes-thumbnails">
       <div 

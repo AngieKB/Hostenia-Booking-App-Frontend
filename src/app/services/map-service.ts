@@ -149,6 +149,20 @@ private clearMarkers(): void {
   this.markers.forEach(marker => marker.remove());
   this.markers = [];
 }
+
+// Actualiza el marcador a una nueva posición
+public updateMarker(lat: number, lng: number): void {
+  if (!this.map) return;
+  
+  this.clearMarkers();
+  const marker = new mapboxgl.Marker({ color: 'red' })
+    .setLngLat([lng, lat])
+    .addTo(this.map);
+  
+  this.markers.push(marker);
+  this.map.flyTo({ center: [lng, lat], zoom: 15 });
+}
+
 resize() {
   if (this.map) {
     this.map.resize();
