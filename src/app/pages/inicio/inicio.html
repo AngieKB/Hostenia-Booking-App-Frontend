@@ -11,17 +11,20 @@
           <h5 class="mb-0">Registrarse</h5>
         </div>
         <div class="card-body">
-          <form (ngSubmit)="registrar()">
+          <form [formGroup]="registroForm" (ngSubmit)="registrar()">
             <!-- Nombre -->
             <div class="mb-3">
               <label class="form-label">Nombre</label>
               <input 
                 type="text" 
                 class="form-control" 
+                [class.is-invalid]="nombreControl?.invalid && nombreControl?.touched"
                 placeholder="Ingrese su nombre"
-                [(ngModel)]="registroData.nombre"
-                name="nombre"
-                required>
+                formControlName="nombre">
+              <div class="invalid-feedback" *ngIf="nombreControl?.invalid && nombreControl?.touched">
+                <small *ngIf="nombreControl?.errors?.['required']">El nombre es requerido</small>
+                <small *ngIf="nombreControl?.errors?.['maxlength']">El nombre no puede exceder 30 caracteres</small>
+              </div>
             </div>
 
             <!-- Correo electrónico -->
@@ -30,10 +33,13 @@
               <input 
                 type="email" 
                 class="form-control" 
+                [class.is-invalid]="emailControl?.invalid && emailControl?.touched"
                 placeholder="Ingrese su correo electrónico"
-                [(ngModel)]="registroData.email"
-                name="email"
-                required>
+                formControlName="email">
+              <div class="invalid-feedback" *ngIf="emailControl?.invalid && emailControl?.touched">
+                <small *ngIf="emailControl?.errors?.['required']">El correo es requerido</small>
+                <small *ngIf="emailControl?.errors?.['email']">Ingrese un correo válido</small>
+              </div>
             </div>
 
             <!-- Contraseña -->
@@ -42,10 +48,14 @@
               <input 
                 type="password" 
                 class="form-control" 
+                [class.is-invalid]="passwordControl?.invalid && passwordControl?.touched"
                 placeholder="Ingrese la contraseña que desea"
-                [(ngModel)]="registroData.password"
-                name="password"
-                required>
+                formControlName="password">
+              <div class="invalid-feedback" *ngIf="passwordControl?.invalid && passwordControl?.touched">
+                <small *ngIf="passwordControl?.errors?.['required']" class="d-block">La contraseña es requerida</small>
+                <small *ngIf="passwordControl?.errors?.['minlength']" class="d-block">Mínimo 8 caracteres</small>
+                <small *ngIf="passwordControl?.errors?.['pattern']" class="d-block">Debe contener mayúscula, minúscula y número</small>
+              </div>
             </div>
 
             <!-- Teléfono -->
@@ -54,10 +64,13 @@
               <input 
                 type="tel" 
                 class="form-control" 
+                [class.is-invalid]="telefonoControl?.invalid && telefonoControl?.touched"
                 placeholder="Ingrese su número de teléfono"
-                [(ngModel)]="registroData.telefono"
-                name="telefono"
-                required>
+                formControlName="telefono">
+              <div class="invalid-feedback" *ngIf="telefonoControl?.invalid && telefonoControl?.touched">
+                <small *ngIf="telefonoControl?.errors?.['required']">El teléfono es requerido</small>
+                <small *ngIf="telefonoControl?.errors?.['maxlength']">El teléfono no puede exceder 10 caracteres</small>
+              </div>
             </div>
 
             <!-- Fecha de nacimiento -->
@@ -66,10 +79,12 @@
               <input 
                 type="date" 
                 class="form-control" 
+                [class.is-invalid]="fechaNacimientoControl?.invalid && fechaNacimientoControl?.touched"
                 placeholder="Selecciona una fecha"
-                [(ngModel)]="registroData.fechaNacimiento"
-                name="fechaNacimiento"
-                required>
+                formControlName="fechaNacimiento">
+              <div class="invalid-feedback" *ngIf="fechaNacimientoControl?.invalid && fechaNacimientoControl?.touched">
+                <small *ngIf="fechaNacimientoControl?.errors?.['required']">La fecha de nacimiento es requerida</small>
+              </div>
             </div>
 
             <!-- Foto de perfil -->
@@ -79,8 +94,7 @@
                 type="file" 
                 class="form-control" 
                 accept="image/*"
-                (change)="onFileSelected($event)"
-                name="fotoUrl">
+                (change)="onFileSelected($event)">
               <small class="text-muted">Formatos aceptados: JPG, PNG, GIF</small>
             </div>
 
@@ -104,17 +118,20 @@
           <h5 class="mb-0">Iniciar Sesión</h5>
         </div>
         <div class="card-body">
-          <form (ngSubmit)="iniciarSesion()">
+          <form [formGroup]="loginForm" (ngSubmit)="iniciarSesion()">
             <!-- Correo electrónico -->
             <div class="mb-3">
               <label class="form-label">Correo electrónico</label>
               <input 
                 type="email" 
                 class="form-control" 
+                [class.is-invalid]="loginEmailControl?.invalid && loginEmailControl?.touched"
                 placeholder="Ingrese su correo electrónico"
-                [(ngModel)]="loginData.email"
-                name="loginEmail"
-                required>
+                formControlName="email">
+              <div class="invalid-feedback" *ngIf="loginEmailControl?.invalid && loginEmailControl?.touched">
+                <small *ngIf="loginEmailControl?.errors?.['required']">El correo es requerido</small>
+                <small *ngIf="loginEmailControl?.errors?.['email']">Ingrese un correo válido</small>
+              </div>
             </div>
 
             <!-- Contraseña -->
@@ -123,10 +140,12 @@
               <input 
                 type="password" 
                 class="form-control" 
+                [class.is-invalid]="loginPasswordControl?.invalid && loginPasswordControl?.touched"
                 placeholder="Ingrese su contraseña"
-                [(ngModel)]="loginData.password"
-                name="loginPassword"
-                required>
+                formControlName="password">
+              <div class="invalid-feedback" *ngIf="loginPasswordControl?.invalid && loginPasswordControl?.touched">
+                <small *ngIf="loginPasswordControl?.errors?.['required']">La contraseña es requerida</small>
+              </div>
             </div>
 
             <!-- Enlace olvidaste tu contraseña -->
@@ -169,10 +188,13 @@
             <input 
               type="email" 
               class="form-control" 
+              [class.is-invalid]="recuperarEmailControl?.invalid && recuperarEmailControl?.touched"
               placeholder="correo@ejemplo.com"
-              [(ngModel)]="recuperarData.email"
-              name="email"
-              required>
+              [formControl]="$any(recuperarForm.get('email'))">
+            <div class="invalid-feedback" *ngIf="recuperarEmailControl?.invalid && recuperarEmailControl?.touched">
+              <small *ngIf="recuperarEmailControl?.errors?.['required']">El correo es requerido</small>
+              <small *ngIf="recuperarEmailControl?.errors?.['email']">Ingrese un correo válido</small>
+            </div>
           </div>
 
           <button 
@@ -186,8 +208,8 @@
         </div>
 
         <!-- Paso 2: Ingresar código y nueva contraseña -->
-        <form *ngIf="codigoEnviado" (ngSubmit)="establecerPassword()">
-          <p class="text-muted small">Se ha enviado un código de verificación a {{ recuperarData.email }}</p>
+        <form *ngIf="codigoEnviado" [formGroup]="recuperarForm" (ngSubmit)="establecerPassword()">
+          <p class="text-muted small">Se ha enviado un código de verificación a {{ recuperarForm.get('email')?.value }}</p>
           
           <!-- Código -->
           <div class="mb-3">
@@ -195,10 +217,12 @@
             <input 
               type="text" 
               class="form-control" 
+              [class.is-invalid]="codigoControl?.invalid && codigoControl?.touched"
               placeholder="Código"
-              [(ngModel)]="recuperarData.codigo"
-              name="codigo"
-              required>
+              formControlName="codigo">
+            <div class="invalid-feedback" *ngIf="codigoControl?.invalid && codigoControl?.touched">
+              <small *ngIf="codigoControl?.errors?.['required']">El código es requerido</small>
+            </div>
             <small class="text-muted">El código se vence en 15min</small>
           </div>
 
@@ -220,11 +244,15 @@
             <input 
               type="password" 
               class="form-control" 
+              [class.is-invalid]="nuevaPasswordControl?.invalid && nuevaPasswordControl?.touched"
               placeholder="Nueva contraseña"
-              [(ngModel)]="recuperarData.nuevaPassword"
-              name="nuevaPassword"
-              required>
-            <small class="text-muted">Mínimo 8 caracteres, incluir mayúscula, minúscula y número</small>
+              formControlName="nuevaPassword">
+            <div class="invalid-feedback" *ngIf="nuevaPasswordControl?.invalid && nuevaPasswordControl?.touched">
+              <small *ngIf="nuevaPasswordControl?.errors?.['required']" class="d-block">La contraseña es requerida</small>
+              <small *ngIf="nuevaPasswordControl?.errors?.['minlength']" class="d-block">Mínimo 8 caracteres</small>
+              <small *ngIf="nuevaPasswordControl?.errors?.['pattern']" class="d-block">Debe contener mayúscula, minúscula y número</small>
+            </div>
+            <small class="text-muted d-block mt-1">Mínimo 8 caracteres, incluir mayúscula, minúscula y número</small>
           </div>
 
           <!-- Botón establecer contraseña -->

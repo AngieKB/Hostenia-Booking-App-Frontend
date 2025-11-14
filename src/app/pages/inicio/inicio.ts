@@ -1,6 +1,6 @@
 import { Component,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { Footer } from '../../components/footer/footer';
@@ -12,34 +12,19 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, EmptyHeader, Footer],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, EmptyHeader, Footer],
   templateUrl: './inicio.html',
   styleUrls: ['./inicio.css']
 })
 export class Inicio {
 
-  // Variables para el formulario de registro
-  registroData = {
-    nombre: '',
-    email: '',
-    password: '',
-    telefono: '',
-    fechaNacimiento: '',
-    fotoUrl: null as File | null
-  };
+  // FormGroups reactivos
+  registroForm!: FormGroup;
+  loginForm!: FormGroup;
+  recuperarForm!: FormGroup;
 
-  // Variables para el formulario de login
-  loginData = {
-    email: '',
-    password: ''
-  };
-
-  // Variables para recuperar contraseña
-  recuperarData = {
-    email: '',
-    codigo: '',
-    nuevaPassword: ''
-  };
+  // Archivo de foto de perfil
+  fotoPerfilFile: File | null = null;
 
   // Control del modal
   showModal = false;
@@ -54,26 +39,74 @@ export class Inicio {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private tokenService: TokenService
-  ) { }
+    private tokenService: TokenService,
+    private fb: FormBuilder
+  ) {
+    this.initForms();
+  }
+
+  // Inicializar los formularios reactivos
+  initForms(): void {
+    this.registroForm = this.fb.group({
+      nombre: ['', [Validators.required, Validators.maxLength(30)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [
+        Validators.required, 
+        Validators.minLength(8),
+        Validators.pattern(/^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z]).*$/)
+      ]],
+      telefono: ['', [Validators.required, Validators.maxLength(10)]],
+      fechaNacimiento: ['', [Validators.required]]
+    });
+
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]]
+    });
+
+    this.recuperarForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      codigo: ['', [Validators.required]],
+      nuevaPassword: ['', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.pattern(/^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z]).*$/)
+      ]]
+    });
+  }
+
+  // Helpers para acceder a los controles del formulario de registro
+  get nombreControl() { return this.registroForm.get('nombre'); }
+  get emailControl() { return this.registroForm.get('email'); }
+  get passwordControl() { return this.registroForm.get('password'); }
+  get telefonoControl() { return this.registroForm.get('telefono'); }
+  get fechaNacimientoControl() { return this.registroForm.get('fechaNacimiento'); }
+
+  // Helpers para acceder a los controles del formulario de login
+  get loginEmailControl() { return this.loginForm.get('email'); }
+  get loginPasswordControl() { return this.loginForm.get('password'); }
+
+  // Helpers para acceder a los controles del formulario de recuperación
+  get recuperarEmailControl() { return this.recuperarForm.get('email'); }
+  get codigoControl() { return this.recuperarForm.get('codigo'); }
+  get nuevaPasswordControl() { return this.recuperarForm.get('nuevaPassword'); }
 
   // Método para manejar la selección de archivo
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.registroData.fotoUrl = file;
+      this.fotoPerfilFile = file;
       console.log('Archivo seleccionado:', file.name);
     }
   }
 
   // Método para registrar usuario
   registrar() {
-    if (!this.registroData.nombre || !this.registroData.email || !this.registroData.password ||
-      !this.registroData.telefono || !this.registroData.fechaNacimiento) {
+    if (this.registroForm.invalid) {
       Swal.fire({
         icon: 'warning',
         title: 'Campos incompletos',
-        text: 'Por favor complete todos los campos',
+        text: 'Por favor complete todos los campos correctamente',
         confirmButtonColor: '#4CB0A6'
       });
       return;
@@ -82,12 +115,8 @@ export class Inicio {
     this.registrando = true;
 
     const usuarioDTO = {
-      nombre: this.registroData.nombre,
-      email: this.registroData.email,
-      telefono: this.registroData.telefono,
-      password: this.registroData.password,
-      fechaNacimiento: this.registroData.fechaNacimiento,
-      fotoUrl: this.registroData.fotoUrl || undefined
+      ...this.registroForm.value,
+      fotoUrl: this.fotoPerfilFile || undefined
     };
 
     console.log('Datos a enviar:', usuarioDTO);
@@ -103,14 +132,8 @@ export class Inicio {
             confirmButtonColor: '#4CB0A6'
           });
           // Limpiar formulario
-          this.registroData = {
-            nombre: '',
-            email: '',
-            password: '',
-            telefono: '',
-            fechaNacimiento: '',
-            fotoUrl: null
-          };
+          this.registroForm.reset();
+          this.fotoPerfilFile = null;
           this.registrando = false;
         },
         error: (error) => {
@@ -144,11 +167,11 @@ export class Inicio {
 
   // Método para iniciar sesión
   iniciarSesion() {
-    if (!this.loginData.email || !this.loginData.password) {
+    if (this.loginForm.invalid) {
       Swal.fire({
         icon: 'warning',
         title: 'Campos incompletos',
-        text: 'Por favor complete todos los campos',
+        text: 'Por favor complete todos los campos correctamente',
         confirmButtonColor: '#4CB0A6'
       });
       return;
@@ -156,7 +179,7 @@ export class Inicio {
 
     this.iniciandoSesion = true;
 
-    this.authService.login(this.loginData)
+    this.authService.login(this.loginForm.value)
       .subscribe({
         next: (response) => {
           console.log('Login exitoso:', response);
@@ -208,20 +231,17 @@ export class Inicio {
   cerrarModal() {
     this.showModal = false;
     this.codigoEnviado = false;
-    this.recuperarData = {
-      email: '',
-      codigo: '',
-      nuevaPassword: ''
-    };
+    this.recuperarForm.reset();
   }
 
   // Método para enviar código de verificación
   enviarCodigo() {
-    if (!this.recuperarData.email) {
+    const emailControl = this.recuperarForm.get('email');
+    if (!emailControl?.value || emailControl.invalid) {
       Swal.fire({
         icon: 'warning',
         title: 'Campo requerido',
-        text: 'Por favor ingrese su correo electrónico',
+        text: 'Por favor ingrese un correo electrónico válido',
         confirmButtonColor: '#4CB0A6'
       });
       return;
@@ -229,7 +249,7 @@ export class Inicio {
 
     this.enviandoCodigo = true;
 
-    this.authService.sendVerificationCode({ email: this.recuperarData.email })
+    this.authService.sendVerificationCode({ email: emailControl.value })
       .subscribe({
         next: (response) => {
           this.codigoEnviado = true;
@@ -269,11 +289,14 @@ export class Inicio {
 
   // Método para establecer nueva contraseña
   establecerPassword() {
-    if (!this.recuperarData.codigo || !this.recuperarData.nuevaPassword) {
+    const codigoControl = this.recuperarForm.get('codigo');
+    const passwordControl = this.recuperarForm.get('nuevaPassword');
+    
+    if (!codigoControl?.value || !passwordControl?.value || passwordControl.invalid) {
       Swal.fire({
         icon: 'warning',
         title: 'Campos incompletos',
-        text: 'Por favor complete todos los campos',
+        text: 'Por favor complete todos los campos correctamente',
         confirmButtonColor: '#4CB0A6'
       });
       return;
@@ -282,9 +305,9 @@ export class Inicio {
     this.enviandoPassword = true;
 
     const resetData = {
-      email: this.recuperarData.email,
-      verificationCode: this.recuperarData.codigo,
-      newPassword: this.recuperarData.nuevaPassword
+      email: this.recuperarForm.get('email')?.value,
+      verificationCode: codigoControl.value,
+      newPassword: passwordControl.value
     };
 
     this.authService.resetPassword(resetData)
