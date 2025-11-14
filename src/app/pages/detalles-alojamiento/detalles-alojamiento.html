@@ -99,30 +99,60 @@
     </div>
 
     <!-- Lista de Comentarios -->
-    <div class="comentarios-grid" *ngIf="!cargandoComentarios">
-      <div class="comentario-card" *ngFor="let comentario of comentariosPaginados">
-        <div class="comentario-header">
-          <div class="comentario-avatar"></div>
-          <div class="comentario-info">
-            <div class="d-flex align-items-center gap-2">
-              <span class="comentario-autor">Usuario</span>
-              <div class="calificacion-comentario">
-                <i class="bi bi-star-fill"></i>
-                <span>{{ comentario.calificacion }}</span>
-              </div>
-            </div>
-            <span class="comentario-fecha">{{ formatearFechaComentario(comentario.fecha) }}</span>
+<div class="comentarios-grid" *ngIf="!cargandoComentarios">
+  <div class="comentario-card" *ngFor="let comentario of comentariosPaginados">
+
+    <!-- CABECERA DEL COMENTARIO -->
+    <div class="comentario-header">
+      <img 
+        class="comentario-avatar"
+        [src]="comentario.fotoHuesped || 'assets/img/avatar-default.png'"
+        alt="Foto del huésped"
+      >
+
+      <div class="comentario-info">
+        <div class="d-flex align-items-center gap-2">
+          <span class="comentario-autor">{{ comentario.nombreHuesped }}</span>
+
+          <div class="calificacion-comentario">
+            <i class="bi bi-star-fill"></i>
+            <span>{{ comentario.calificacion }}</span>
           </div>
         </div>
-        <p class="comentario-texto">{{ comentario.texto }}</p>
-      </div>
-      
-
-      <!-- Mensaje si no hay comentarios -->
-      <div *ngIf="comentariosPaginados.length === 0" class="text-center py-4">
-        <p class="text-muted">No hay comentarios aún. ¡Sé el primero en comentar!</p>
+        <span class="comentario-fecha">
+          {{ formatearFechaComentario(comentario.fecha) }}
+        </span>
       </div>
     </div>
+
+    <!-- TEXTO DEL COMENTARIO -->
+    <p class="comentario-texto">{{ comentario.texto }}</p>
+
+    <!-- RESPUESTA DEL ANFITRIÓN (si existe) -->
+    <div class="respuesta-container" *ngIf="comentario.textoRespuesta">
+
+      <div class="respuesta-header">
+        <img 
+          class="respuesta-avatar"
+          [src]="comentario.fotoAnfitrion || 'assets/img/avatar-default.png'"
+          alt="Foto del anfitrión"
+        >
+        <div>
+          <span class="respuesta-autor">{{ comentario.nombreAnfitrion}}</span>
+          <span class="respuesta-label">      Anfitrión</span>
+        </div>
+      </div>
+
+      <p class="respuesta-texto">{{ comentario.textoRespuesta }}</p>
+    </div>
+
+  </div>
+
+  <!-- Si no hay comentarios -->
+  <div *ngIf="comentariosPaginados.length === 0" class="text-center py-4">
+    <p class="text-muted">No hay comentarios aún. ¡Sé el primero en comentar!</p>
+  </div>
+</div>
 
     <!-- Paginación de Comentarios -->
     <div class="paginacion" *ngIf="totalPaginasComentarios > 1 && !cargandoComentarios">

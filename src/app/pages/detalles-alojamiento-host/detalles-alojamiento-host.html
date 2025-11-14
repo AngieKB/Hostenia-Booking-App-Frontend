@@ -83,52 +83,56 @@
     </div>
   </div>
 
-  <!-- Calificaciones y Comentarios -->
-  <div class="comentarios-section">
-    <div class="comentarios-header">
-      <h3>
-        Calificaciones y comentarios
-        <span class="rating-badge">
-          <span class="material-icons">star</span>
-          {{ calcularCalificacionPromedio() }}
-        </span>
-      </h3>
-    </div>
+  <!-- ... (el resto del HTML igual hasta la sección de comentarios) ... -->
 
-    <!-- Lista de Comentarios -->
-    <div class="comentarios-grid">
-      <div class="comentario-card" *ngFor="let comentario of comentariosPaginados">
-        <div class="comentario-header">
-          <div class="comentario-avatar"></div>
-          <div class="comentario-info">
-            <span class="comentario-autor">Usuario</span>
-            <span class="comentario-fecha">{{ formatearFecha(comentario.fecha) }}</span>
-          </div>
+<!-- Lista de Comentarios -->
+<div class="comentarios-grid" *ngIf="!cargandoComentarios">
+  <div class="comentario-card" *ngFor="let comentario of comentariosPaginados">
+    <!-- CABECERA DEL COMENTARIO -->
+    <div class="comentario-header">
+      <img 
+        class="comentario-avatar"
+        [src]="comentario.fotoHuesped || 'assets/img/avatar-default.png'"
+        alt="Foto del huésped"
+      />
+      <div class="comentario-info">
+        <span class="comentario-autor">{{ comentario.nombreHuesped }}</span>
+        <!-- Contenedor para fecha y rating en la misma línea -->
+        <div class="fecha-rating-container" style="display: flex; align-items: center; gap: 8px;">
+          <span class="comentario-fecha">{{ formatearFechaComentario(comentario.fecha) }}</span>
+          <span class="comentario-rating">
+            <span class="material-icons star">star</span>{{ comentario.calificacion }}
+          </span>
         </div>
-        <p class="comentario-texto">{{ comentario.texto }}</p>
-        <button class="btn-responder" (click)="responderComentario(comentario.id)">
-          Responder
-        </button>
       </div>
     </div>
-
-    <!-- Paginación de Comentarios -->
-    <div class="paginacion" *ngIf="totalPaginasComentarios > 1">
-      <button 
-        class="pag-btn" 
-        (click)="cambiarPaginaComentarios(paginaActualComentarios - 1)"
-        [disabled]="paginaActualComentarios === 1">
-        <span class="material-icons">keyboard_arrow_up</span>
-      </button>
-      <button 
-        class="pag-btn" 
-        (click)="cambiarPaginaComentarios(paginaActualComentarios + 1)"
-        [disabled]="paginaActualComentarios === totalPaginasComentarios">
-        <span class="material-icons">keyboard_arrow_down</span>
-      </button>
+    <!-- TEXTO DEL COMENTARIO -->
+    <p class="comentario-texto">{{ comentario.texto }}</p>
+    <!-- RESPUESTA DEL ANFITRIÓN (si existe) -->
+    <div class="respuesta-container" *ngIf="comentario.textoRespuesta">
+      <div class="respuesta-header">
+        <img 
+          class="respuesta-avatar"
+          [src]="comentario.fotoAnfitrion || 'assets/img/avatar-default.png'" 
+        />
+        <span class="respuesta-autor">{{ comentario.nombreAnfitrion }} (Anfitrión)</span>
+      </div>
+      <p class="respuesta-texto">{{ comentario.textoRespuesta }}</p>
     </div>
+    <!-- BOTÓN INDIVIDUAL PARA RESPONDER -->
+    <button class="btn-responder" (click)="responderComentario(comentario.id)">
+      Responder
+    </button>
+  </div>
+
+  <!-- Mensaje si no hay comentarios -->
+  <div *ngIf="comentariosPaginados.length === 0" class="text-center py-4">
+    <p class="text-muted">No hay comentarios aún.</p>
   </div>
 </div>
+
+<!-- ... (el resto del HTML igual) ... -->
+
 
 <!-- Modal de Editar Alojamiento -->
 <app-editar-alojamiento-modal

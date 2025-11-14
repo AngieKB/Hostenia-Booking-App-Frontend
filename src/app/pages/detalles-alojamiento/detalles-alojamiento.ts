@@ -178,6 +178,7 @@ export class DetallesAlojamiento implements OnInit {
           r => r.alojamientoTitulo === alojamientoTitulo && r.estado === EstadoReserva.COMPLETADA
         );
 
+
         if (reservasCompletadas.length === 0) {
           // No tiene reservas completadas
           Swal.fire({

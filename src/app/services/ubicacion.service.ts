@@ -29,13 +29,23 @@ export class UbicacionService {
           id: 1,
           texto: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
           calificacion: 5,
-          fecha: new Date('2020-03-12')
+          fecha: new Date('2020-03-12'),
+          nombreHuesped: "Pepe",
+          nombreAnfitrion: "Carlos",
+          fotoHuesped: "foto.com",
+          fotoAnfitrion: "foto.com",
+          textoRespuesta: "meno"
         },
         {
           id: 2,
           texto: 'Ut enim ad minim veniam, quis nostrud exercitation.',
           calificacion: 4,
-          fecha: new Date('2020-03-12')
+          fecha: new Date('2020-03-12'),
+          nombreHuesped: "Pepe",
+          nombreAnfitrion: "Carlos",
+          fotoHuesped: "foto.com",
+          fotoAnfitrion: "foto.com",
+          textoRespuesta: "meno"
         }
       ],
       reservas: [],

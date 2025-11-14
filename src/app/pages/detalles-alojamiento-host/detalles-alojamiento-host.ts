@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Footer } from '../../components/footer/footer';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlojamientoDTO, Comentario } from '../../models/alojamiento';
+import { AlojamientoDTO } from '../../models/alojamiento';
+import { ComentarioDTO } from '../../models/comentario-dto';
+import { ComentarioService } from '../../services/comentario.service';
 import { AlojamientoService } from '../../services/alojamiento.service';
 import { RespuestaService } from '../../services/respuesta.service';
 import { ResponderDTO } from '../../models/comentario-dto';
@@ -22,11 +24,14 @@ export class DetallesAlojamientoHost implements OnInit {
   imagenPrincipal: string = '';
   showEditModal: boolean = false;
   favoritosCount: number = 0;
+  totalComentarios: number = 0;
+
   cargando: boolean = false;
-  
-  // Paginación de comentarios
-  comentariosPaginados: Comentario[] = [];
-  paginaActualComentarios: number = 1;
+  cargandoComentarios: boolean = false;
+
+  // Paginación de comentarios (cambiado a 0-based para consistencia con APIs)
+  comentariosPaginados: ComentarioDTO[] = [];
+  paginaActualComentarios: number = 0;  // Inicializado en 0 (0-based)
   comentariosPorPagina: number = 4;
   totalPaginasComentarios: number = 1;
 
@@ -34,7 +39,8 @@ export class DetallesAlojamientoHost implements OnInit {
     private route: ActivatedRoute,
     public router: Router,
     private alojamientoService: AlojamientoService,
-    private respuestaService: RespuestaService
+    private respuestaService: RespuestaService,
+    private comentarioService: ComentarioService
   ) {}
 
   ngOnInit(): void {
@@ -50,8 +56,7 @@ export class DetallesAlojamientoHost implements OnInit {
       next: (alojamiento) => {
         this.alojamiento = alojamiento;
         this.imagenPrincipal = this.alojamiento.galeria[0] || '';
-        this.calcularPaginacionComentarios();
-        this.cargarComentariosPagina();
+        this.cargarComentariosDesdeAPI(id);  // Carga comentarios aquí
         
         // Cargar conteo de favoritos desde el backend
         this.alojamientoService.contarUsuariosFavorito(id).subscribe({
@@ -131,16 +136,23 @@ export class DetallesAlojamientoHost implements OnInit {
     // Aquí implementarías la lógica para actualizar en el backend
     this.closeEditModal();
   }
+
   verReservas(): void {
-  if (this.alojamiento && this.alojamiento.id) {
-    // Navega a la vista de reservas del alojamiento actual
-    this.router.navigate(['/reservas-host', this.alojamiento.id]);
-  } else {
-    console.error('No se pudo obtener el ID del alojamiento');
+    if (this.alojamiento && this.alojamiento.id) {
+      // Navega a la vista de reservas del alojamiento actual
+      this.router.navigate(['/reservas-host', this.alojamiento.id]);
+    } else {
+      console.error('No se pudo obtener el ID del alojamiento');
+    }
   }
-}
 
-
+  formatearFechaComentario(fecha: string): string {
+    return new Date(fecha).toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  }
 
   responderComentario(comentarioId: number): void {
     Swal.fire({
@@ -206,25 +218,47 @@ export class DetallesAlojamientoHost implements OnInit {
     });
   }
 
-  // Métodos de paginación de comentarios
-  private calcularPaginacionComentarios(): void {
-    if (!this.alojamiento) return;
-    this.totalPaginasComentarios = Math.ceil(
-      this.alojamiento.comentarios.length / this.comentariosPorPagina
-    );
+  // Cargar comentarios desde la API (con logs de debug)
+  private cargarComentariosDesdeAPI(idAlojamiento: number): void {
+    this.cargandoComentarios = true;
+    console.log(`Cargando comentarios para alojamiento ${idAlojamiento}, página ${this.paginaActualComentarios}, tamaño ${this.comentariosPorPagina}`);
+
+    this.comentarioService.obtenerComentariosPorAlojamiento(
+      idAlojamiento,
+      this.paginaActualComentarios,  // Ahora 0-based
+      this.comentariosPorPagina
+    ).subscribe({
+      next: (response) => {
+        console.log('Respuesta de comentarios:', response);
+        this.comentariosPaginados = response.content || [];
+        this.totalPaginasComentarios = response.totalPages || 1;
+        this.totalComentarios = response.totalElements || 0;
+        this.cargandoComentarios = false;
+        console.log(`Comentarios cargados: ${this.comentariosPaginados.length}, total páginas: ${this.totalPaginasComentarios}`);
+      },
+      error: (error) => {
+        console.error('Error al cargar comentarios:', error);
+        this.comentariosPaginados = [];  // Resetear para evitar estados inconsistentes
+        this.totalPaginasComentarios = 1;
+        this.totalComentarios = 0;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar los comentarios',
+          confirmButtonColor: '#4CB0A6'
+        });
+        this.cargandoComentarios = false;
+      }
+    });
   }
 
-  private cargarComentariosPagina(): void {
-    if (!this.alojamiento) return;
-    const inicio = (this.paginaActualComentarios - 1) * this.comentariosPorPagina;
-    const fin = inicio + this.comentariosPorPagina;
-    this.comentariosPaginados = this.alojamiento.comentarios.slice(inicio, fin);
-  }
-
+  // Cambiar página de comentarios (ahora 'pagina' es 0-based directamente)
   cambiarPaginaComentarios(pagina: number): void {
-    if (pagina >= 1 && pagina <= this.totalPaginasComentarios) {
+    if (pagina >= 0 && pagina < this.totalPaginasComentarios) {
       this.paginaActualComentarios = pagina;
-      this.cargarComentariosPagina();
+      if (this.alojamiento) {
+        this.cargarComentariosDesdeAPI(this.alojamiento.id);
+      }
     }
   }
 

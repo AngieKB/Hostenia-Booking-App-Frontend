@@ -343,9 +343,10 @@
 }
 
 .comentario-avatar {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
+  object-fit: cover;  /* evita deformación */
   background-color: #c5b358;
 }
 
@@ -419,6 +420,29 @@
 
 .pag-btn .material-icons {
   color: #2d5016;
+}
+.respuesta-container {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-left: 4px solid #00a36c;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+.respuesta-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.respuesta-label {
+  font-size: 12px;
+  color: #777;
+}
+.respuesta-texto {
+  margin: 0;
+}
+.respuesta-autor {
+  font-weight: 600;
 }
 
 /* Responsive */

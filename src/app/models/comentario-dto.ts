@@ -11,6 +11,12 @@ export interface ComentarioDTO {
   texto: string;
   calificacion: number;
   fecha: string; // ISO string
+  nombreHuesped: string;
+  nombreAnfitrion: string;
+  fotoHuesped: string;
+  fotoAnfitrion: string;
+  textoRespuesta: string;
+
 }
 
 // DTO para responder a un comentario
@@ -25,4 +31,5 @@ export interface RespuestaDTO {
   idComentario: number;
   respuesta: string;
   fecha: string; // ISO string
+
 }

@@ -19,6 +19,11 @@ export interface Comentario {
   texto: string;
   calificacion: number;
   fecha: Date;
+  nombreHuesped: string;
+  nombreAnfitrion: string;
+  fotoHuesped: string;
+  fotoAnfitrion: string;
+  textoRespuesta: string;
 }
 
 export interface Reserva {
