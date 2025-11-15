@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -23,7 +23,7 @@ import { map } from 'rxjs/operators';
   templateUrl: './principal.html',
   styleUrls: ['./principal.css']
 })
-export class Principal implements OnInit, OnDestroy {
+export class Principal implements OnInit, OnDestroy, AfterViewInit {
   
   
   // Filtros de búsqueda (estos NO vienen del backend, son locales)
@@ -70,13 +70,18 @@ export class Principal implements OnInit, OnDestroy {
     this.inicializarFechaMinima();
     this.cargarAlojamientos();
     this.actualizarEstadoLogin();
-    this.mapService.create();
     
     // Listener para detectar cambios en sessionStorage (logout desde otra pestaña)
     this.storageListener = () => {
       this.actualizarEstadoLogin();
     };
     window.addEventListener('storage', this.storageListener);
+  }
+
+  ngAfterViewInit() {
+    if (this.isLogged) {
+      this.mapService.create();
+    }
   }
 
   ngOnDestroy() {

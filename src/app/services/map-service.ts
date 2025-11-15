@@ -23,6 +23,12 @@ export class MapService implements OnDestroy {
       this.map.remove();
     }
 
+    const containerElement = document.getElementById(containerId);
+    if (!containerElement) {
+      console.error(`Contenedor de mapa '${containerId}' no encontrado en el DOM`);
+      return;
+    }
+
     this.map = new mapboxgl.Map({
       container: containerId,
       style: 'mapbox://styles/mapbox/streets-v11',
