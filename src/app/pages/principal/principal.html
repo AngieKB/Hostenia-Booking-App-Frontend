@@ -1,8 +1,8 @@
 <!-- Mostrar header según estado de login -->
 @if (isLogged) {
-  <app-main-header [currentPage]="'principal'"></app-main-header>
+<app-main-header [currentPage]="'principal'"></app-main-header>
 } @else {
-  <app-empty-header></app-empty-header>
+<app-empty-header></app-empty-header>
 }
 
 <!-- Hero Section con título -->
@@ -22,11 +22,12 @@
         <!-- Ciudad -->
         <div class="col-lg-2 col-md-6">
           <label class="form-label">Ciudad</label>
-          <input 
-            type="text" 
-            class="form-control" 
+          <input
+            type="text"
+            class="form-control"
             placeholder="¿Cual ciudad prefieres?"
-            [(ngModel)]="filtros.ciudad">
+            [(ngModel)]="filtros.ciudad"
+          />
         </div>
 
         <!-- Rango de fechas -->
@@ -34,20 +35,22 @@
           <label class="form-label">Rango de fechas</label>
           <div class="row g-2">
             <div class="col-6">
-              <input 
-                type="date" 
-                class="form-control" 
+              <input
+                type="date"
+                class="form-control"
                 placeholder="Desde"
                 [(ngModel)]="filtros.fechaInicio"
-                [min]="fechaMinima">
+                [min]="fechaMinima"
+              />
             </div>
             <div class="col-6">
-              <input 
-                type="date" 
-                class="form-control" 
+              <input
+                type="date"
+                class="form-control"
                 placeholder="Hasta"
                 [(ngModel)]="filtros.fechaFin"
-                [min]="filtros.fechaInicio || fechaMinima">
+                [min]="filtros.fechaInicio || fechaMinima"
+              />
             </div>
           </div>
         </div>
@@ -56,29 +59,34 @@
         <div class="col-lg-3 col-md-6">
           <label class="form-label">Rango de precio</label>
           <div class="mb-2">
-            <small class="text-muted">{{ formatearPrecio(filtros.precio.min) }} - {{ formatearPrecio(filtros.precio.max) }}</small>
+            <small class="text-muted"
+              >{{ formatearPrecio(filtros.precio.min) }} -
+              {{ formatearPrecio(filtros.precio.max) }}</small
+            >
           </div>
           <div class="mb-2">
             <label class="form-label small">Mínimo</label>
-            <input 
-              type="range" 
-              class="form-range" 
-              min="0" 
-              max="1000000" 
+            <input
+              type="range"
+              class="form-range"
+              min="0"
+              max="1000000"
               step="50000"
               [(ngModel)]="filtros.precio.min"
-              (input)="ajustarPrecioMinimo()">
+              (input)="ajustarPrecioMinimo()"
+            />
           </div>
           <div>
             <label class="form-label small">Máximo</label>
-            <input 
-              type="range" 
-              class="form-range" 
-              min="0" 
-              max="1000000" 
+            <input
+              type="range"
+              class="form-range"
+              min="0"
+              max="1000000"
               step="50000"
               [(ngModel)]="filtros.precio.max"
-              (input)="ajustarPrecioMaximo()">
+              (input)="ajustarPrecioMaximo()"
+            />
           </div>
         </div>
 
@@ -86,24 +94,50 @@
         <div class="col-lg-2 col-md-4">
           <label class="form-label">Servicios</label>
           <div class="dropdown">
-            <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+            <button
+              class="btn btn-outline-secondary dropdown-toggle w-100"
+              type="button"
+              id="dropdownServicios"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
               Seleccionar
             </button>
-            <ul class="dropdown-menu p-3">
+            <ul class="dropdown-menu p-3" aria-labelledby="dropdownServicios">
               <li class="form-check">
-                <input class="form-check-input" type="checkbox" [(ngModel)]="filtros.servicios.wifi" id="wifi">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [(ngModel)]="filtros.servicios.wifi"
+                  id="wifi"
+                />
                 <label class="form-check-label" for="wifi">WiFi</label>
               </li>
               <li class="form-check">
-                <input class="form-check-input" type="checkbox" [(ngModel)]="filtros.servicios.piscina" id="piscina">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [(ngModel)]="filtros.servicios.piscina"
+                  id="piscina"
+                />
                 <label class="form-check-label" for="piscina">Piscina</label>
               </li>
               <li class="form-check">
-                <input class="form-check-input" type="checkbox" [(ngModel)]="filtros.servicios.cocina" id="cocina">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [(ngModel)]="filtros.servicios.cocina"
+                  id="cocina"
+                />
                 <label class="form-check-label" for="cocina">Cocina</label>
               </li>
               <li class="form-check">
-                <input class="form-check-input" type="checkbox" [(ngModel)]="filtros.servicios.mascotas" id="mascotas">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [(ngModel)]="filtros.servicios.mascotas"
+                  id="mascotas"
+                />
                 <label class="form-check-label" for="mascotas">Mascotas</label>
               </li>
             </ul>
@@ -112,43 +146,15 @@
 
         <!-- Botón de búsqueda -->
         <div class="col-lg-1 col-md-2 d-flex align-items-end">
-          <button class="btn btn-search w-100" (click)="buscarAlojamientos()">
+          <button class="btn btn-search w-100" (click)="buscarAlojamientos()" title="Buscar">
             <i class="bi bi-search"></i>
           </button>
         </div>
       </div>
     </div>
-    <div id="map"></div>
-<style>
-  #map {
-  width: 100%;
-  height: 500px;
-  border-radius: 10px;
-  margin-top: 2rem;
-  margin-bottom: 4rem;
-  position: relative;
-  z-index: 1;
-  overflow: hidden;  /* Contener marcadores */
-  /* Evita transform o translate aquí si los hay */
-}
-@media (max-width: 576px) {
-  #map {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-  }
-}
-/* Opcional: Estilos para asegurar que los marcadores no se muevan */
-.mapboxgl-marker {
-  /* Si hay problemas, añade esto para forzar posicionamiento */
-  position: absolute !important;
-  /* Evita cualquier transform que pueda interferir */
-  transform: none !important;
-}
-</style>
-  </div>
-  
 
+    <div id="map"></div>
+  </div>
 </div>
 }
 
@@ -156,28 +162,32 @@
 <div class="alojamientos-section">
   <div class="container">
     <h2 class="section-title">Nuestros Alojamientos</h2>
-    
+
     <div class="row">
       <div class="col-lg-4 col-md-6 mb-4" *ngFor="let alojamiento of alojamientosFiltrados">
         <div class="alojamiento-card">
           <!-- Imagen -->
           <div class="alojamiento-image">
-            <img [src]="alojamiento.galeria[0] || 'assets/placeholder.jpg'" 
-                 [alt]="alojamiento.titulo"
-                 class="w-100">
+            <img
+              [src]="alojamiento.galeria[0] || 'assets/placeholder.jpg'"
+              [alt]="alojamiento.titulo"
+              class="w-100"
+            />
             <!-- Botón favorito (solo si está logueado) -->
-            <button 
+            <button
               *ngIf="isLogged"
-              class="btn-favorito" 
+              class="btn-favorito"
               [class.active]="esFavorito(alojamiento.id)"
-              (click)="toggleFavorito(alojamiento.id)">
-              <i class="bi" [class.bi-heart]="!esFavorito(alojamiento.id)" 
-                            [class.bi-heart-fill]="esFavorito(alojamiento.id)"></i>
+              (click)="toggleFavorito(alojamiento.id)"
+            >
+              <i
+                class="bi"
+                [class.bi-heart]="!esFavorito(alojamiento.id)"
+                [class.bi-heart-fill]="esFavorito(alojamiento.id)"
+              ></i>
             </button>
             <!-- Badge de precio -->
-            <div class="precio-badge">
-              {{ formatearPrecio(alojamiento.precioNoche) }} COP
-            </div>
+            <div class="precio-badge">{{ formatearPrecio(alojamiento.precioNoche) }} COP</div>
           </div>
 
           <!-- Información -->
@@ -214,7 +224,9 @@
             </div>
 
             <!-- Botón ver más -->
-            <button class="btn btn-outline-success w-100" (click)="verDetalles(alojamiento.id)">Ver detalles</button>
+            <button class="btn btn-outline-success w-100" (click)="verDetalles(alojamiento.id)">
+              Ver detalles
+            </button>
           </div>
         </div>
       </div>
@@ -222,11 +234,10 @@
 
     <!-- Mensaje si no hay resultados -->
     <div *ngIf="alojamientosFiltrados.length === 0" class="text-center py-5">
-      <i class="bi bi-house-slash" style="font-size: 4rem; color: #ccc;"></i>
+      <i class="bi bi-house-slash" style="font-size: 4rem; color: #ccc"></i>
       <p class="text-muted mt-3">No se encontraron alojamientos con los filtros seleccionados</p>
     </div>
   </div>
-
 </div>
 
 <app-footer></app-footer>

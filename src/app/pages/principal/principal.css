@@ -51,6 +51,65 @@
   transition: all 0.3s ease;
 }
 
+/* Dropdown personalizado para servicios */
+.dropdown-custom {
+  position: relative;
+}
+
+.dropdown-menu-custom {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  min-width: 100%;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu-custom.show {
+  display: block;
+}
+
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  background-color: transparent;
+}
+
+/* Map */
+#map {
+  width: 100%;
+  height: 500px;
+  border-radius: 10px;
+  margin-top: 2rem;
+  margin-bottom: 4rem;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+@media (max-width: 576px) {
+  #map {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
+.mapboxgl-marker {
+  position: absolute !important;
+  transform: none !important;
+}
+
 /* Alojamientos Section */
 .alojamientos-section {
   padding: 4rem 0;
@@ -336,6 +395,4 @@
   .servicios-icons i {
     font-size: 1.1rem;
   }
-
-  
 }

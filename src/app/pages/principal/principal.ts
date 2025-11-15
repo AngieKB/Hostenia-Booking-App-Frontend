@@ -40,6 +40,8 @@ export class Principal implements OnInit, OnDestroy, AfterViewInit {
     }
   };
 
+
+
   // Fecha mínima para el selector (hoy)
   fechaMinima: string = '';
 
@@ -138,6 +140,7 @@ export class Principal implements OnInit, OnDestroy, AfterViewInit {
       }
     });
   }
+  
   public mapItemToMarker(places: AlojamientoDTO[]): MarkerDTO[] {
     return places.map((item) => ({
       id: item.id,
@@ -147,101 +150,83 @@ export class Principal implements OnInit, OnDestroy, AfterViewInit {
     }));
   }
 
+
+
   // Método para buscar/filtrar alojamientos usando la API
-  buscarAlojamientos() {
-    const busquedas: Observable<AlojamientoDTO[]>[] = [];
-    
-    // Búsqueda por ciudad
-    if (this.filtros.ciudad) {
-      busquedas.push(
-        this.alojamientoService.buscarPorCiudad(this.filtros.ciudad, 0, 100)
-          .pipe(map(page => page.content.filter(a => a.estado === 'ACTIVO')))
-      );
-    }
-    
-    // Búsqueda por fechas
-    if (this.filtros.fechaInicio && this.filtros.fechaFin) {
-      const fechaInicio = new Date(this.filtros.fechaInicio);
-      const fechaFin = new Date(this.filtros.fechaFin);
-      busquedas.push(
-        this.alojamientoService.buscarPorFechas(fechaInicio, fechaFin, 0, 100)
-          .pipe(map(page => page.content.filter(a => a.estado === 'ACTIVO')))
-      );
-    }
-    
-    // Búsqueda por precio
-    if (this.filtros.precio.min > 0 || this.filtros.precio.max < 1000000) {
-      busquedas.push(
-        this.alojamientoService.buscarPorPrecio(this.filtros.precio.min, this.filtros.precio.max, 0, 100)
-          .pipe(map(page => page.content.filter(a => a.estado === 'ACTIVO')))
-      );
-    }
-    
-    // Búsqueda por servicios
-    const serviciosSeleccionados: string[] = [];
-    if (this.filtros.servicios.wifi) serviciosSeleccionados.push('wifi');
-    if (this.filtros.servicios.piscina) serviciosSeleccionados.push('piscina');
-    if (this.filtros.servicios.mascotas) serviciosSeleccionados.push('mascotas');
-    if (this.filtros.servicios.cocina) serviciosSeleccionados.push('cocina');
-    
-    if (serviciosSeleccionados.length > 0) {
-      busquedas.push(
-        this.alojamientoService.buscarPorServicios(serviciosSeleccionados, 0, 100)
-          .pipe(map(page => page.content.filter(a => a.estado === 'ACTIVO')))
-      );
-    }
-    
-    // Si no hay filtros, mostrar todos
-    if (busquedas.length === 0) {
-      this.cargarAlojamientos();
-      return;
-    }
-    
-    // Combinar todas las búsquedas y encontrar la intersección
-    forkJoin(busquedas).subscribe({
-      next: (resultados) => {
-        // Encontrar alojamientos que aparecen en todos los resultados
-        this.alojamientosFiltrados = this.interseccionAlojamientos(resultados);
-        
-        if (this.alojamientosFiltrados.length === 0) {
-          Swal.fire({
-            icon: 'info',
-            title: 'Sin resultados',
-            text: 'No se encontraron alojamientos con los filtros seleccionados.',
-            timer: 3000,
-            timerProgressBar: true,
-            confirmButtonColor: '#4CB0A6'
-          });
-        }
-      },
-      error: (error) => {
-        console.error('Error en búsqueda:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Error al realizar la búsqueda',
-          confirmButtonColor: '#4CB0A6'
-        });
-      }
-    });
+  // Método para buscar/filtrar alojamientos usando todos los filtros locales
+buscarAlojamientos() {
+
+  const ciudad = this.filtros.ciudad.trim().toLowerCase();
+  const fechaInicio = this.filtros.fechaInicio;
+  const fechaFin = this.filtros.fechaFin;
+  const precioMin = this.filtros.precio.min;
+  const precioMax = this.filtros.precio.max;
+
+  // Obtener lista de servicios seleccionados
+  const serviciosSeleccionados: string[] = [];
+  if (this.filtros.servicios.wifi) serviciosSeleccionados.push("wifi");
+  if (this.filtros.servicios.piscina) serviciosSeleccionados.push("piscina");
+  if (this.filtros.servicios.mascotas) serviciosSeleccionados.push("mascotas");
+  if (this.filtros.servicios.cocina) serviciosSeleccionados.push("cocina");
+
+
+  // VERIFICAR SI HAY ALGÚN FILTRO ACTIVO
+  const hayFiltros =
+    ciudad !== "" ||
+    fechaInicio !== "" ||
+    fechaFin !== "" ||
+    serviciosSeleccionados.length > 0 ||
+    precioMin > 0 ||
+    precioMax < 1000000;
+
+  if (!hayFiltros) {
+    this.alojamientosFiltrados = [...this.alojamientos];
+    return;
   }
-  
-  // Encontrar la intersección de múltiples arrays de alojamientos
-  private interseccionAlojamientos(resultados: AlojamientoDTO[][]): AlojamientoDTO[] {
-    if (resultados.length === 0) return [];
-    if (resultados.length === 1) return resultados[0];
-    
-    // Comenzar con el primer resultado
-    let interseccion = resultados[0];
-    
-    // Intersectar con cada resultado subsecuente
-    for (let i = 1; i < resultados.length; i++) {
-      const idsActuales = new Set(resultados[i].map(a => a.id));
-      interseccion = interseccion.filter(a => idsActuales.has(a.id));
-    }
-    
-    return interseccion;
+
+
+  // INICIAR FILTRADO LOCAL
+  let filtrados = [...this.alojamientos];
+
+
+  // 🔹 FILTRO POR CIUDAD
+  if (ciudad !== "") {
+    filtrados = filtrados.filter(a =>
+      a.ubicacion.ciudad.toLowerCase().includes(ciudad)
+    );
   }
+
+  // 🔹 FILTRO DE FECHAS (REQUIERE AMBAS)
+  if (fechaInicio !== "" && fechaFin !== "") {
+    filtrados = filtrados.filter(a =>
+      this.verificarDisponibilidad(a, fechaInicio, fechaFin)
+    );
+  }
+
+  // 🔹 FILTRO DE PRECIO (por noche)
+  filtrados = filtrados.filter(a =>
+    a.precioNoche >= precioMin && a.precioNoche <= precioMax
+  );
+
+  // 🔹 FILTRO DE SERVICIOS
+  if (serviciosSeleccionados.length > 0) {
+    filtrados = filtrados.filter(a =>
+      serviciosSeleccionados.every(serv =>
+        a.servicios.map(s => s.toLowerCase()).includes(serv.toLowerCase())
+      )
+    );
+  }
+
+  // ASIGNAR RESULTADO FINAL
+  this.alojamientosFiltrados = filtrados;
+
+  // ACTUALIZAR MARCADORES EN EL MAPA
+  setTimeout(() => {
+    const markers = this.mapItemToMarker(filtrados);
+    this.mapService.drawMarkers(markers);
+  }, 300);
+}
+
 
   // Verificar si el alojamiento está disponible en el rango de fechas
   verificarDisponibilidad(alojamiento: AlojamientoDTO, fechaInicio: string, fechaFin: string): boolean {
@@ -253,7 +238,7 @@ export class Principal implements OnInit, OnDestroy, AfterViewInit {
     const fin = new Date(fechaFin);
 
     // Verificar que no haya solapamiento con ninguna reserva existente
-    return !alojamiento.reservas.some(reserva => {
+    return !alojamiento.reservas.some((reserva: any) => {
       const reservaInicio = new Date(reserva.fechaInicio);
       const reservaFin = new Date(reserva.fechaFin);
       
@@ -291,7 +276,7 @@ export class Principal implements OnInit, OnDestroy, AfterViewInit {
         console.error('Error al cargar favoritos:', error);
         this.favoritos.clear();
       }
-    });
+      });
   }
 
   toggleFavorito(id: number) {
