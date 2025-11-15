@@ -4,12 +4,14 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PerfilAnfitrionDTO, EditarAnfitrionDTO } from '../models/perfil-anfitrion-dto';
 import { ResponseDTO } from '../models/response-dto';
+import { environment } from '../../environments/environment.prod';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class PerfilAnfitrionService {
-  private apiUrl = 'http://localhost:8080/api/perfiles-anfitrion';
+  private apiUrl = `${environment.apiUrl}/api/perfiles-anfitrion`;
 
   constructor(private http: HttpClient) {}
 

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 import { UsuarioDTO, EditarUsuarioDTO, ChangePasswordDTO } from '../models/usuario.model';
 import { ResponseDTO } from '../models/auth.model';
 import { UserDTO, Rol } from '../models/user-dto';
@@ -12,7 +12,7 @@ import { TokenService } from './token.service';
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl = `${environment.apiUrl}/usuario`;
+  private apiUrl = `${environment.apiUrl}/api/usuario`;
   private currentUser: UserDTO | null = null;
 
   constructor(

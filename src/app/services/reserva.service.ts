@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from '../../environments/environment.prod';
+
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { 
@@ -15,7 +17,7 @@ import { Page } from '../models/alojamiento';
   providedIn: 'root'
 })
 export class ReservaService {
-  private apiUrl = 'http://localhost:8080/api/reserva';
+  private apiUrl = `${environment.apiUrl}/api/reserva`;
 
   constructor(private http: HttpClient) {}
 

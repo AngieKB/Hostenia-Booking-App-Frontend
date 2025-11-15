@@ -4,12 +4,14 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MetricasDTO } from '../models/metricas-dto';
 import { ResponseDTO } from '../models/response-dto';
+import { environment } from '../../environments/environment.prod';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class MetricasService {
-  private apiUrl = 'http://localhost:8080/api/alojamiento';
+  private apiUrl = `${environment.apiUrl}/api/alojamiento`;
 
   constructor(private http: HttpClient) {}
 

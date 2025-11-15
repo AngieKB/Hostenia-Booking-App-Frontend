@@ -4,12 +4,14 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ResponderDTO, RespuestaDTO } from '../models/comentario-dto';
 import { ResponseDTO } from '../models/response-dto';
+import { environment } from '../../environments/environment.prod';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class RespuestaService {
-  private apiUrl = 'http://localhost:8080/api/respuestas';
+  private apiUrl = `${environment.apiUrl}/api/respuestas`;
 
   constructor(private http: HttpClient) {}
 

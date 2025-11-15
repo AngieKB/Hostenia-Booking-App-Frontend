@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
 import { map, catchError } from 'rxjs/operators';
 import { 
   AlojamientoDTO, 
@@ -15,7 +16,7 @@ import { ResponseDTO } from '../models/response-dto';
   providedIn: 'root'
 })
 export class AlojamientoService {
-  private apiUrl = 'http://localhost:8080/api/alojamiento';
+  private apiUrl = `${environment.apiUrl}/api/alojamiento`;
 
   constructor(private http: HttpClient) {}
 

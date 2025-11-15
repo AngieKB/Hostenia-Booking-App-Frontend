@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://appbooking-backend.onrender.com/api'
+  apiUrl: 'https://hostenia-booking-app-production.up.railway.app'
 };
