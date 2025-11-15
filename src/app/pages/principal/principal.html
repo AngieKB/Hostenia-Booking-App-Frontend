@@ -12,7 +12,8 @@
   </div>
 </div>
 
-<!-- Sección de búsqueda -->
+<!-- Sección de búsqueda (solo visible si está logueado) -->
+@if (isLogged) {
 <div class="search-section">
   <div class="container">
     <div class="search-card">
@@ -149,6 +150,7 @@
   
 
 </div>
+}
 
 <!-- Sección de alojamientos -->
 <div class="alojamientos-section">
