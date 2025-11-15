@@ -150,11 +150,8 @@ export class Principal implements OnInit, OnDestroy, AfterViewInit {
     }));
   }
 
-
-
   // Método para buscar/filtrar alojamientos usando la API
-  // Método para buscar/filtrar alojamientos usando todos los filtros locales
-buscarAlojamientos() {
+  buscarAlojamientos() {
 
   const ciudad = this.filtros.ciudad.trim().toLowerCase();
   const fechaInicio = this.filtros.fechaInicio;
@@ -184,31 +181,74 @@ buscarAlojamientos() {
     return;
   }
 
+  // SI HAY FILTRO DE FECHAS, USAR API DEL BACKEND
+  if (fechaInicio !== "" && fechaFin !== "") {
+    const inicio = new Date(fechaInicio + 'T00:00:00');
+    const fin = new Date(fechaFin + 'T23:59:59');
+    
+    this.alojamientoService.buscarPorFechas(inicio, fin, 0, 100).subscribe({
+      next: (page) => {
+        let filtrados = page.content.filter(alojamiento => alojamiento.estado === 'ACTIVO');
+        
+        // Aplicar filtros adicionales localmente
+        // FILTRO POR CIUDAD
+        if (ciudad !== "") {
+          filtrados = filtrados.filter(a =>
+            a.ubicacion.ciudad.toLowerCase().includes(ciudad)
+          );
+        }
 
-  // INICIAR FILTRADO LOCAL
+        // FILTRO DE PRECIO (por noche)
+        filtrados = filtrados.filter(a =>
+          a.precioNoche >= precioMin && a.precioNoche <= precioMax
+        );
+
+        // FILTRO DE SERVICIOS
+        if (serviciosSeleccionados.length > 0) {
+          filtrados = filtrados.filter(a =>
+            serviciosSeleccionados.every(serv =>
+              a.servicios.map(s => s.toLowerCase()).includes(serv.toLowerCase())
+            )
+          );
+        }
+
+        this.alojamientosFiltrados = filtrados;
+
+        // ACTUALIZAR MARCADORES EN EL MAPA
+        setTimeout(() => {
+          const markers = this.mapItemToMarker(filtrados);
+          this.mapService.drawMarkers(markers);
+        }, 300);
+      },
+      error: (error) => {
+        console.error('Error al buscar por fechas:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo realizar la búsqueda por fechas',
+          confirmButtonColor: '#4CB0A6'
+        });
+      }
+    });
+    return;
+  }
+
+  // INICIAR FILTRADO LOCAL (cuando no hay filtro de fechas)
   let filtrados = [...this.alojamientos];
 
-
-  // 🔹 FILTRO POR CIUDAD
+  // FILTRO POR CIUDAD
   if (ciudad !== "") {
     filtrados = filtrados.filter(a =>
       a.ubicacion.ciudad.toLowerCase().includes(ciudad)
     );
   }
 
-  // 🔹 FILTRO DE FECHAS (REQUIERE AMBAS)
-  if (fechaInicio !== "" && fechaFin !== "") {
-    filtrados = filtrados.filter(a =>
-      this.verificarDisponibilidad(a, fechaInicio, fechaFin)
-    );
-  }
-
-  // 🔹 FILTRO DE PRECIO (por noche)
+  // FILTRO DE PRECIO (por noche)
   filtrados = filtrados.filter(a =>
     a.precioNoche >= precioMin && a.precioNoche <= precioMax
   );
 
-  // 🔹 FILTRO DE SERVICIOS
+  // FILTRO DE SERVICIOS
   if (serviciosSeleccionados.length > 0) {
     filtrados = filtrados.filter(a =>
       serviciosSeleccionados.every(serv =>
@@ -237,8 +277,13 @@ buscarAlojamientos() {
     const inicio = new Date(fechaInicio);
     const fin = new Date(fechaFin);
 
-    // Verificar que no haya solapamiento con ninguna reserva existente
+    // Verificar que no haya solapamiento con ninguna reserva CONFIRMADA
     return !alojamiento.reservas.some((reserva: any) => {
+      // Solo considerar reservas confirmadas
+      if (reserva.estado !== 'CONFIRMADA') {
+        return false;
+      }
+      
       const reservaInicio = new Date(reserva.fechaInicio);
       const reservaFin = new Date(reserva.fechaFin);
       
