@@ -200,7 +200,7 @@ export class RealizarReserva implements OnInit {
     if (!this.alojamiento) return 0;
     
     const dias = this.calcularDias();
-    const precioTotal = (dias * this.alojamiento.precioNoche) + this.reserva.numeroHuespedes*this.alojamiento.precioNoche;
+    const precioTotal = dias * this.alojamiento.precioNoche * this.reserva.numeroHuespedes;
     return precioTotal;
   }
 
