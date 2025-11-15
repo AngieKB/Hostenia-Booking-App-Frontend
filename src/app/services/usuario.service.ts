@@ -12,7 +12,7 @@ import { TokenService } from './token.service';
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl = `${environment.apiUrl}/usuario`;
+  private apiUrl = `${environment.apiUrl}/api/usuario`;
   private currentUser: UserDTO | null = null;
 
   constructor(
